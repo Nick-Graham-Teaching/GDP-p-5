@@ -1,17 +1,21 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System;
+using UnityEngine.UI;
 
 
-class Messages {
+static class Messages {
 
-    public static readonly byte KEY = (byte)1;
+    public static readonly byte MOVEMENT = (byte)1;
+    public static readonly byte ROTATIONX = (byte)2;
+    public static readonly byte ROTATIONY = (byte)3;
 
-    static byte[] allMessageTypes = { KEY };
+	static byte[] allMessageTypes = { MOVEMENT, ROTATIONX, ROTATIONY };
 
     public static int maxMessageSize = 128; // maximum size of a message in bytes
 
-	public static string NetworkErrorToString(byte error)
+    #region config
+    public static string NetworkErrorToString(byte error)
 	{
 		switch (error)
 		{
@@ -65,8 +69,55 @@ class Messages {
 
         Logger.LogFormat("Connection info: from IP {0}:{1}", address, port);
 	}
+    #endregion
 
-	static void AddShortToByteArray(Int16 n, ref byte[] m, ref int count)
+    #region Movement Message
+    public static byte[] CreateMovementMessage(float x, float y, float z)
+	{
+		// Format is:
+		//	 - byte 0: message type
+		//   - byte 1-4: x
+		//   - byte 5-8: y
+		//   - byte 9-12: z
+
+		byte[] m = new byte[13];
+		m[0] = MOVEMENT;
+		int count = 1;
+		AddFloatToByteArray(x, ref m, ref count);
+		AddFloatToByteArray(y, ref m, ref count);
+		AddFloatToByteArray(z, ref m, ref count);
+
+		return m;
+	}
+	public static void GetMovementMessage(byte[] message, out float x, out float y, out float z)
+	{
+		x = ExtractFloat(message, 1);
+		y = ExtractFloat(message, 5);
+		z = ExtractFloat(message, 9);
+	}
+    #endregion
+
+    #region Rotation Message
+    public static byte[] CreateRotationMessage(byte messageType, float rotationDeg)
+    {
+        // Format is:
+        //	 - byte 0: message type
+        //   - byte 1-4: rotationDeg
+
+        byte[] m = new byte[5];
+        m[0] = messageType;
+        int count = 1;
+        AddFloatToByteArray(rotationDeg, ref m, ref count);
+
+        return m;
+    }
+	public static float GetRotationMessage(byte[] message) {
+		return ExtractFloat(message, 1);
+	}
+    #endregion
+
+    #region util
+    static void AddFloatToByteArray(float n, ref byte[] m, ref int count)
 	{
 		byte[] b = BitConverter.GetBytes(n);
 		for (int i = 0; i < b.Length; i++)
@@ -74,43 +125,18 @@ class Messages {
 			m[count++] = b[i];
 		}
 	}
-
-	public static byte[] CreateKeyMessage(float x, float y, float z)
-	{
-		// Format is:
-		//	 - byte 0: message type
-		//   - byte 1-2: x
-		//   - byte 3-4: y
-		//   - byte 5-6: z
-
-		byte[] m = new byte[7];
-		m[0] = Messages.KEY;
-		int count = 1;
-		AddShortToByteArray((short)(x), ref m, ref count);
-		AddShortToByteArray((short)(y), ref m, ref count);
-		AddShortToByteArray((short)(z), ref m, ref count);
-
-		return m;
-	}
 	static float ExtractFloat(byte[] message, int startPos)
 	{
-		Int16 n = BitConverter.ToInt16(message, startPos);
+		float n = BitConverter.ToSingle(message, startPos);
 		return n;
-	}
-
-	public static void GetKeyMessage(byte[] message, out float x, out float y, out float z)
-	{
-		x = ExtractFloat(message, 1);
-		y = ExtractFloat(message, 3);
-		z = ExtractFloat(message, 5);
 	}
 
 	public static byte GetMessageType(byte[] message)
 	{
 		return message[0];
 	}
+    #endregion
 }
-
 static class Logger
 {
 	public static void Log(String msg)
@@ -124,6 +150,7 @@ static class Logger
 		Log(formattedMsg);
 	}
 }
+
 public class ServerNetwork : MonoBehaviour
 {
 
@@ -137,15 +164,27 @@ public class ServerNetwork : MonoBehaviour
 	int dataChannelId;  // unreliable channel for movement info
 
 	GameObject sphe;
+	GameObject cubeRotation;
 
 	void ProcessMessage(byte[] message)
 	{
-		// send to all clients other than originator
-
-		// ...
-		float x, y, z;
-		Messages.GetKeyMessage(message, out x,out y, out z);
-		sphe.transform.position = sphe.transform.position + 4.0f * new Vector3(x,y,z) * Time.deltaTime;
+		byte messageType = Messages.GetMessageType(message);
+		float rotation;
+		switch (messageType) {
+			case (byte)1:  // Messages.MOVEMENT
+				float x, y, z;
+				Messages.GetMovementMessage(message, out x, out y, out z);
+				sphe.transform.position = sphe.transform.position + 11.0f * new Vector3(x, y, z) * Time.deltaTime;
+				break;
+			case (byte)2:  // Messages.XROTATION
+				rotation = Messages.GetRotationMessage(message);
+				cubeRotation.transform.rotation *= Quaternion.Euler(rotation, 0, 0);
+				break;
+			case (byte)3:  // Messages.YROTATION
+				rotation = Messages.GetRotationMessage(message);
+				cubeRotation.transform.rotation *= Quaternion.Euler(0, rotation, 0);
+				break;
+		}
 
 	}
 	void ReceiveMessagesFromClient()
@@ -210,6 +249,7 @@ public class ServerNetwork : MonoBehaviour
 		Application.runInBackground = true;
 
 		sphe = GameObject.Find("Sphere");
+		cubeRotation = GameObject.Find("cubeRotation");
 		InitNetwork();
 	}
 

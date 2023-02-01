@@ -12,11 +12,11 @@ public class ClientNetwork : MonoBehaviour
 
     const int _maxConnections = 5;
 
-    string _serverHostIP = "192.168.2.15";
-    //string _serverHostIP = "127.0.0.1";
+    //string _serverHostIP = "76.64.188.60";
+    //string _serverHostIP = "192.168.43.193";  // Nick's home
+    string _serverHostIP = "192.168.2.15";  // Nick's home
 
     bool _isConnected = true;
-
 
     // To send messages, we will need a host id (this client), a connection id (reference to server),
     // and a channel id (socket connection itself.) These are all set when this client is initialized.
@@ -28,6 +28,7 @@ public class ClientNetwork : MonoBehaviour
     /// </summary>
     int _controlChannelId;  // reliable channel for control messages
     int _dataChannelId;  // unreliable channel for movement info
+
 
     void InitNetwork()
     {
@@ -116,21 +117,35 @@ public class ClientNetwork : MonoBehaviour
 
     public void GoForward() 
     {
-        SendMessageToServer(Messages.CreateKeyMessage(Vector3.forward.x, Vector3.forward.y, Vector3.forward.z));
+        SendMessageToServer(Messages.CreateMovementMessage(Vector3.forward.x, Vector3.forward.y, Vector3.forward.z));
     }
     public void GoBackward()
     {
-        SendMessageToServer(Messages.CreateKeyMessage(Vector3.back.x, Vector3.back.y, Vector3.back.z));
+        SendMessageToServer(Messages.CreateMovementMessage(Vector3.back.x, Vector3.back.y, Vector3.back.z));
     }
     public void GoLeft()
     {
-        SendMessageToServer(Messages.CreateKeyMessage(Vector3.left.x, Vector3.left.y, Vector3.left.z));
+        SendMessageToServer(Messages.CreateMovementMessage(Vector3.left.x, Vector3.left.y, Vector3.left.z));
     }
     public void GoRight()
     {
-        SendMessageToServer(Messages.CreateKeyMessage(Vector3.right.x, Vector3.right.y, Vector3.right.z));
+        SendMessageToServer(Messages.CreateMovementMessage(Vector3.right.x, Vector3.right.y, Vector3.right.z));
     }
 
+    IEnumerator SendGyroRotation() { 
+        while (true)
+        {
+            if (_isConnected && GyroRotationDetector.isRotateX())
+            {
+                SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONX, GyroRotationDetector.rotationX()));
+            }
+            if (_isConnected && GyroRotationDetector.isRotateY())
+            {
+                SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONY, GyroRotationDetector.rotationY()));
+            }
+            yield return new WaitForSeconds(0f);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -138,6 +153,7 @@ public class ClientNetwork : MonoBehaviour
         Application.runInBackground = true;
 
         InitNetwork();
+        StartCoroutine("SendGyroRotation");
     }
 
     // Update is called once per frame
@@ -145,4 +161,7 @@ public class ClientNetwork : MonoBehaviour
     {
         ProcessIncomingMessages();
     }
+
+
+
 }
