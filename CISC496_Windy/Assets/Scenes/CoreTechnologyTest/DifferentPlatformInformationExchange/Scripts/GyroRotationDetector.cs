@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class GyroRotationDetector
+public class GyroRotationDetector : MonoBehaviour
 {
 
     private static readonly float rotationRateThreshold = 0.05f;
