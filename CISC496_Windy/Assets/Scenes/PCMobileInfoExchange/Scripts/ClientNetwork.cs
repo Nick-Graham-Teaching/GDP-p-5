@@ -7,27 +7,21 @@ using System.Text;
 
 public class ClientNetwork : MonoBehaviour
 {
-    float speed = 4.0f;
-    const int _serverPort = 51343;  // port used by server
+    const int _serverPort = 51343;
 
     const int _maxConnections = 5;
 
-    //string _serverHostIP = "76.64.188.60";
-    //string _serverHostIP = "192.168.43.193";  // Nick's home
-    string _serverHostIP = "192.168.2.15";  // Nick's home
+    [SerializeField]
+    string _serverHostIP = "192.168.43.193";  // hotspot
+    //string _serverHostIP = "192.168.2.15";  // LAN
 
     bool _isConnected = true;
 
-    // To send messages, we will need a host id (this client), a connection id (reference to server),
-    // and a channel id (socket connection itself.) These are all set when this client is initialized.
     int _hostId;
     int _connectionId;
 
-    /// <summary>
-    /// We have two types of channel - control and movement info
-    /// </summary>
-    int _controlChannelId;  // reliable channel for control messages
-    int _dataChannelId;  // unreliable channel for movement info
+    int _controlChannelId;
+    int _dataChannelId;
 
 
     void InitNetwork()

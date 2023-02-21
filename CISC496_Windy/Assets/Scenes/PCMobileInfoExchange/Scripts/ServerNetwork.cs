@@ -210,17 +210,14 @@ public class ServerNetwork : MonoBehaviour
 					messagesAvailable = false;
 					break;
 				case NetworkEventType.ConnectEvent:
-					// AddClient
 					this.connectionId = connectionId;
 					break;
 				case NetworkEventType.DataEvent:
 					Logger.LogFormat("Message received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
-					// Inform Handler To Process Information
 					ProcessMessage(recBuffer);
 					break;
 				case NetworkEventType.DisconnectEvent:
 					Logger.Log(string.Format("Disconnection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId));
-					// removeClient
 					break;
 			}
 		}
@@ -228,22 +225,18 @@ public class ServerNetwork : MonoBehaviour
 
 	void InitNetwork()
 	{
-		// Establish connection to server and get client id.
 		NetworkTransport.Init();
 
-		// Set up channels for control messages (reliable) and movement messages (unreliable)
 		ConnectionConfig config = new ConnectionConfig();
 		controlChannelId = config.AddChannel(QosType.Reliable);
 		dataChannelId = config.AddChannel(QosType.Unreliable);
 
-		// Create socket end-point
 		HostTopology topology = new HostTopology(config, maxConnections);
 		hostId = NetworkTransport.AddHost(topology, serverPort);
 
 		Logger.Log(string.Format("Server created with hostId {0}", hostId));
 	}
 
-	// Start is called before the first frame update
 	void Start()
     {
 		Application.runInBackground = true;
@@ -253,7 +246,6 @@ public class ServerNetwork : MonoBehaviour
 		InitNetwork();
 	}
 
-    // Update is called once per frame
     void Update()
     {
 		ReceiveMessagesFromClient();
