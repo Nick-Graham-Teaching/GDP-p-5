@@ -18,15 +18,15 @@ public class CameraFollow : MonoBehaviour
 
     // The smallest Y value camera could reach
     // Must be negative value
-    private float minY;
+    public float minY;
 
     // Set a boundary for viewDirection Length
-    private float MaxLength;
+    public float MaxLength;
     public float MinLength;
 
     // As camera getting closer to the target, the point camera looks at should move upwards based on target position
     public float maxTargetOffsetY;
-    private Vector3 targetOffset;
+    public Vector3 targetOffset;
 
     private void Start()
     {
@@ -40,10 +40,11 @@ public class CameraFollow : MonoBehaviour
         targetOffset = new Vector3(0.0f, 0.0f, 0.0f);
         // Initial Position
         transform.position = target.position + viewDirection;
-        transform.rotation = Quaternion.LookRotation(-viewDirection+targetOffset, Vector3.up)*transform.rotation;
+        transform.rotation = Quaternion.LookRotation(-viewDirection, Vector3.up);
     }
 
-    void UpdateViewDirection() {
+    void UpdateViewDirection()
+    {
         // Rotation by Y Axis
         viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * xRotateRate, Vector3.up) * viewDirection;
         // Rotation by X Axis
@@ -72,7 +73,7 @@ public class CameraFollow : MonoBehaviour
                 viewDirection = oldV;
             }
         } 
-        else if (viewDirection.magnitude < MaxLength && viewDirection.y > minY) // When the camera's not been blocked and not gone back to the length it should be.
+        else if (viewDirection.magnitude < MaxLength && viewDirection.y > minY && viewDirection.y < 0.0f) // When the camera's not been blocked and not gone back to the length it should be.
         {
             viewDirection = minY / viewDirection.y * viewDirection;
             targetOffset = new Vector3(targetOffset.x, 
@@ -84,6 +85,7 @@ public class CameraFollow : MonoBehaviour
     {
         //transform.position = Vector3.Lerp(transform.position, target.position + viewDirection, followSpeed * Time.deltaTime);
         transform.position = target.position + viewDirection;
+
     }
     void LookAtTarget()
     {
