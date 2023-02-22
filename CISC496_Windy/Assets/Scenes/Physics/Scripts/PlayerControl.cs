@@ -5,103 +5,83 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    static readonly float speed = 4.0f;
-    
-    int upTap;
-    int upPress;
-
-    int downTap;
-    int downPress;
-
-    int leftTap;
-    int leftPress;
-
-    int rightTap;
-    int rightPress;
-
-    int jumpTap;
-    int jumpPress;
+    static readonly float walkSpeed = 10.0f;
+    public float rotateRate;
 
     public Transform PlayerCamera;
 
 
+    public Vector3 ForwardD
+    {
+        get 
+        {
+            if (PlayerCamera != null)
+            {
+                Vector3 direction = transform.position - PlayerCamera.position;
+                return new Vector3(direction.x, 0.0f, direction.z).normalized;
+            }
+            return Vector3.forward;
+        }
+    }
+    public Vector3 BackD => -ForwardD;
+    public Vector3 LeftD
+    {
+        get
+        {
+            Vector3 forward = ForwardD;
+            return new Vector3(-forward.z, 0.0f, forward.x);
+        }
+    }
+    public Vector3 RightD => -LeftD;
+
+    void PositionUpdate()
+    {
+        if (KIH.Instance.GetKeyPress(Keys.UpCode))
+        {
+            transform.position = transform.position + Time.deltaTime * walkSpeed * ForwardD;
+        }
+        if (KIH.Instance.GetKeyPress(Keys.DownCode))
+        {
+            transform.position = transform.position + Time.deltaTime * walkSpeed * BackD;
+        }
+        if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+        {
+            transform.position = transform.position + Time.deltaTime * walkSpeed * LeftD;
+        }
+        if (KIH.Instance.GetKeyPress(Keys.RightCode))
+        {
+            transform.position = transform.position + Time.deltaTime * walkSpeed * RightD;
+        }
+    }
+
+    void RotationUpdate()
+    {
+        if (KIH.Instance.GetKeyPress(Keys.UpCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(ForwardD, Vector3.up), rotateRate * Time.deltaTime);
+        }
+        if (KIH.Instance.GetKeyPress(Keys.DownCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(BackD, Vector3.up), rotateRate * Time.deltaTime);
+        }
+        if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(LeftD, Vector3.up), rotateRate * Time.deltaTime);
+        }
+        if (KIH.Instance.GetKeyPress(Keys.RightCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(RightD, Vector3.up), rotateRate * Time.deltaTime);
+        }
+    }
+
     private void Start()
     {
-
+        rotateRate = rotateRate <= Mathf.Epsilon ? 10.0f : rotateRate;
     }
 
     private void Update()
     {
-        if (KIH.Instance.GetKeyPress(Keys.UpCode)) {
-            transform.position = transform.position + Vector3.forward *  Time.deltaTime * speed;
-        }
-        if (KIH.Instance.GetKeyPress(Keys.DownCode))
-        {
-            transform.position = transform.position + Vector3.back * Time.deltaTime * speed;
-        }
-        if (KIH.Instance.GetKeyPress(Keys.LeftCode))
-        {
-            transform.position = transform.position + Vector3.left * Time.deltaTime * speed;
-        }
-        if (KIH.Instance.GetKeyPress(Keys.RightCode))
-        {
-            transform.position = transform.position + Vector3.right * Time.deltaTime * speed;
-        }
-    }
-
-
-    void TestKeyInput()
-    {
-        if (KIH.Instance.GetKeyPress(Keys.UpCode))
-        {
-            upPress++;
-            Debug.LogFormat("up key tap {0}, up key press {1}", upTap, upPress);
-        }
-        else if (KIH.Instance.GetKeyTap(Keys.UpCode))
-        {
-            upTap++;
-            Debug.LogFormat("up key tap {0}, up key press {1}", upTap, upPress);
-        }
-        if (KIH.Instance.GetKeyPress(Keys.DownCode))
-        {
-            downPress++;
-            Debug.LogFormat("down key tap {0}, down key press {1}", downTap, downPress);
-        }
-        else if (KIH.Instance.GetKeyTap(Keys.DownCode))
-        {
-            downTap++;
-            Debug.LogFormat("down key tap {0}, down key press {1}", downTap, downPress);
-        }
-        if (KIH.Instance.GetKeyPress(Keys.LeftCode))
-        {
-            leftPress++;
-            Debug.LogFormat("left key tap {0}, left key press {1}", leftTap, leftPress);
-        }
-        else if (KIH.Instance.GetKeyTap(Keys.LeftCode))
-        {
-            leftTap++;
-            Debug.LogFormat("left key tap {0}, left key press {1}", leftTap, leftPress);
-        }
-
-        if (KIH.Instance.GetKeyPress(Keys.RightCode))
-        {
-            rightPress++;
-            Debug.LogFormat("right key tap {0}, right key press {1}", rightTap, rightPress);
-        }
-        else if (KIH.Instance.GetKeyTap(Keys.RightCode))
-        {
-            rightTap++;
-            Debug.LogFormat("right key tap {0}, right key press {1}", rightTap, rightPress);
-        }
-        if (KIH.Instance.GetKeyPress(Keys.JumpCode))
-        {
-            jumpPress++;
-            Debug.LogFormat("right key tap {0}, right key press {1}", jumpTap, jumpPress);
-        }
-        else if (KIH.Instance.GetKeyTap(Keys.JumpCode))
-        {
-            jumpTap++;
-            Debug.LogFormat("right key tap {0}, right key press {1}", jumpTap, jumpPress);
-        }
+        PositionUpdate();
+        RotationUpdate();
     }
 }

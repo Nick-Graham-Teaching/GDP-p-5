@@ -34,7 +34,7 @@ public class CameraFollow : MonoBehaviour
         xRotateRate = xRotateRate <= Mathf.Epsilon ? 0.55f : xRotateRate;
         yRotateRate = yRotateRate <= Mathf.Epsilon ? 0.55f : yRotateRate;
         //followSpeed = followSpeed <= Mathf.Epsilon ? 400.0f : followSpeed;
-        minY = -target.localScale.y / 5.0f;                                                 // Must be negative value
+        minY = -target.localScale.y / 4.0f;                                                 // Must be negative value
         MaxLength = viewDirection.magnitude;
         MinLength = MinLength <= (target.localScale.y / 2.0f) ? target.localScale.y : 5.0f; // Should not be smaller or equal to half of the target's y scale
         targetOffset = new Vector3(0.0f, 0.0f, 0.0f);
