@@ -9,35 +9,29 @@ public class CameraFollow : MonoBehaviour
     // -viewDirection is the viewing direction from Camera to target
     public Vector3 viewDirection;
 
+    // When viewdirection length is smaller than maxLength and not blocked by any walls
+    public float viewDirEnlargeRate;
+
     // Coefficient of Mouse Movement
     public float xRotateRate;
     public float yRotateRate;
 
-    // Speed of following gameObject movement when objects move or mouse moves
-    //public float followSpeed;
-
-    // The smallest Y value camera could reach
-    // Must be negative value
-    public float minY;
-
     // Set a boundary for viewDirection Length
-    public float MaxLength;
-    public float MinLength;
+    private float MaxLength;
+    // Cosine of the angle between viewDirectiona and Vctor3.down
+    public float MaxCosTheta;
 
     // As camera getting closer to the target, the point camera looks at should move upwards based on target position
     public float maxTargetOffsetY;
-    public Vector3 targetOffset;
+    private float targetOffset;
+    public float raiseRate;
+    
+    // The number of collision layer the camera is using
+    public int numLayer;
 
     private void Start()
     {
-        viewDirection = viewDirection == Vector3.zero ? new Vector3(0.0f, 2.7f, -15.0f) : viewDirection;
-        xRotateRate = xRotateRate <= Mathf.Epsilon ? 0.55f : xRotateRate;
-        yRotateRate = yRotateRate <= Mathf.Epsilon ? 0.55f : yRotateRate;
-        //followSpeed = followSpeed <= Mathf.Epsilon ? 400.0f : followSpeed;
-        minY = -target.localScale.y / 4.0f;                                                 // Must be negative value
         MaxLength = viewDirection.magnitude;
-        MinLength = MinLength <= (target.localScale.y / 2.0f) ? target.localScale.y : 5.0f; // Should not be smaller or equal to half of the target's y scale
-        targetOffset = new Vector3(0.0f, 0.0f, 0.0f);
         // Initial Position
         transform.position = target.position + viewDirection;
         transform.rotation = Quaternion.LookRotation(-viewDirection, Vector3.up);
@@ -54,43 +48,34 @@ public class CameraFollow : MonoBehaviour
         else
             viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.left)  * viewDirection;
         // Set limits to Y value
-        if (viewDirection.y < minY) // When the camera is blocked by the ground
+        RaycastHit hitInfo;
+        float length = viewDirection.magnitude;
+        if (Physics.Raycast(target.position, viewDirection.normalized, out hitInfo, MaxLength, numLayer))
         {
-            if (viewDirection.magnitude > MinLength)
+            viewDirection = hitInfo.distance / length * viewDirection;
+            float cosTheta = Vector3.Dot(viewDirection.normalized, Vector3.down);
+            if (cosTheta > MaxCosTheta)
             {
-                // Length of viewDirection getting smaller, as camera getting closer to the target
-                // In case view of the camera is blocked by the ground
-                viewDirection = minY / viewDirection.y * viewDirection;
-                // Change the target point camera looks at
-                targetOffset = new Vector3(targetOffset.x, 
-                                           Mathf.Min(maxTargetOffsetY - ((viewDirection.magnitude - MinLength) / (MaxLength - MinLength)) * maxTargetOffsetY, maxTargetOffsetY) , 
-                                           targetOffset.z);
-            }
-            else 
-            {
-                // length of viewDirection should never be smaller than minLength
-                // It's to set a boundary to Y value
                 viewDirection = oldV;
+                targetOffset = Mathf.Lerp(targetOffset, (cosTheta / MaxCosTheta) * maxTargetOffsetY, raiseRate * Time.deltaTime);
             }
-        } 
-        else if (viewDirection.magnitude < MaxLength && viewDirection.y > minY && viewDirection.y < 0.0f) // When the camera's not been blocked and not gone back to the length it should be.
-        {
-            viewDirection = minY / viewDirection.y * viewDirection;
-            targetOffset = new Vector3(targetOffset.x, 
-                                       Mathf.Max(maxTargetOffsetY - ((viewDirection.magnitude - MinLength) / (MaxLength - MinLength)) * maxTargetOffsetY, 0.0f), 
-                                       targetOffset.z);
+            else if (cosTheta > Mathf.Epsilon)
+            {
+                targetOffset = Mathf.Lerp(targetOffset, (cosTheta / MaxCosTheta) * maxTargetOffsetY, raiseRate * Time.deltaTime);
+            }
+        }
+        else if (length < MaxLength) {
+            viewDirection = Vector3.Lerp(viewDirection, MaxLength / length * viewDirection, viewDirEnlargeRate * Time.deltaTime);
+            targetOffset = Mathf.Lerp(targetOffset, 0.0f, raiseRate * Time.deltaTime);
         }
     }
     void PositionUpdate()
     {
-        //transform.position = Vector3.Lerp(transform.position, target.position + viewDirection, followSpeed * Time.deltaTime);
         transform.position = target.position + viewDirection;
-
     }
     void LookAtTarget()
     {
-        //transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(-viewDirection + targetOffset, Vector3.up), followSpeed * Time.deltaTime);
-        transform.rotation = Quaternion.LookRotation(-viewDirection + targetOffset, Vector3.up);
+        transform.rotation = Quaternion.LookRotation(-viewDirection + new Vector3(0.0f, targetOffset, 0.0f), Vector3.up);
     }
 
     void LateUpdate()
