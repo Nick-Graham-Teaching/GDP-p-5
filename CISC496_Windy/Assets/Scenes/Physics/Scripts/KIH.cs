@@ -21,7 +21,7 @@ public static class Keys
     public static readonly KeyCode LeftCode = KeyCode.A;   // Going left
     public static readonly KeyCode DownCode = KeyCode.S;   // Going backword
     public static readonly KeyCode RightCode = KeyCode.D;   // Going right
-    public static readonly KeyCode JumpCode = KeyCode.J;   // Jump
+    public static readonly KeyCode JumpCode = KeyCode.Space;   // Jump
 
     public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode };
 }
@@ -32,12 +32,15 @@ public class KIH : Singleton<KIH>
 
     // After receving getkeydown event, wait for keyBufferCD seconds to see if getkey events get recveived.
     private static readonly float KeyColdDownMax = 0.1f;
+    private bool keyUp;
 
     private Dictionary<KeyCode, Key> keyDic;
+    private Dictionary<KeyCode, int> directionKeyPresseds;
 
     private void Start()
     {
         keyDic = new Dictionary<KeyCode, Key>();
+        directionKeyPresseds = new Dictionary<KeyCode, int>();
 
         foreach (KeyCode keyCode in Keys.keys) {
             keyDic.Add(keyCode, new Key());
@@ -51,6 +54,7 @@ public class KIH : Singleton<KIH>
         {
             if (keyDic[key].Value == KEYSTAT.UP)
             {
+                keyUp = false;
                 keyDic[key].Value = KEYSTAT.IDLE;
             }
             if (Input.GetKeyDown(key))
@@ -70,6 +74,7 @@ public class KIH : Singleton<KIH>
         keyDic[key].Value = Input.GetKey(key) ? KEYSTAT.PRESS : KEYSTAT.TAP;
         if (keyDic[key].Value == KEYSTAT.PRESS)
         {
+            directionKeyPresseds[key] = 0;
             StartCoroutine(WaitForKeyUp(key));
         }
     }
@@ -77,8 +82,11 @@ public class KIH : Singleton<KIH>
     {
         yield return new WaitUntil(() => Input.GetKeyUp(key));
         keyDic[key].Value = KEYSTAT.UP;
+        directionKeyPresseds.Remove(key);
+        keyUp = true;
     }
 
+    
     public bool GetKeyUp(KeyCode kc) 
     {
         return keyDic[kc].Value == KEYSTAT.UP;
@@ -90,5 +98,8 @@ public class KIH : Singleton<KIH>
     public bool GetKeyPress(KeyCode kc)
     {
         return keyDic[kc].Value == KEYSTAT.PRESS;
+    }
+    public bool LastKeyUpAfterPress() {
+        return directionKeyPresseds.Keys.Count == 0 && keyUp;
     }
 }

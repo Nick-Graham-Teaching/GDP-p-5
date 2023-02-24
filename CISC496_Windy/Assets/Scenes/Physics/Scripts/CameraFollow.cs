@@ -29,6 +29,9 @@ public class CameraFollow : MonoBehaviour
     // The number of collision layer the camera is using
     public int numLayer;
 
+    // Camera follows mouse movement if true
+    public bool updateView;
+
     private void Start()
     {
         MaxLength = viewDirection.magnitude;
@@ -47,7 +50,7 @@ public class CameraFollow : MonoBehaviour
             viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.right) * viewDirection;
         else
             viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.left)  * viewDirection;
-        // Set limits to Y value
+        // raycast detection
         RaycastHit hitInfo;
         float length = viewDirection.magnitude;
         if (Physics.Raycast(target.position, viewDirection.normalized, out hitInfo, MaxLength, numLayer))
@@ -57,7 +60,7 @@ public class CameraFollow : MonoBehaviour
             if (cosTheta > MaxCosTheta)
             {
                 viewDirection = oldV;
-                targetOffset = Mathf.Lerp(targetOffset, (cosTheta / MaxCosTheta) * maxTargetOffsetY, raiseRate * Time.deltaTime);
+                targetOffset = Mathf.Lerp(targetOffset, maxTargetOffsetY, raiseRate * Time.deltaTime);
             }
             else if (cosTheta > Mathf.Epsilon)
             {
@@ -80,7 +83,10 @@ public class CameraFollow : MonoBehaviour
 
     void LateUpdate()
     {
-        UpdateViewDirection();
+        if (updateView)
+        {
+            UpdateViewDirection();
+        }
         PositionUpdate();
         LookAtTarget();
     }
