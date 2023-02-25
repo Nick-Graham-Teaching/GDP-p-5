@@ -51,9 +51,8 @@ public class CameraFollow : MonoBehaviour
         else
             viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.left)  * viewDirection;
         // raycast detection
-        RaycastHit hitInfo;
         float length = viewDirection.magnitude;
-        if (Physics.Raycast(target.position, viewDirection.normalized, out hitInfo, MaxLength, numLayer))
+        if (Physics.Raycast(target.position, viewDirection.normalized, out RaycastHit hitInfo, MaxLength, numLayer))
         {
             viewDirection = hitInfo.distance / length * viewDirection;
             float cosTheta = Vector3.Dot(viewDirection.normalized, Vector3.down);

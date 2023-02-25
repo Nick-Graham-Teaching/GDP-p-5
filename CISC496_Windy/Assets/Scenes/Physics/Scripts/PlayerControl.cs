@@ -10,31 +10,25 @@ public class PlayerControl : MonoBehaviour
 
     // The camera which focus on the object
     public Transform PlayerCamera;
+    public Transform bottomTransform;
     
     private Rigidbody rb;
 
-    // Constant acceleration of gravity
-    public Vector3 gravity;
-    // Constant scalar value of walking speed
-    public float walkSpeed;
-    // MaxDeltaSpeed + walkSpeed is the maximum walking speed
-    public float MaxDeltaSpeed;
-    // Interpolation for speeding up
-    public float deltaSpeed;
-    // Coefficient on rate of speeding up
-    public float speedUpRate;
-    // Coefficient on rate of slowing down
-    public float slowDownRate;
-    // Effect of keep moving when the object has high speed
-    private Vector3 inertia;
-    // Speed threshold for presenting inertia
-    public float inertiaThreshold;
+    Vector3 walkAcceleration;
+    public float walkAccelScalar;
+    public float MaxWalkSpeedLevelOne;
+    public float MaxWalkSpeedLevelTwo;
+    float MaxWalkSpeedDelta;
+    float startDrag;
 
     // The maximum slope angle that the object can climb
     public float MaxSlopeAngle;
+    public float MinSlopeAngle;
 
     // Walking direction
-    private Vector3 moveDirection;
+    Vector3 moveDirection;
+
+    Vector3 inertia;
 
     // Jump Angle in degree
     public float jumpAngle;
@@ -43,6 +37,9 @@ public class PlayerControl : MonoBehaviour
 
     // Rotation speed
     public float rotateSpeed;
+
+    bool onGround;
+    public int groundLayerMask;
 
     // All facing directions are based on relative positions of the camera
     public Vector3 ForwardD
@@ -68,102 +65,129 @@ public class PlayerControl : MonoBehaviour
     }
     public Vector3 RightD => -LeftD;
 
-
-    void PositionRotationUpdate()
+    void AccelerationUpdate()
     {
+        // If getting direction key input, return a direction vector while considering slope of ground
+        // If not getting any input, return a zero vector
+        moveDirection = MoveDirectionWithSlope();
+        walkAcceleration = walkAccelScalar * (moveDirection);
+    }
+    Vector3 MoveDirectionWithSlope()
+    {
+        Vector3 direction = Vector3.zero;
+
         if (KIH.Instance.GetKeyPress(Keys.UpCode))
         {
-            MoveDirectionWithSlope(ForwardD);  // Must get moving direction at first
-            GravityOnDownhillMovement();       // Then calculating acceleration in scalar value
-            transform.position = transform.position + Time.deltaTime * (walkSpeed + deltaSpeed) * moveDirection;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(ForwardD, Vector3.up), rotateSpeed * Time.deltaTime);
+            direction += ForwardD;
         }
         if (KIH.Instance.GetKeyPress(Keys.DownCode))
         {
-            MoveDirectionWithSlope(BackD);
-            GravityOnDownhillMovement();
-            transform.position = transform.position + Time.deltaTime * (walkSpeed + deltaSpeed) * moveDirection;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(BackD, Vector3.up), rotateSpeed * Time.deltaTime);
+            direction += BackD;
         }
         if (KIH.Instance.GetKeyPress(Keys.LeftCode))
         {
-            MoveDirectionWithSlope(LeftD);
-            GravityOnDownhillMovement();
-            transform.position = transform.position + Time.deltaTime * (walkSpeed + deltaSpeed) * moveDirection;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(LeftD, Vector3.up), rotateSpeed * Time.deltaTime);
+            direction += LeftD;
         }
         if (KIH.Instance.GetKeyPress(Keys.RightCode))
         {
-            MoveDirectionWithSlope(RightD);
-            GravityOnDownhillMovement();
-            transform.position = transform.position + Time.deltaTime * (walkSpeed + deltaSpeed) * moveDirection;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(RightD, Vector3.up), rotateSpeed * Time.deltaTime);
+            direction += RightD;
         }
-    }
 
-    void MoveDirectionWithSlope(Vector3 moveD)
-    {
-        // Collect slope of the ground
-        RaycastHit rayHit;
-        if (Physics.Raycast(transform.position, Vector3.down, out rayHit, transform.localScale.y))
+        if (onGround && direction != Vector3.zero && 
+            // Collect slope of the ground
+            Physics.Raycast(bottomTransform.position, Vector3.down, out RaycastHit rayHit, 1.0f, groundLayerMask))
         {
             Vector3 surfaceNormal = rayHit.normal;
             float angle = Vector3.Angle(Vector3.up, surfaceNormal);
             if (angle < MaxSlopeAngle)
             {
-                moveDirection = Vector3.ProjectOnPlane(moveD, surfaceNormal).normalized;
+                return Vector3.ProjectOnPlane(direction, surfaceNormal).normalized;
             }
         }
-        else moveDirection = moveD;
+        return direction.normalized;
     }
 
-    void GravityOnDownhillMovement() {
-        // The amount of gravity projection on moving direction
-        float gravityProjection = Vector3.Dot(gravity, moveDirection.normalized);
-        if (gravityProjection <= Mathf.Epsilon) {
-            deltaSpeed = Mathf.Lerp(deltaSpeed, 0.0f, slowDownRate * speedUpRate * Time.deltaTime);
+    void RotationUpdate() {
+        if (KIH.Instance.GetKeyPress(Keys.UpCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(ForwardD, Vector3.up), rotateSpeed * Time.deltaTime);
         }
-        else deltaSpeed = Mathf.Clamp( deltaSpeed + gravityProjection * Time.deltaTime * speedUpRate, 0.0f, MaxDeltaSpeed);
+        if (KIH.Instance.GetKeyPress(Keys.DownCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(BackD, Vector3.up), rotateSpeed * Time.deltaTime);
+        }
+        if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(LeftD, Vector3.up), rotateSpeed * Time.deltaTime);
+        }
+        if (KIH.Instance.GetKeyPress(Keys.RightCode))
+        {
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(RightD, Vector3.up), rotateSpeed * Time.deltaTime);
+        }
+    }
+
+    void GravityOnDownhillMovement()
+    {
+        // The amount of gravity projection on moving direction
+        float gravityProjection = Vector3.Dot(Vector3.down, rb.velocity.normalized);
+        // When going downhill or falls, the object has a higher speed limit.
+        if (gravityProjection > Mathf.Cos((90.0f - MinSlopeAngle) * Mathf.Deg2Rad))
+        {
+            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne, walkAccelScalar * Time.deltaTime * Time.deltaTime);
+            rb.drag = 0.0f;
+        }
+        // When going uphill or on the ground or jump up, the object's speed limit will generally return to normal level.
+        else
+        {
+            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, 0.0f, startDrag * Time.deltaTime);
+            rb.drag = startDrag;
+        }
     }
 
     void Jump() {
-        // Test if on the ground
-        if (KIH.Instance.GetKeyTap(Keys.JumpCode) && Physics.Raycast(transform.position, Vector3.down, transform.localScale.y))
-        {
-            inertia += jumpStrength * (Quaternion.AngleAxis(jumpAngle, -transform.right) * transform.forward);
+        if (onGround && KIH.Instance.GetKeyTap(Keys.JumpCode)) {
+            inertia += Quaternion.AngleAxis(jumpAngle, -transform.right) * (jumpStrength * transform.forward);
+            MaxWalkSpeedDelta = Mathf.Min(MaxWalkSpeedDelta + Mathf.Max(jumpStrength - MaxWalkSpeedLevelOne, 0.0f), MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
         }
     }
 
-    void Inertia()
-    { 
-        if (KIH.Instance.LastKeyUpAfterPress())
-        {
-            float totalSpeed = walkSpeed + deltaSpeed;
-            inertia += totalSpeed > inertiaThreshold ? totalSpeed * moveDirection : Vector3.zero;
-            // Reset deltaSpeed after calculating inertia
-            deltaSpeed = 0.0f;
-        }
-    }
-
-    private void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        startposition = transform.position;
-    }
     void Update()
     {
-        PositionRotationUpdate();
+        AccelerationUpdate();
+        RotationUpdate();
+        GravityOnDownhillMovement();
         Jump();
-        Inertia();
     }
     private void FixedUpdate()
     {
-        if (inertia != Vector3.zero)
-        {
+        if (rb.velocity.magnitude > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) {
+            rb.velocity = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * rb.velocity.normalized;
+        }
+        rb.AddForce(walkAcceleration, ForceMode.Acceleration);
+        if (inertia != Vector3.zero) {
             rb.AddForce(inertia, ForceMode.VelocityChange);
-            // Reset inertia after applying inertia
             inertia = Vector3.zero;
         }
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground") 
+        {
+            onGround = true;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            onGround = false;
+        }
+    }
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        startDrag = rb.drag;
+        startposition = transform.position;
     }
     private void OnGUI()
     {

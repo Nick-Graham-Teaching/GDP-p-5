@@ -31,7 +31,10 @@ public class KIH : Singleton<KIH>
 {
 
     // After receving getkeydown event, wait for keyBufferCD seconds to see if getkey events get recveived.
-    private static readonly float KeyColdDownMax = 0.1f;
+    [SerializeField]
+    private float DirectionKeyColdDown;
+    [SerializeField]
+    private float JumpKeyColdDown;
     private bool keyUp;
 
     private Dictionary<KeyCode, Key> keyDic;
@@ -70,7 +73,7 @@ public class KIH : Singleton<KIH>
     }
     private IEnumerator KeyColdDownTimer(KeyCode key)
     {
-        yield return new WaitForSeconds(KeyColdDownMax);
+        yield return new WaitForSeconds(key == Keys.JumpCode ? JumpKeyColdDown : DirectionKeyColdDown);
         keyDic[key].Value = Input.GetKey(key) ? KEYSTAT.PRESS : KEYSTAT.TAP;
         if (keyDic[key].Value == KEYSTAT.PRESS)
         {
