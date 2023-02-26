@@ -64,7 +64,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                     MotionMode = PlayerMotionMode.WALK;
                 }
                 // Switch flying mode in air
-                if (KIH.Instance.GetKeyTapOrPress(Keys.ModeSwitchCode))
+                if (KIH.Instance.GetKeyTap(Keys.ModeSwitchCode))
                 {
                     MotionMode = MotionMode == PlayerMotionMode.DIVE ? PlayerMotionMode.GLIDE : PlayerMotionMode.DIVE;
                 }

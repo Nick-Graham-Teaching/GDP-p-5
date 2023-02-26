@@ -7,6 +7,8 @@ public class PlayerControlInAir : MonoBehaviour
     PlayerControlOnGround onGroundControl;
     Rigidbody rb;
 
+    public Vector3 Gravity;
+
     Vector3 flyVelocity;
     // Record facing direction before take off
     // Used to determine flying directions
@@ -18,12 +20,16 @@ public class PlayerControlInAir : MonoBehaviour
 
     public float diveAngle;
 
-    public float diveFloatAccel;
+    private float diveFloatAccel;
+    public float diveFloatAccelMin;
+    public float diveFloatAccelMax;
+
     public float glideFloatAccel;
 
     public float flyAccelScalar;
     public float MaxFlySpeed;
 
+    public float rotateRate;
     // Now assume all flying modes are using same drag value
     public float flyDrag;
 
@@ -48,20 +54,26 @@ public class PlayerControlInAir : MonoBehaviour
 
     void RestrictVelocity() {
         float flySpeed = Vector3.Dot(rb.velocity, flyDirection);
-        if (flySpeed > MaxFlySpeed) {
+        if (flyDirection.y > -Mathf.Epsilon && flySpeed > MaxFlySpeed) {
             rb.velocity = rb.velocity - flySpeed * flyDirection + MaxFlySpeed * flyDirection;
         }
     }
 
     void FlyDirectionUpdate(PlayerMotionMode mm) {
 
-        flyDirection = mm == PlayerMotionMode.GLIDE ? onGroundControl.ForwardD : Vector3.zero;
+        flyDirection = Vector3.zero;
 
-        if (KIH.Instance.GetKeyPress(Keys.UpCode)) 
+        if (KIH.Instance.GetKeyPress(Keys.UpCode))
         {
             // TODO
             // An upper force need to be applied
             flyDirection += onGroundControl.ForwardD;
+            if (mm == PlayerMotionMode.DIVE) {
+                diveFloatAccel = diveFloatAccelMax;
+            }
+        }
+        else if (mm == PlayerMotionMode.DIVE) {
+            diveFloatAccel = diveFloatAccelMin;
         }
         if (KIH.Instance.GetKeyPress(Keys.DownCode))
         {
@@ -75,8 +87,29 @@ public class PlayerControlInAir : MonoBehaviour
         {
             flyDirection += onGroundControl.RightD;
         }
+        if (flyDirection == Vector3.zero && mm == PlayerMotionMode.GLIDE) 
+        {
+            flyDirection = onGroundControl.ForwardD;
+        }
 
         flyDirection = flyDirection.normalized;
+    }
+
+
+    void RotationUpdate() {
+        Vector3 upDirection = flyDirection;
+        Vector3 forwardDirection;
+        if (upDirection == Vector3.zero) {
+            upDirection = Vector3.up;
+            forwardDirection = onGroundControl.ForwardD;
+        }
+        else forwardDirection = Quaternion.AngleAxis(90, Vector3.Cross(upDirection, Vector3.down).normalized) * upDirection;
+
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            Quaternion.LookRotation(forwardDirection, upDirection),
+            rotateRate * Time.deltaTime
+            );
     }
 
     private void Update()
@@ -87,9 +120,11 @@ public class PlayerControlInAir : MonoBehaviour
                 //// TODO
                 //// When adding energy system, longer jump key gets pressed, higher it reaches.
                 FlyDirectionUpdate(PlayerMotionMode.GLIDE);
+                RotationUpdate();
                 break;
             case PlayerMotionMode.DIVE:
                 FlyDirectionUpdate(PlayerMotionMode.DIVE);
+                RotationUpdate();
                 break;
             case PlayerMotionMode.TAKEOFF:
                 rb.drag = flyDrag;
@@ -115,12 +150,13 @@ public class PlayerControlInAir : MonoBehaviour
                 // Only when pressing direction keys, a force will be applied in certain directions.
                 rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
                 break;
-        }
-
-        if (flyVelocity != Vector3.zero)
-        {
-            rb.AddForce(flyVelocity, ForceMode.VelocityChange);
-            flyVelocity = Vector3.zero;
+            case PlayerMotionMode.TAKEOFF:
+                if (flyVelocity != Vector3.zero)
+                {
+                    rb.AddForce(flyVelocity, ForceMode.VelocityChange);
+                    flyVelocity = Vector3.zero;
+                }
+                break;
         }
     }
     private void Start()

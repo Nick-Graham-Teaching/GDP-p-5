@@ -1209,14 +1209,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89023d5fde5d0f34c857ca4f67ea24bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Gravity: {x: 0, y: -9.81, z: 0}
   flipWingsSpeed: 15
   takeOffAngle: 25
-  diveAngle: 30
-  diveFloatAccel: 3
+  diveAngle: 60
+  diveFloatAccelMin: 3
+  diveFloatAccelMax: 5.5
   glideFloatAccel: 7
   flyAccelScalar: 40
   MaxFlySpeed: 30
-  flyDrag: 0.2
+  rotateRate: 3
+  flyDrag: 0.23
 --- !u!1 &6959982696287615192
 GameObject:
   m_ObjectHideFlags: 0
