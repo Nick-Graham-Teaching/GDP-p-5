@@ -1,58 +1,78 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControl : MonoBehaviour
+public class PlayerControlOnGround : MonoBehaviour
 {
+    #region Attribute
     // For debug, reset object's position
     private Vector3 startposition;
 
     // The camera which focus on the object
-    public Transform PlayerCamera;
+    [SerializeField]
+    Transform PlayerCamera;
     // An Empty game object at bottom
-    public Transform bottomTransform;
+    [SerializeField]
+    Transform bottomTransform;
     
     // Rigidbody component of the object
-    private Rigidbody rb;
+    Rigidbody rb;
 
     // Walking direction
     Vector3 moveDirection;
     // Rotate Direction
     Vector3 rotateDirection;
     // Rotation speed
-    public float rotateSpeed;
+    [SerializeField]
+    float rotateSpeed;
 
     // Acceleration of the object when it's on the ground
     Vector3 walkAcceleration;
     // scalar value of acceleration
-    public float walkAccelScalar;
+    [SerializeField]
+    float walkAccelScalar;
     // First speed limit (walking)
-    public float MaxWalkSpeedLevelOne;
+    [SerializeField]
+    float MaxWalkSpeedLevelOne;
     // Second speed limit (downhill, falls, jump)
-    public float MaxWalkSpeedLevelTwo;
+    [SerializeField]
+    float MaxWalkSpeedLevelTwo;
     // interpolation value between two limits
     float MaxWalkSpeedDelta;
+    // Slow down Coefficeint
+    [SerializeField]
+    float slowDownRate;
     // Rigidbody.drag initial value
-    float startDrag;
+    [SerializeField]
+    float MaxDrag;
+    [SerializeField]
+    float MinDrag;
 
     // The maximum slope angle that the object can climb
-    public float MaxSlopeAngle;
+    [SerializeField]
+    float MaxSlopeAngle;
     // The minimun slope angle that the object has acceleration
-    public float MinSlopeAngle;
+    [SerializeField]
+    float MinSlopeAngle;
 
     // inertia after jump (for now)
     Vector3 inertia;
 
     // Jump Angle in degree
-    public float jumpAngle;
+    [SerializeField]
+    float jumpAngle;
     // Jump Strength
-    public float jumpStrength;
+    [SerializeField]
+    float jumpStrength;
+
+    // Used by raycast, only apply raycast to the layer Ground
+    [SerializeField]
+    int groundLayerMask;
 
     // If collided with Ground tag object, return true
-    bool onGround;
-    
-    // Used by raycast, only apply raycast to the layer Ground
-    public int groundLayerMask;
+    public bool OnGround { get; private set; }
+
+    public int GroundLayerMask => groundLayerMask;
+    public float TakeOffSpeed => MaxWalkSpeedLevelTwo;
+    #endregion
 
     #region Relative Direction to Camera
     // All facing directions are based on relative positions of the camera
@@ -109,7 +129,7 @@ public class PlayerControl : MonoBehaviour
             direction += RightD;
         }
 
-        if (onGround && direction != Vector3.zero && 
+        if (OnGround && direction != Vector3.zero && 
             // Collect slope of the ground
             Physics.Raycast(bottomTransform.position, Vector3.down, out RaycastHit rayHit, 1.0f, groundLayerMask))
         {
@@ -137,20 +157,20 @@ public class PlayerControl : MonoBehaviour
         // When going downhill or falls, the object has a higher speed limit.
         if (gravityProjection > Mathf.Cos((90.0f - MinSlopeAngle) * Mathf.Deg2Rad))
         {
-            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne, startDrag * Time.deltaTime);
-            rb.drag = 0.0f;
+            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne, MaxDrag * Time.deltaTime);
+            rb.drag = MinDrag;
         }
         // When going uphill or on the ground or jump up, the object's speed limit will generally return to normal level.
         else
         {
-            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, 0.0f, startDrag * Time.deltaTime);
-            rb.drag = startDrag;
+            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, 0.0f, slowDownRate * MaxDrag * Time.deltaTime);
+            rb.drag = MaxDrag;
         }
     }
 
     void Jump() 
     {
-        if (onGround) {
+        if (OnGround) {
             if (KIH.Instance.GetKeyTap(Keys.JumpCode))
             {
                 inertia += Quaternion.AngleAxis(jumpAngle, -transform.right) * (jumpStrength * transform.forward);
@@ -178,46 +198,73 @@ public class PlayerControl : MonoBehaviour
             }
         }
     }
+    void SpeedRestriction()
+    {
+        // If onGround is true, directly apply restrictions to Rigidbody.speed
+        // If not, only apply restrictions to Rigidbody.velocity on x and z axes
+        if (OnGround)
+        {
+            if (rb.velocity.magnitude > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta)
+            {
+                rb.velocity = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * rb.velocity.normalized;
+            }
+        }
+        else 
+        {
+            Vector2 magnitude = new(rb.velocity.x, rb.velocity.z);
+            float speedOnXZ = magnitude.magnitude;
+            if (speedOnXZ > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta)
+            {
+                magnitude = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * magnitude.normalized;
+                rb.velocity = new Vector3(magnitude.x, rb.velocity.y, magnitude.y);
+            }
+        }
+    }
     #endregion
 
+    #region Unity Functions
     void Update()
     {
-        AccelerationUpdate();
-        GravityOnVericalMovement();
-        Jump();
-        RotationUpdate();
+        if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
+        {
+            AccelerationUpdate();
+            GravityOnVericalMovement();
+            Jump();
+            RotationUpdate();
+        }
     }
     private void FixedUpdate()
     {
-        if (rb.velocity.magnitude > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) {
-            rb.velocity = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * rb.velocity.normalized;
-        }
-        rb.AddForce(walkAcceleration, ForceMode.Acceleration);
-        if (inertia != Vector3.zero) {
-            rb.AddForce(inertia, ForceMode.VelocityChange);
-            inertia = Vector3.zero;
-        }
-    }
-    private void OnCollisionStay(Collision collision)
-    {
-        if (collision.gameObject.tag == "Ground") 
+        if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
         {
-            onGround = true;
-        }
-    }
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.tag == "Ground")
-        {
-            onGround = false;
+            SpeedRestriction();
+            rb.AddForce(walkAcceleration, ForceMode.Acceleration);
+            if (inertia != Vector3.zero)
+            {
+                rb.AddForce(inertia, ForceMode.VelocityChange);
+                inertia = Vector3.zero;
+            }
         }
     }
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        startDrag = rb.drag;
         startposition = transform.position;
         rotateDirection = ForwardD;
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground")) 
+        {
+            OnGround = true;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            OnGround = false;
+        }
     }
     private void OnGUI()
     {
@@ -228,4 +275,5 @@ public class PlayerControl : MonoBehaviour
             rb.velocity = Vector3.zero;
         }
     }
+    #endregion
 }

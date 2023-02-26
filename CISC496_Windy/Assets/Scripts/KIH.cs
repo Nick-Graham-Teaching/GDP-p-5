@@ -22,8 +22,10 @@ public static class Keys
     public static readonly KeyCode DownCode = KeyCode.S;   // Going backword
     public static readonly KeyCode RightCode = KeyCode.D;   // Going right
     public static readonly KeyCode JumpCode = KeyCode.Space;   // Jump
+    public static readonly KeyCode ModeSwitchCode = KeyCode.LeftShift;   // ModeSwithc
 
-    public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode };
+
+    public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode, ModeSwitchCode };
 }
 
 // Stand for KeyInputHandler
@@ -104,5 +106,10 @@ public class KIH : Singleton<KIH>
     }
     public bool LastKeyUpAfterPress() {
         return directionKeyPresseds.Keys.Count == 0 && keyUp;
+    }
+    public bool GetKeyTapOrPress(KeyCode kc)
+    {
+        return keyDic[kc].Value == KEYSTAT.TAP ||
+            keyDic[kc].Value == KEYSTAT.PRESS;
     }
 }
