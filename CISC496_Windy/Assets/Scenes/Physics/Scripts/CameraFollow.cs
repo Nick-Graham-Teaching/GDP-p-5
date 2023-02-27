@@ -36,8 +36,7 @@ public class CameraFollow : MonoBehaviour
     {
         MaxLength = viewDirection.magnitude;
         // Initial Position
-        transform.position = target.position + viewDirection;
-        transform.rotation = Quaternion.LookRotation(-viewDirection, Vector3.up);
+        transform.SetPositionAndRotation(target.position + viewDirection, Quaternion.LookRotation(-viewDirection, Vector3.up));
     }
 
     void UpdateViewDirection()

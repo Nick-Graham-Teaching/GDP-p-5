@@ -10,7 +10,7 @@ public enum PlayerMotionMode
 public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
 {
     public PlayerMotionMode MotionMode { get; private set; }
-    public Action<float, PlayerMotionMode> Takeoff;
+    public Action<int> Takeoff;
     public Action<RaycastHit> Land;
 
     [SerializeField]
@@ -35,21 +35,21 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                 {
                     // Consume One Energy and receive a large acceleration on +Y direction
                     // To Dive
-                    Takeoff?.Invoke(inAirControl.GreatTakeOffSpeed, PlayerMotionMode.DIVE);
+                    Takeoff?.Invoke(0b001);
                 }
                 // Falling from high position and exceeding second level speed limit
                 else if (!onGroundControl.OnGround && playerSpeed > onGroundControl.TakeOffSpeed && inAirControl.AboveMinimumFlightHeight())
                 {
                     // Consume none of energy and won't get any acceleration
                     // To Dive
-                    Takeoff?.Invoke(0.0f, PlayerMotionMode.DIVE);
+                    Takeoff?.Invoke(0b010);
                 }
                 // Running fast on the ground and tap jump key
                 else if (onGroundControl.OnGround && KIH.Instance.GetKeyTap(Keys.JumpCode) && playerSpeed > onGroundControl.TakeOffSpeed)
                 {
                     // Consume a bit of energy and receive a small acceleration on +Y direction
                     // To Glide
-                    Takeoff?.Invoke(inAirControl.SmallTakeOffSpeed, PlayerMotionMode.GLIDE);
+                    Takeoff?.Invoke(0b100);
                 }
                 break;
 
@@ -77,7 +77,6 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                     Land?.Invoke(hitInfo);
                     MotionMode = PlayerMotionMode.LAND;
                 }
-
                 break;
         }
     }
@@ -95,9 +94,9 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
 
         MotionMode = PlayerMotionMode.WALK; // Default
         
-        Takeoff += (a, b) => {
+        Takeoff += (a) => {
             MotionMode = PlayerMotionMode.TAKEOFF;
-            StartCoroutine(SwitchMotionModeToFlying(b));
+            StartCoroutine(SwitchMotionModeToFlying(a == 0b100 ? PlayerMotionMode.GLIDE : PlayerMotionMode.DIVE));
         };
     }
     IEnumerator SwitchMotionModeToFlying(PlayerMotionMode mm)

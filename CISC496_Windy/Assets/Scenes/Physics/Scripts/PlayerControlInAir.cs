@@ -1,6 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public static class Util {
+    public static IEnumerator Timer(float CD, Action action) {
+        yield return new WaitForSeconds(CD);
+        action.Invoke();
+    }
+}
 
 public class PlayerControlInAir : MonoBehaviour
 {
@@ -20,6 +28,8 @@ public class PlayerControlInAir : MonoBehaviour
     Vector3 flyDirection;
 
     public float flipWingsSpeed;
+    public float flipWingCD;
+    bool canFlipWings;
 
     public float TakeOffAngle;
     // Angle between ground and negation of velocity direction
@@ -37,7 +47,7 @@ public class PlayerControlInAir : MonoBehaviour
     public float PunishGlideFloatAccel;
     public float GlideFloatSpeedUpRate;
 
-    float upForceDeltaTime;
+    public float upForceDeltaTime;
     public float UpForceMaxUtilityTime;
     public float DeltaTimeRecoverRate;
 
@@ -59,10 +69,10 @@ public class PlayerControlInAir : MonoBehaviour
 
     public float GreatTakeOffSpeed => flipWingsSpeed;
     public float SmallTakeOffSpeed => flipWingsSpeed / 3.0f * 2.0f;
-    public float LowestFlightHeight => LowestFlyHeight;
 
 
-    public bool AboveMinimumFlightHeight() {
+    public bool AboveMinimumFlightHeight() 
+    {
         return !Physics.Raycast(transform.position, Vector3.down, LowestFlyHeight, onGroundControl.GroundLayerMask);
     }
     public bool AboveMinimumFlightHeight(out RaycastHit hitInfo)
@@ -75,21 +85,9 @@ public class PlayerControlInAir : MonoBehaviour
 
         flyDirection = Vector3.zero;
 
-        if (mm == PlayerMotionMode.GLIDE && Input.GetKeyDown(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
-        {
-            StartCoroutine(GlideUpForceTimer());
-        }
         if (KIH.Instance.GetKeyPress(Keys.UpCode))
         {
             flyDirection += onGroundControl.ForwardD;
-            if (mm == PlayerMotionMode.DIVE)
-            {
-                diveFloatAccel = MaxDiveFloatAccel;
-            }
-        }
-        else if (mm == PlayerMotionMode.DIVE) 
-        {
-            diveFloatAccel = MinDiveFloatAccel;
         }
         if (KIH.Instance.GetKeyPress(Keys.DownCode))
         {
@@ -112,13 +110,15 @@ public class PlayerControlInAir : MonoBehaviour
     }
 
     IEnumerator GlideUpForceTimer() {
-        while (upForceDeltaTime < UpForceMaxUtilityTime) 
-        {
-            if (!Input.GetKey(Keys.UpCode)) break;
-            upForceDeltaTime += Time.deltaTime;
-            glideFloatAccel = Mathf.Lerp(glideFloatAccel, MaxGlideFloatAccel, GlideFloatSpeedUpRate * Time.deltaTime);
-            yield return null;
-        }
+
+        yield return new WaitUntil(
+                () => {
+                    upForceDeltaTime += Time.deltaTime;
+                    glideFloatAccel = Mathf.Lerp(glideFloatAccel, MaxGlideFloatAccel, GlideFloatSpeedUpRate * Time.deltaTime);
+                    return !Input.GetKey(Keys.UpCode) || upForceDeltaTime >= UpForceMaxUtilityTime;
+                }
+            );
+
         if (upForceDeltaTime >= UpForceMaxUtilityTime)
         {
             glideFloatAccel = PunishGlideFloatAccel;
@@ -129,12 +129,28 @@ public class PlayerControlInAir : MonoBehaviour
         else 
         {
             glideFloatAccel = MinGlideFloatAccel;
-            while (upForceDeltaTime > 0.0f) {
-                if (Input.GetKeyDown(Keys.UpCode)) break;
-                upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
-                yield return null;
-            }
+            yield return new WaitUntil(
+                () => {
+                    upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
+                    return Input.GetKeyDown(Keys.UpCode) || upForceDeltaTime < Mathf.Epsilon;
+                }    
+            );
         }
+    }
+
+    IEnumerator EnergyConsumptionSupervisor() {
+        yield return new WaitUntil(() => PlayerMotionModeManager.Instance.MotionMode != PlayerMotionMode.TAKEOFF);
+
+        yield return new WaitUntil(() => {
+
+            if (canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySys.Instance.ConsumeEnergy) {
+                canFlipWings = false;
+                flyInertia = flipWingsSpeed * Vector3.up;
+                StartCoroutine(Util.Timer(flipWingCD, () => canFlipWings = true));
+            }
+
+            return PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.LAND;
+        });
     }
 
     void RotationUpdate() {
@@ -189,17 +205,21 @@ public class PlayerControlInAir : MonoBehaviour
         switch (PlayerMotionModeManager.Instance.MotionMode)
         {
             case PlayerMotionMode.GLIDE:
-                //// TODO
-                //// When adding energy system, longer jump key gets pressed, higher it reaches.
+                if (Input.GetKeyDown(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
+                {
+                    StartCoroutine(GlideUpForceTimer());
+                }
                 FlyDirectionUpdate(PlayerMotionMode.GLIDE);
                 RotationUpdate();
                 break;
             case PlayerMotionMode.DIVE:
+                diveFloatAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveFloatAccel : MinDiveFloatAccel;
                 FlyDirectionUpdate(PlayerMotionMode.DIVE);
                 RotationUpdate();
                 break;
             case PlayerMotionMode.TAKEOFF:
                 rb.drag = flyDrag;
+                StartCoroutine(EnergyConsumptionSupervisor());
                 break;
             case PlayerMotionMode.LAND:
                 LandRotationUpdate();
@@ -224,13 +244,11 @@ public class PlayerControlInAir : MonoBehaviour
                 // Only when pressing direction keys, a force will be applied in certain directions.
                 rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
                 break;
-            case PlayerMotionMode.TAKEOFF or PlayerMotionMode.LAND:
-                if (flyInertia != Vector3.zero)
-                {
-                    rb.AddForce(flyInertia, ForceMode.VelocityChange);
-                    flyInertia = Vector3.zero;
-                }
-                break;
+        }
+        if (flyInertia != Vector3.zero)
+        {
+            rb.AddForce(flyInertia, ForceMode.VelocityChange);
+            flyInertia = Vector3.zero;
         }
     }
 
@@ -240,11 +258,14 @@ public class PlayerControlInAir : MonoBehaviour
         PlayerMotionModeManager.Instance.Land += onLand;
         onGroundControl = GetComponent<PlayerControlOnGround>();
         rb = GetComponent<Rigidbody>();
+        canFlipWings = true;
     }
 
     #region callback functions
-    void onTakeOff(float force, PlayerMotionMode mm)
+    void onTakeOff(int way)
     {
+        float force = way == 0b001 ? flipWingsSpeed :
+                      way == 0b100 ? flipWingsSpeed / 3.0f * 2.0f : 0.0f;
         flyInertia = force * Vector3.up;
     }
     void onLand(RaycastHit hitInfo)
@@ -254,7 +275,7 @@ public class PlayerControlInAir : MonoBehaviour
         if (cosTheta < Mathf.Cos((90.0f - LandAngle) * Mathf.Deg2Rad))
         {
             // keep momentum
-            StartCoroutine(MomentumMaintain( new Vector3(rb.velocity.x, 0.0f, rb.velocity.z) ));   // May lose some velocity, but can be ignored.
+            StartCoroutine(MomentumMaintain( rb.velocity.magnitude * new Vector3(rb.velocity.x, 0.0f, rb.velocity.z).normalized ));   // May lose some velocity, but can be ignored.
             momentumMaintain = true;
         }
         else 
