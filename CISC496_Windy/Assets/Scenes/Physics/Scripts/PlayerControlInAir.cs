@@ -9,29 +9,46 @@ public class PlayerControlInAir : MonoBehaviour
 
     public Vector3 Gravity;
 
-    Vector3 flyVelocity;
+    public float flyAccelScalar;
+    public float MaxFlySpeed;
+    public float LowestFlyHeight;
+
+    Vector3 flyInertia;
     // Record facing direction before take off
     // Used to determine flying directions
     // because transform.forward is influenced by rotation around z axis
     Vector3 flyDirection;
-    
+
     public float flipWingsSpeed;
-    public float takeOffAngle;
+
+    public float TakeOffAngle;
+    // Angle between ground and negation of velocity direction
+    public float LandAngle;
 
     public float diveAngle;
 
-    private float diveFloatAccel;
-    public float diveFloatAccelMin;
-    public float diveFloatAccelMax;
+    float diveFloatAccel;
+    public float MinDiveFloatAccel;
+    public float MaxDiveFloatAccel;
 
-    public float glideFloatAccel;
+    float glideFloatAccel;
+    public float MinGlideFloatAccel;
+    public float MaxGlideFloatAccel;
+    public float PunishGlideFloatAccel;
+    public float GlideFloatSpeedUpRate;
 
-    public float flyAccelScalar;
-    public float MaxFlySpeed;
+    float upForceDeltaTime;
+    public float UpForceMaxUtilityTime;
+    public float DeltaTimeRecoverRate;
 
     public float rotateRate;
+
     // Now assume all flying modes are using same drag value
     public float flyDrag;
+
+    public float LandStopAngle;
+    public float LandStopRatio;
+    bool momentumMaintain;
 
     public Vector3 BackD
     {
@@ -40,40 +57,39 @@ public class PlayerControlInAir : MonoBehaviour
         }
     }
 
-
     public float GreatTakeOffSpeed => flipWingsSpeed;
     public float SmallTakeOffSpeed => flipWingsSpeed / 3.0f * 2.0f;
+    public float LowestFlightHeight => LowestFlyHeight;
 
-    void TakeOff(float force, PlayerMotionMode mm) {
-        if (mm == PlayerMotionMode.DIVE)
-        {
-            flyVelocity = force * Vector3.up;
-        }
-        else flyVelocity = force * (Quaternion.AngleAxis(takeOffAngle, -transform.right) * transform.forward);
+
+    public bool AboveMinimumFlightHeight() {
+        return !Physics.Raycast(transform.position, Vector3.down, LowestFlyHeight, onGroundControl.GroundLayerMask);
+    }
+    public bool AboveMinimumFlightHeight(out RaycastHit hitInfo)
+    {
+        return !Physics.Raycast(transform.position, Vector3.down, out hitInfo ,LowestFlyHeight, onGroundControl.GroundLayerMask);
     }
 
-    void RestrictVelocity() {
-        float flySpeed = Vector3.Dot(rb.velocity, flyDirection);
-        if (flyDirection.y > -Mathf.Epsilon && flySpeed > MaxFlySpeed) {
-            rb.velocity = rb.velocity - flySpeed * flyDirection + MaxFlySpeed * flyDirection;
-        }
-    }
 
     void FlyDirectionUpdate(PlayerMotionMode mm) {
 
         flyDirection = Vector3.zero;
 
+        if (mm == PlayerMotionMode.GLIDE && Input.GetKeyDown(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
+        {
+            StartCoroutine(GlideUpForceTimer());
+        }
         if (KIH.Instance.GetKeyPress(Keys.UpCode))
         {
-            // TODO
-            // An upper force need to be applied
             flyDirection += onGroundControl.ForwardD;
-            if (mm == PlayerMotionMode.DIVE) {
-                diveFloatAccel = diveFloatAccelMax;
+            if (mm == PlayerMotionMode.DIVE)
+            {
+                diveFloatAccel = MaxDiveFloatAccel;
             }
         }
-        else if (mm == PlayerMotionMode.DIVE) {
-            diveFloatAccel = diveFloatAccelMin;
+        else if (mm == PlayerMotionMode.DIVE) 
+        {
+            diveFloatAccel = MinDiveFloatAccel;
         }
         if (KIH.Instance.GetKeyPress(Keys.DownCode))
         {
@@ -95,11 +111,36 @@ public class PlayerControlInAir : MonoBehaviour
         flyDirection = flyDirection.normalized;
     }
 
+    IEnumerator GlideUpForceTimer() {
+        while (upForceDeltaTime < UpForceMaxUtilityTime) 
+        {
+            if (!Input.GetKey(Keys.UpCode)) break;
+            upForceDeltaTime += Time.deltaTime;
+            glideFloatAccel = Mathf.Lerp(glideFloatAccel, MaxGlideFloatAccel, GlideFloatSpeedUpRate * Time.deltaTime);
+            yield return null;
+        }
+        if (upForceDeltaTime >= UpForceMaxUtilityTime)
+        {
+            glideFloatAccel = PunishGlideFloatAccel;
+            yield return new WaitUntil( () => onGroundControl.OnGround );
+            glideFloatAccel = MinGlideFloatAccel;
+            upForceDeltaTime = 0.0f;
+        }
+        else 
+        {
+            glideFloatAccel = MinGlideFloatAccel;
+            while (upForceDeltaTime > 0.0f) {
+                if (Input.GetKeyDown(Keys.UpCode)) break;
+                upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
+                yield return null;
+            }
+        }
+    }
 
     void RotationUpdate() {
-        Vector3 upDirection = flyDirection;
+        Vector3 upDirection = rb.velocity.normalized;
         Vector3 forwardDirection;
-        if (upDirection == Vector3.zero) {
+        if (flyDirection == Vector3.zero) {
             upDirection = Vector3.up;
             forwardDirection = onGroundControl.ForwardD;
         }
@@ -109,8 +150,39 @@ public class PlayerControlInAir : MonoBehaviour
             transform.rotation,
             Quaternion.LookRotation(forwardDirection, upDirection),
             rotateRate * Time.deltaTime
-            );
+        );
     }
+
+    void LandRotationUpdate() {
+        if (momentumMaintain)
+        {
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(Vector3.Cross(transform.right, Vector3.up).normalized, Vector3.up),
+                rotateRate * Time.deltaTime
+            );
+        }
+        else 
+        {
+            Vector3 rotatedFacingD = Quaternion.AngleAxis(LandStopAngle, transform.right) * Vector3.up;
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(rotatedFacingD, Vector3.Cross(rotatedFacingD, transform.right).normalized),
+                rotateRate * Time.deltaTime
+            );
+        }
+    }
+
+    void RestrictVelocity()
+    {
+        Vector2 velocityXZ = new(rb.velocity.x, rb.velocity.z);
+        if (velocityXZ.magnitude > MaxFlySpeed)
+        {
+            velocityXZ = MaxFlySpeed * velocityXZ.normalized;
+            rb.velocity = new Vector3(velocityXZ.x, rb.velocity.y, velocityXZ.y);
+        }
+    }
+
 
     private void Update()
     {
@@ -129,6 +201,9 @@ public class PlayerControlInAir : MonoBehaviour
             case PlayerMotionMode.TAKEOFF:
                 rb.drag = flyDrag;
                 break;
+            case PlayerMotionMode.LAND:
+                LandRotationUpdate();
+                break;
         }
     }
 
@@ -145,24 +220,53 @@ public class PlayerControlInAir : MonoBehaviour
                 break;
             case PlayerMotionMode.DIVE:
                 RestrictVelocity();
-                // Continuously apply a floating force
                 rb.AddForce(diveFloatAccel * Vector3.up, ForceMode.Acceleration);
                 // Only when pressing direction keys, a force will be applied in certain directions.
                 rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
                 break;
-            case PlayerMotionMode.TAKEOFF:
-                if (flyVelocity != Vector3.zero)
+            case PlayerMotionMode.TAKEOFF or PlayerMotionMode.LAND:
+                if (flyInertia != Vector3.zero)
                 {
-                    rb.AddForce(flyVelocity, ForceMode.VelocityChange);
-                    flyVelocity = Vector3.zero;
+                    rb.AddForce(flyInertia, ForceMode.VelocityChange);
+                    flyInertia = Vector3.zero;
                 }
                 break;
         }
     }
+
     private void Start()
     {
-        PlayerMotionModeManager.Instance.Takeoff += TakeOff;
+        PlayerMotionModeManager.Instance.Takeoff += onTakeOff;
+        PlayerMotionModeManager.Instance.Land += onLand;
         onGroundControl = GetComponent<PlayerControlOnGround>();
         rb = GetComponent<Rigidbody>();
     }
+
+    #region callback functions
+    void onTakeOff(float force, PlayerMotionMode mm)
+    {
+        flyInertia = force * Vector3.up;
+    }
+    void onLand(RaycastHit hitInfo)
+    {
+        // Two ways of landing, which are determined by normal of ground and -rb.velocity.normalized
+        float cosTheta = Vector3.Dot(hitInfo.normal, -rb.velocity.normalized);
+        if (cosTheta < Mathf.Cos((90.0f - LandAngle) * Mathf.Deg2Rad))
+        {
+            // keep momentum
+            StartCoroutine(MomentumMaintain( new Vector3(rb.velocity.x, 0.0f, rb.velocity.z) ));   // May lose some velocity, but can be ignored.
+            momentumMaintain = true;
+        }
+        else 
+        {
+            // sudden stop
+            flyInertia = LandStopRatio * -rb.velocity;
+            momentumMaintain = false;
+        }
+    }
+    IEnumerator MomentumMaintain(Vector3 v) {
+        yield return new WaitUntil(() => PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK);
+        onGroundControl.Inertia = v;
+    }
+    #endregion
 }

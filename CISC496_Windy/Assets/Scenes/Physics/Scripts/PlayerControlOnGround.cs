@@ -72,6 +72,13 @@ public class PlayerControlOnGround : MonoBehaviour
 
     public int GroundLayerMask => groundLayerMask;
     public float TakeOffSpeed => MaxWalkSpeedLevelTwo;
+    public Vector3 Inertia { 
+        set 
+        { 
+            inertia = value;
+            MaxWalkSpeedDelta = value.magnitude - MaxWalkSpeedLevelOne;
+        } 
+    }
     #endregion
 
     #region Relative Direction to Camera

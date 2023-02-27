@@ -4,14 +4,14 @@ using UnityEngine;
 
 public enum PlayerMotionMode
 { 
-    WALK, TAKEOFF, GLIDE, DIVE
+    WALK, TAKEOFF, GLIDE, DIVE, LAND
 }
 
 public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
 {
     public PlayerMotionMode MotionMode { get; private set; }
     public Action<float, PlayerMotionMode> Takeoff;
-    public Action Land;
+    public Action<RaycastHit> Land;
 
     [SerializeField]
     GameObject player;
@@ -24,6 +24,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
 
     private void Update()
     {
+        Debug.Log(MotionMode);
         switch (MotionMode) {
 
             case PlayerMotionMode.WALK:
@@ -37,7 +38,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                     Takeoff?.Invoke(inAirControl.GreatTakeOffSpeed, PlayerMotionMode.DIVE);
                 }
                 // Falling from high position and exceeding second level speed limit
-                else if (!onGroundControl.OnGround && playerSpeed > onGroundControl.TakeOffSpeed)
+                else if (!onGroundControl.OnGround && playerSpeed > onGroundControl.TakeOffSpeed && inAirControl.AboveMinimumFlightHeight())
                 {
                     // Consume none of energy and won't get any acceleration
                     // To Dive
@@ -55,20 +56,28 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
             case PlayerMotionMode.TAKEOFF:
                 break;
 
-            default:
+            case PlayerMotionMode.LAND:
                 // Detect if it's landing
                 // If happens collisions or reaches landing height
                 if (onGroundControl.OnGround ||
-                    Physics.Raycast(player.transform.position, Vector3.down, player.transform.localScale.y, onGroundControl.GroundLayerMask)) {
-                    Land?.Invoke();
+                    Physics.Raycast(player.transform.position, Vector3.down, player.transform.localScale.y, onGroundControl.GroundLayerMask))
+                {
                     MotionMode = PlayerMotionMode.WALK;
                 }
+                break;
+
+            default:
                 // Switch flying mode in air
-                if (KIH.Instance.GetKeyTap(Keys.ModeSwitchCode))
+                if (Input.GetKeyDown(Keys.ModeSwitchCode))
                 {
                     MotionMode = MotionMode == PlayerMotionMode.DIVE ? PlayerMotionMode.GLIDE : PlayerMotionMode.DIVE;
                 }
-                Debug.Log(MotionMode);
+                if (!inAirControl.AboveMinimumFlightHeight(out RaycastHit hitInfo)) 
+                {
+                    Land?.Invoke(hitInfo);
+                    MotionMode = PlayerMotionMode.LAND;
+                }
+
                 break;
         }
     }
@@ -93,7 +102,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
     }
     IEnumerator SwitchMotionModeToFlying(PlayerMotionMode mm)
     {
-        yield return new WaitUntil(() => !onGroundControl.OnGround);
+        yield return new WaitUntil(() => inAirControl.AboveMinimumFlightHeight());
         MotionMode = mm;
     }
 }
