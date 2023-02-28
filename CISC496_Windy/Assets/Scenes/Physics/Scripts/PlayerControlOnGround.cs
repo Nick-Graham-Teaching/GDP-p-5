@@ -79,6 +79,12 @@ public class PlayerControlOnGround : MonoBehaviour
             MaxWalkSpeedDelta = value.magnitude - MaxWalkSpeedLevelOne;
         } 
     }
+    public Vector3 RotationDirecion_Forward
+    {
+        set {
+            rotateDirection = value;
+        }
+    }
     #endregion
 
     #region Relative Direction to Camera

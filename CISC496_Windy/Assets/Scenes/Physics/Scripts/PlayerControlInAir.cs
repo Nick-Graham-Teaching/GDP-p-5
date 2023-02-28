@@ -1,68 +1,91 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pixeye.Unity;
 
 public class PlayerControlInAir : MonoBehaviour
 {
     PlayerControlOnGround onGroundControl;
     Rigidbody rb;
-
+    
     public Vector3 Gravity;
 
+    public float rotateRate;
+
+
+    // Now assume all flying modes are using same drag value
+    public float flyDrag;
+
+    [Foldout("Flying", true)]
     public float flyAccelScalar;
     public float MaxFlySpeed;
     public float LowestFlyHeight;
 
     Vector3 flyInertia;
-    // Record facing direction before take off
-    // Used to determine flying directions
-    // because transform.forward is influenced by rotation around z axis
     Vector3 flyDirection;
 
+    [Foldout("Flip Wings", true)]
     public float flipWingsSpeed;
     public float flipWingCD;
     bool canFlipWings;
 
-    public float TakeOffAngle;
+    [Foldout("Flying Angle", true)]
     // Angle between ground and negation of velocity direction
     public float LandAngle;
-
     public float diveAngle;
+    public float turnAroundAngle;
+    Quaternion turnLeftRotation;
+    Quaternion turnRightRotation;
+    public float pitchAngle;
+    public float rotationAngle_turnAround;
 
+    [Foldout("Dive Floating Accel", true)]
     float diveFloatAccel;
     public float MinDiveFloatAccel;
     public float MaxDiveFloatAccel;
 
+    [Foldout("Glide Floating Accel", true)]
     float glideFloatAccel;
     public float MinGlideFloatAccel;
     public float MaxGlideFloatAccel;
     public float PunishGlideFloatAccel;
     public float GlideFloatSpeedUpRate;
 
+    [Foldout("Glide Upforce", true)]
     float upForceDeltaTime;
     public float UpForceMaxUtilityTime;
     public float DeltaTimeRecoverRate;
 
-    public float rotateRate;
-
-    // Now assume all flying modes are using same drag value
-    public float flyDrag;
-
+    [Foldout("Landing", true)]
     public float LandStopAngle;
     public float LandStopRatio;
     bool momentumMaintain;
 
     bool glideFloatSupervisorOn;
 
-    public Vector3 BackD
+    // Axes of the transform in world space, but won't be influenced by rotation when rotation around y axis is not larger than 90 degrees
+    public Vector3 FlightAttitude_Forward
     {
         get {
-            return Quaternion.AngleAxis(diveAngle, transform.right) * onGroundControl.ForwardD;
+            Vector2 vXZ = new (rb.velocity.x, rb.velocity.z);
+            if (vXZ.magnitude < Mathf.Epsilon) {
+                return new Vector3(transform.forward.x, 0.0f, transform.forward.z).normalized;
+            }
+            vXZ = vXZ.normalized;
+            return new Vector3(vXZ.x, 0.0f, vXZ.y);
         }
     }
+    public Vector3 FlightAttitude_Back    => -FlightAttitude_Forward;
+    public Vector3 FlightAttitude_Left    => Vector3.Cross(FlightAttitude_Forward, Vector3.up).normalized;
+    public Vector3 FlightAttitude_Right   => -FlightAttitude_Left;
+    public Vector3 FlightAttitude_Up      => Vector3.up;
+    public Vector3 FlightAttitude_Down    => Vector3.down;
 
-    public float GreatTakeOffSpeed => flipWingsSpeed;
-    public float SmallTakeOffSpeed => flipWingsSpeed / 3.0f * 2.0f;
+    // Flying Directions
+    public Vector3 ForwardD => FlightAttitude_Forward; 
+    public Vector3 LeftD    => turnLeftRotation  * ForwardD;
+    public Vector3 RightD   => turnRightRotation * ForwardD;
+    public Vector3 BackD    => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
 
 
     public bool AboveMinimumFlightHeight() 
@@ -81,7 +104,7 @@ public class PlayerControlInAir : MonoBehaviour
 
         if (KIH.Instance.GetKeyPress(Keys.UpCode))
         {
-            flyDirection += onGroundControl.ForwardD;
+            flyDirection += ForwardD;
         }
         if (KIH.Instance.GetKeyPress(Keys.DownCode))
         {
@@ -89,15 +112,15 @@ public class PlayerControlInAir : MonoBehaviour
         }
         if (KIH.Instance.GetKeyPress(Keys.LeftCode))
         {
-            flyDirection += onGroundControl.LeftD;
+            flyDirection += LeftD;
         }
         if (KIH.Instance.GetKeyPress(Keys.RightCode))
         {
-            flyDirection += onGroundControl.RightD;
+            flyDirection += RightD;
         }
         if (flyDirection == Vector3.zero && mm == PlayerMotionMode.GLIDE) 
         {
-            flyDirection = onGroundControl.ForwardD;
+            flyDirection = ForwardD;
         }
 
         flyDirection = flyDirection.normalized;
@@ -147,21 +170,43 @@ public class PlayerControlInAir : MonoBehaviour
 
             return PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.LAND;
         });
-
     }
 
     void RotationUpdate() {
-        Vector3 upDirection = rb.velocity.normalized;
-        Vector3 forwardDirection;
-        if (flyDirection == Vector3.zero) {
-            upDirection = Vector3.up;
-            forwardDirection = onGroundControl.ForwardD;
+
+        Vector3 forward = FlightAttitude_Forward;
+        Vector3 down = FlightAttitude_Down;
+
+        if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+        {
+            Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, forward);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(turnAroundRotation * down, turnAroundRotation * forward),
+                rotateRate * Time.deltaTime);
         }
-        else forwardDirection = Quaternion.AngleAxis(90, Vector3.Cross(upDirection, Vector3.down).normalized) * upDirection;
+        if (KIH.Instance.GetKeyPress(Keys.RightCode))
+        {
+            Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, FlightAttitude_Back);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(turnAroundRotation * down, turnAroundRotation * forward),
+                rotateRate * Time.deltaTime);
+        }
+
+        Vector3 upD = rb.velocity.normalized;
+        Vector3 forD;
+
+        if (flyDirection == Vector3.zero)
+        {
+            upD = Vector3.up;
+            forD = onGroundControl.ForwardD;
+        }
+        else forD = Quaternion.AngleAxis(90, Vector3.Cross(upD, Vector3.down).normalized) * upD;
 
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
-            Quaternion.LookRotation(forwardDirection, upDirection),
+            Quaternion.LookRotation(forD, upD),
             rotateRate * Time.deltaTime
         );
     }
@@ -258,6 +303,8 @@ public class PlayerControlInAir : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         canFlipWings = true;
         glideFloatSupervisorOn = false;
+        turnLeftRotation  = Quaternion.AngleAxis(turnAroundAngle, Vector3.down);
+        turnRightRotation = Quaternion.AngleAxis(turnAroundAngle, Vector3.up);
     }
 
     #region callback functions
@@ -288,6 +335,7 @@ public class PlayerControlInAir : MonoBehaviour
     IEnumerator MomentumMaintain(Vector3 v) {
         yield return new WaitUntil(() => PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK);
         onGroundControl.Inertia = v;
+        onGroundControl.RotationDirecion_Forward = v.normalized;
     }
     #endregion
 }

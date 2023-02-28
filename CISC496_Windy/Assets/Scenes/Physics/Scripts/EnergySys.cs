@@ -7,7 +7,7 @@ public class EnergySys : Singleton<EnergySys>
 {
 
     public float MaxEnergy;
-    public  float _energyDelta;
+    float _energyDelta;
 
     public float toDiveConsumption;
     public float toGlideConsumption;

@@ -733,6 +733,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f0f0e56f2d276e4cb848c9376687162, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaxEnergy: 5
+  toDiveConsumption: 1
+  toGlideConsumption: 0.5
 --- !u!1 &1325264533
 GameObject:
   m_ObjectHideFlags: 0
@@ -1116,6 +1119,89 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 15.461, y: 0, z: 0}
+--- !u!1 &2050660678
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2050660679}
+  - component: {fileID: 2050660681}
+  - component: {fileID: 2050660680}
+  m_Layer: 6
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2050660679
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050660678}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.21, z: -0.504}
+  m_LocalScale: {x: 4.815841, y: 0.83855, z: 0.011187382}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6778596861655935988}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &2050660680
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050660678}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 358793c903799d1428670b1d1f4ce35d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &2050660681
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050660678}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!54 &6778596861655935984
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1168,6 +1254,7 @@ Transform:
   m_Children:
   - {fileID: 861988072}
   - {fileID: 785706280}
+  - {fileID: 2050660679}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1274,24 +1361,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Gravity: {x: 0, y: -9.81, z: 0}
+  rotateRate: 3
+  flyDrag: 0.23
   flyAccelScalar: 40
   MaxFlySpeed: 30
   LowestFlyHeight: 5
   flipWingsSpeed: 15
-  TakeOffAngle: 25
+  flipWingCD: 1
   LandAngle: 50
   diveAngle: 60
+  turnAroundAngle: 30
+  pitchAngle: 20
+  rotationAngle_turnAround: 80
   MinDiveFloatAccel: 3
   MaxDiveFloatAccel: 5.5
   MinGlideFloatAccel: 7
   MaxGlideFloatAccel: 60
   PunishGlideFloatAccel: -10
   GlideFloatSpeedUpRate: 5
-  upForceDeltaTime: 0
   UpForceMaxUtilityTime: 1
   DeltaTimeRecoverRate: 0.23
-  rotateRate: 7.5
-  flyDrag: 0.23
   LandStopAngle: 95
   LandStopRatio: 0.8
 --- !u!1 &6959982696287615192
