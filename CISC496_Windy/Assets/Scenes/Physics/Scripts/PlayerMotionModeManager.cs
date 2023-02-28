@@ -24,7 +24,6 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
 
     private void Update()
     {
-        Debug.Log(MotionMode);
         switch (MotionMode) {
 
             case PlayerMotionMode.WALK:
