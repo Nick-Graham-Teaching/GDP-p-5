@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum PlayerMotionMode
 { 
-    WALK, TAKEOFF, GLIDE, DIVE, LAND
+    UNAVAILABLE, WALK, TAKEOFF, GLIDE, DIVE, LAND
 }
 
 public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>

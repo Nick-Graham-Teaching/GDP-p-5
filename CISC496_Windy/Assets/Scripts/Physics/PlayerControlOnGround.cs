@@ -259,11 +259,11 @@ public class PlayerControlOnGround : MonoBehaviour
             }
         }
     }
-    private void Start()
+    private void OnEnable()
     {
         rb = GetComponent<Rigidbody>();
         startposition = transform.position;
-        rotateDirection = ForwardD;
+        rotateDirection = transform.forward;
     }
     private void OnCollisionStay(Collision collision)
     {

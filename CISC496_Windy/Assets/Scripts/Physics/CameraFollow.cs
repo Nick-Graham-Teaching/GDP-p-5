@@ -32,11 +32,30 @@ public class CameraFollow : MonoBehaviour
     // Camera follows mouse movement if true
     public bool updateView;
 
+    public float positionUpdateRate;
+    public float rotationUpdateRate;
+    Vector3 finalPosition;
+    Quaternion finalRotation;
+
+    public bool StartPageTransitionAnimation() {
+        transform.position = Vector3.Lerp(transform.position, finalPosition, positionUpdateRate * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, rotationUpdateRate * Time.deltaTime);
+
+        if ((transform.position - finalPosition).magnitude < Mathf.Epsilon)
+        {
+            transform.SetPositionAndRotation(target.position + viewDirection, Quaternion.LookRotation(-viewDirection, Vector3.up));
+            return true;
+        }
+        return false;
+    }
+
     private void Start()
     {
         MaxLength = viewDirection.magnitude;
         // Initial Position
-        transform.SetPositionAndRotation(target.position + viewDirection, Quaternion.LookRotation(-viewDirection, Vector3.up));
+        finalPosition = target.position + viewDirection;
+        finalRotation = Quaternion.LookRotation(-viewDirection, Vector3.up);
+        //transform.SetPositionAndRotation(target.position + viewDirection, Quaternion.LookRotation(-viewDirection, Vector3.up));
     }
 
     void UpdateViewDirection()
@@ -84,8 +103,8 @@ public class CameraFollow : MonoBehaviour
         if (updateView)
         {
             UpdateViewDirection();
+            PositionUpdate();
+            LookAtTarget();
         }
-        PositionUpdate();
-        LookAtTarget();
     }
 } 

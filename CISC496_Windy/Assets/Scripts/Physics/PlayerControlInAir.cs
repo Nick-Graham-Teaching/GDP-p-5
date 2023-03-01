@@ -237,7 +237,7 @@ public class PlayerControlInAir : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void OnEnable()
     {
         PlayerMotionModeManager.Instance.Takeoff += onTakeOff;
         PlayerMotionModeManager.Instance.Land += onLand;
