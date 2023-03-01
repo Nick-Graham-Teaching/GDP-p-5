@@ -9,7 +9,7 @@ public class EnergyBar : MonoBehaviour
     public float maxEnergy = 20;
     public float currentEnergy = 0;
     public RectTransform fill;
-
+    private Image fillImage;
     
     void Start()
     {
@@ -24,6 +24,7 @@ public class EnergyBar : MonoBehaviour
         currentEnergy += 0.5f;
         if (currentEnergy > maxEnergy)
             currentEnergy = maxEnergy;
+            
 
         UpdateFillHeight();
     }
