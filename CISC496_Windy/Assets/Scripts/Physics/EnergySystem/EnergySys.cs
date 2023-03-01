@@ -5,12 +5,16 @@ using UnityEngine;
 
 public class EnergySys : Singleton<EnergySys>
 {
-
-    public float MaxEnergy;
     float _energyDelta;
+    [SerializeField]
+    float MaxEnergy;
+    [SerializeField]
+    float rechargeSpeed;
 
-    public float toDiveConsumption;
-    public float toGlideConsumption;
+    [SerializeField]
+    float toDiveConsumption;
+    [SerializeField]
+    float toGlideConsumption;
 
     public event Action<float> EnergyChanged;
 
@@ -18,13 +22,17 @@ public class EnergySys : Singleton<EnergySys>
     {
         set 
         {
-            _energyDelta = value;
-            EnergyChanged?.Invoke(value/MaxEnergy);
+            _energyDelta = Mathf.Min(value, MaxEnergy);
+            EnergyChanged?.Invoke(_energyDelta / MaxEnergy);
         }
         get
         {
             return _energyDelta;
         }
+    }
+
+    public void RechargeEnergy(float rate = 1.0f) {
+        Energy += rate * rechargeSpeed;
     }
 
     public bool ConsumeEnergy(float consumption = 1.0f) {

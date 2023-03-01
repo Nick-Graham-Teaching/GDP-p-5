@@ -149,7 +149,7 @@ public class PlayerControlInAir : MonoBehaviour
         if (flyDirection == Vector3.zero)
         {
             upD = Vector3.up;
-            forD = onGroundControl.ForwardD;
+            forD = ForwardD;
         }
         else forD = Quaternion.AngleAxis(90, Vector3.Cross(upD, Vector3.down).normalized) * upD;
 
