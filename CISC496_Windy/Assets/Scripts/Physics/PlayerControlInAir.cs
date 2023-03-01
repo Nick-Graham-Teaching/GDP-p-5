@@ -12,7 +12,6 @@ public class PlayerControlInAir : MonoBehaviour
 
     public float rotateRate;
 
-
     // Now assume all flying modes are using same drag value
     public float flyDrag;
 
@@ -39,29 +38,10 @@ public class PlayerControlInAir : MonoBehaviour
     public float pitchAngle;
     public float rotationAngle_turnAround;
 
-    [Foldout("Dive Floating Accel", true)]
-    float diveFloatAccel;
-    public float MinDiveFloatAccel;
-    public float MaxDiveFloatAccel;
-
-    [Foldout("Glide Floating Accel", true)]
-    float glideFloatAccel;
-    public float MinGlideFloatAccel;
-    public float MaxGlideFloatAccel;
-    public float PunishGlideFloatAccel;
-    public float GlideFloatSpeedUpRate;
-
-    [Foldout("Glide Upforce", true)]
-    float upForceDeltaTime;
-    public float UpForceMaxUtilityTime;
-    public float DeltaTimeRecoverRate;
-
     [Foldout("Landing", true)]
     public float LandStopAngle;
     public float LandStopRatio;
     bool momentumMaintain;
-
-    bool glideFloatSupervisorOn;
 
     // Axes of the transform in world space, but won't be influenced by rotation when rotation around y axis is not larger than 90 degrees
     public Vector3 FlightAttitude_Forward
@@ -124,37 +104,6 @@ public class PlayerControlInAir : MonoBehaviour
         }
 
         flyDirection = flyDirection.normalized;
-    }
-
-    IEnumerator GlideUpForceTimer() {
-
-        yield return new WaitUntil(
-                () => {
-                    upForceDeltaTime += Time.deltaTime;
-                    glideFloatAccel = Mathf.Lerp(glideFloatAccel, MaxGlideFloatAccel, GlideFloatSpeedUpRate * Time.deltaTime);
-                    return !Input.GetKey(Keys.UpCode) || upForceDeltaTime >= UpForceMaxUtilityTime;
-                }
-            );
-
-        if (upForceDeltaTime >= UpForceMaxUtilityTime)
-        {
-            glideFloatAccel = PunishGlideFloatAccel;
-            yield return new WaitUntil( () => onGroundControl.OnGround );
-            glideFloatAccel = MinGlideFloatAccel;
-            upForceDeltaTime = 0.0f;
-        }
-        else 
-        {
-            glideFloatAccel = MinGlideFloatAccel;
-            yield return new WaitUntil(
-                () => {
-                    upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
-                    return Input.GetKeyDown(Keys.UpCode) || upForceDeltaTime < Mathf.Epsilon;
-                }
-            );
-        }
-
-        glideFloatSupervisorOn = false;
     }
 
     IEnumerator EnergyConsumptionSupervisor() {
@@ -247,17 +196,10 @@ public class PlayerControlInAir : MonoBehaviour
         switch (PlayerMotionModeManager.Instance.MotionMode)
         {
             case PlayerMotionMode.GLIDE:
-                //if (Input.GetKeyDown(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
-                if (!glideFloatSupervisorOn && KIH.Instance.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
-                {
-                    StartCoroutine(GlideUpForceTimer());
-                    glideFloatSupervisorOn = true;
-                }
                 FlyDirectionUpdate(PlayerMotionMode.GLIDE);
                 RotationUpdate();
                 break;
             case PlayerMotionMode.DIVE:
-                diveFloatAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveFloatAccel : MinDiveFloatAccel;
                 FlyDirectionUpdate(PlayerMotionMode.DIVE);
                 RotationUpdate();
                 break;
@@ -277,13 +219,13 @@ public class PlayerControlInAir : MonoBehaviour
             case PlayerMotionMode.GLIDE:
                 RestrictVelocity();
                 // Continuously apply a floating force
-                rb.AddForce(glideFloatAccel * Vector3.up, ForceMode.Acceleration);
+                rb.AddForce(Buoyancy.Instance.Force * Vector3.up, ForceMode.Acceleration);
                 // Continuously apply a forward force unless direction keys change its direction
                 rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
                 break;
             case PlayerMotionMode.DIVE:
                 RestrictVelocity();
-                rb.AddForce(diveFloatAccel * Vector3.up, ForceMode.Acceleration);
+                rb.AddForce(Buoyancy.Instance.Force * Vector3.up, ForceMode.Acceleration);
                 // Only when pressing direction keys, a force will be applied in certain directions.
                 rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
                 break;
@@ -302,7 +244,6 @@ public class PlayerControlInAir : MonoBehaviour
         onGroundControl = GetComponent<PlayerControlOnGround>();
         rb = GetComponent<Rigidbody>();
         canFlipWings = true;
-        glideFloatSupervisorOn = false;
         turnLeftRotation  = Quaternion.AngleAxis(turnAroundAngle, Vector3.down);
         turnRightRotation = Quaternion.AngleAxis(turnAroundAngle, Vector3.up);
     }
