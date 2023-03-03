@@ -279,14 +279,6 @@ public class PlayerControlOnGround : MonoBehaviour
             OnGround = false;
         }
     }
-    private void OnGUI()
-    {
-        if (GUI.Button(new Rect(100, 0, 150, 30), "Reset"))
-        {
-            transform.position = startposition;
-            rb.transform.position = startposition;
-            rb.velocity = Vector3.zero;
-        }
-    }
+
     #endregion
 }

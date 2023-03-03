@@ -813,6 +813,9 @@ MonoBehaviour:
   raiseRate: 30
   numLayer: 8
   updateView: 1
+  positionUpdateRate: 0
+  rotationUpdateRate: 0
+  distanceThreshold: 0
 --- !u!1 &1174940323
 GameObject:
   m_ObjectHideFlags: 0

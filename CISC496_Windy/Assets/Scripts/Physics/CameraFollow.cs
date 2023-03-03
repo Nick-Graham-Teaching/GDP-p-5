@@ -34,16 +34,17 @@ public class CameraFollow : MonoBehaviour
 
     public float positionUpdateRate;
     public float rotationUpdateRate;
-    Vector3 finalPosition;
+    //Vector3 finalPosition;
+    public float distanceThreshold;
     Quaternion finalRotation;
 
     public bool StartPageTransitionAnimation() {
-        transform.position = Vector3.Lerp(transform.position, finalPosition, positionUpdateRate * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, target.position + viewDirection, positionUpdateRate * Time.deltaTime);
         transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, rotationUpdateRate * Time.deltaTime);
 
-        if ((transform.position - finalPosition).magnitude < Mathf.Epsilon)
+        if ((transform.position - (target.position + viewDirection)).magnitude < distanceThreshold)
         {
-            transform.SetPositionAndRotation(target.position + viewDirection, Quaternion.LookRotation(-viewDirection, Vector3.up));
+            transform.SetPositionAndRotation((target.position + viewDirection), finalRotation);
             return true;
         }
         return false;
@@ -53,7 +54,6 @@ public class CameraFollow : MonoBehaviour
     {
         MaxLength = viewDirection.magnitude;
         // Initial Position
-        finalPosition = target.position + viewDirection;
         finalRotation = Quaternion.LookRotation(-viewDirection, Vector3.up);
         //transform.SetPositionAndRotation(target.position + viewDirection, Quaternion.LookRotation(-viewDirection, Vector3.up));
     }

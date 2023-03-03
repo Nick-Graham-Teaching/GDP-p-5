@@ -35,6 +35,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                     // Consume One Energy and receive a large acceleration on +Y direction
                     // To Dive
                     Takeoff?.Invoke(0b001);
+                    UIEvents.OnToDiveMode?.Invoke();
                 }
                 // Falling from high position and exceeding second level speed limit
                 else if (!onGroundControl.OnGround && playerSpeed > onGroundControl.TakeOffSpeed && inAirControl.AboveMinimumFlightHeight())
@@ -42,6 +43,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                     // Consume none of energy and won't get any acceleration
                     // To Dive
                     Takeoff?.Invoke(0b010);
+                    UIEvents.OnToDiveMode?.Invoke();
                 }
                 // Running fast on the ground and tap jump key
                 else if (onGroundControl.OnGround && KIH.Instance.GetKeyTap(Keys.JumpCode) && playerSpeed > onGroundControl.TakeOffSpeed)
@@ -49,6 +51,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                     // Consume a bit of energy and receive a small acceleration on +Y direction
                     // To Glide
                     Takeoff?.Invoke(0b100);
+                    UIEvents.OnToGlideMode?.Invoke();
                 }
                 break;
 
@@ -62,6 +65,7 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                     Physics.Raycast(player.transform.position, Vector3.down, player.transform.localScale.y, onGroundControl.GroundLayerMask))
                 {
                     MotionMode = PlayerMotionMode.WALK;
+                    UIEvents.OnToWalkMode?.Invoke();
                 }
                 break;
 
@@ -69,7 +73,17 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
                 // Switch flying mode in air
                 if (Input.GetKeyDown(Keys.ModeSwitchCode))
                 {
-                    MotionMode = MotionMode == PlayerMotionMode.DIVE ? PlayerMotionMode.GLIDE : PlayerMotionMode.DIVE;
+                    if (MotionMode == PlayerMotionMode.DIVE)
+                    {
+                        MotionMode = PlayerMotionMode.GLIDE;
+                        UIEvents.OnToGlideMode?.Invoke();
+
+                    }
+                    else
+                    {
+                        MotionMode = PlayerMotionMode.DIVE;
+                        UIEvents.OnToDiveMode?.Invoke();
+                    }
                 }
                 if (!inAirControl.AboveMinimumFlightHeight(out RaycastHit hitInfo)) 
                 {

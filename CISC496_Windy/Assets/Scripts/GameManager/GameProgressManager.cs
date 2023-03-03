@@ -1,21 +1,12 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public enum GameState { 
-    StartPage, InGame
-}
-
 public static class GameEvent {
-    public static Action StartPressed;
+    public static Action OnStartPressed;
 }
-
 
 public class GameProgressManager : Singleton<GameProgressManager>
 {
-    public GameState GameState { get; set; }
-
     public GameObject Player;
     PlayerControlOnGround onGroundControl;
     PlayerControlInAir inAirControl;
@@ -23,36 +14,36 @@ public class GameProgressManager : Singleton<GameProgressManager>
     public GameObject Camera;
     CameraFollow cameraFollow;
 
-    IEnumerator StartPageTransitionAnimation()
-    {
-        yield return new WaitUntil(() => cameraFollow.StartPageTransitionAnimation());
-        GameState = GameState.InGame;
-        onGroundControl.enabled = true;
-        inAirControl.enabled = true;
-        cameraFollow.updateView = true;
+    public bool CameraAnimationTransition() {
+        return cameraFollow.StartPageTransitionAnimation();
     }
 
 
     private void Start()
     {
-        // Default
-        GameState = GameState.StartPage;
+
         onGroundControl = Player.GetComponent<PlayerControlOnGround>();
         inAirControl = Player.GetComponent<PlayerControlInAir>();
         cameraFollow = Camera.GetComponent<CameraFollow>();
+
+        // Start Settings
+        
+        // Player cannot move
         onGroundControl.enabled = false;
         inAirControl.enabled = false;
+        // Camera does not follow mouse movement
         cameraFollow.updateView = false;
-        GameEvent.StartPressed += () => {
-            StartCoroutine(StartPageTransitionAnimation());
+        // In game UI is set to be inactive
+        UIEventsHandler.Instance.InGameUI.SetActive(false) ;
+
+        // Register start pressed action;
+        GameEvent.OnStartPressed += () => {
+            onGroundControl.enabled = true;
+            inAirControl.enabled = true;
+            cameraFollow.updateView = true;
+            UIEventsHandler.Instance.StartPageUI.SetActive(false);
+            UIEventsHandler.Instance.InGameUI.SetActive(true);
         };
 
-    }
-
-    private void OnGUI()
-    {
-        if (GUI.Button(new Rect(100, 30, 150, 30), "Start")) {
-            GameEvent.StartPressed?.Invoke();
-        }
     }
 }
