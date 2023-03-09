@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StartPageEvents : MonoBehaviour
+public class UICallbackFunctions : MonoBehaviour
 {
     public void OnStartPressed() 
     {
@@ -15,13 +15,12 @@ public class StartPageEvents : MonoBehaviour
         Application.Quit();
 #endif
     }
-    public void GoToOptionMenu()
-    {
-        SceneManager.LoadScene("OptionMenu");
+
+    public void OnChangeInputDevice(int a) { 
+    
     }
 
-    public void GoToMainMenu()
-    {
-        SceneManager.LoadScene("MainMenu");
-    }
+    public void OnChangeFrameRate(int a) { }
+
+
 }

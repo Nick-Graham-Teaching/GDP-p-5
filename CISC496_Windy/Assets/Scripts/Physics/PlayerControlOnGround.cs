@@ -4,7 +4,8 @@ public class PlayerControlOnGround : MonoBehaviour
 {
     #region Attribute
     // For debug, reset object's position
-    private Vector3 startposition;
+    Vector3 startposition;
+    Quaternion startRotation;
 
     // The camera which focus on the object
     [SerializeField]
@@ -263,6 +264,7 @@ public class PlayerControlOnGround : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         startposition = transform.position;
+        startRotation = transform.rotation;
         rotateDirection = transform.forward;
     }
     private void OnCollisionStay(Collision collision)
@@ -281,4 +283,10 @@ public class PlayerControlOnGround : MonoBehaviour
     }
 
     #endregion
+
+    public void ResetStatus() {
+        transform.position = startposition;
+        transform.rotation = startRotation;
+        rb.velocity = Vector3.zero;
+    }
 }

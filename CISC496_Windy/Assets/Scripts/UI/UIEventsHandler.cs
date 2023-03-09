@@ -6,23 +6,48 @@ using System;
 
 public static class UIEvents
 {
+    // Button events
+
+    // Start Page
     public static Action OnStartPressed;
+    // InGame Page
+    public static Action OnPausePressed;
+    // Pause Page
+    public static Action OnContinuePressed;
+    //public static Action OnQuitPressed;   Same as HomePage
+    // GameOver Page
+    public static Action OnHomePressed;
+    public static Action OnRestartPressed;
+
+    // InGame Game-UI interaction events
+
     public static Action OnToWalkMode;
     public static Action OnToGlideMode;
     public static Action OnToDiveMode;
+
+    public static Action OnOutOfBoundary;
+    public static Action OnBackToBoundary;
+    //public static Action OnGameOver;
 }
+
 
 public class UIEventsHandler : Singleton<UIEventsHandler>
 {
 
-    public GameObject StartPageUI;
-    public GameObject InGameUI;
-    public float UIFadeOutRate;
-    public float UIFadeInRate;
-
+    public GameObject StartPage;
     Image[] StartPageUIImages;
     Button[] StartPageUIButtons;
+
+    public GameObject InGameUI;
     Image[] InGameUIImages;
+
+    public GameObject CountdownPage;
+    public GameObject GameoverPage;
+
+    public float UIFadeOutRate;
+    public float UIFadeInRate;
+    public float UISlowFadeInRate;
+    public float UIFadeInAlpha;
 
     public Image TutorialImage;
     public float tutorialStayTime;
@@ -30,6 +55,7 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
     public GameObject WalkMode;
     public GameObject GlideMode;
     public GameObject DiveMode;
+
 
     IEnumerator StartPageUIFadeOut()
     {
@@ -41,70 +67,106 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
         yield return new WaitUntil(() =>
         {
             // Decrease alpha of all images
-            foreach (Image i in StartPageUIImages)
-            {
-                Color c = i.color;
-                i.color = Color.Lerp(c, new Color(c.r, c.g, c.b, 0.0f), UIFadeOutRate * Time.deltaTime);
-            }
+            MyUtility.Util.ImagesFadeOut(StartPageUIImages, UIFadeOutRate);
             // While doing the camera animation
             return GameProgressManager.Instance.CameraAnimationTransition();
-        }
-        );
-        // Enable all player and camera control files
-        GameEvent.OnStartPressed?.Invoke();
+        });
         StartCoroutine(InGameUIFadeIn());
     }
 
-    public IEnumerator InGameUIFadeIn() {
-        float alpha = 0.0f;
+    IEnumerator InGameUIFadeIn()
+    {
+        // Ensable all buttons
+        foreach (Button b in StartPageUIButtons)
+        {
+            b.enabled = true;
+        }
+        // Enable all player and camera control files
+        GameEvents.OnStartPressed?.Invoke();
+
+        MyUtility.Util.ResetImagesAlpha(InGameUIImages, 0.0f);
         yield return new WaitUntil(() =>
         {
-            foreach (Image i in InGameUIImages)
-            {
-                Color c = i.color;
-                alpha = Mathf.Lerp(alpha, 1.0f, UIFadeInRate * Time.deltaTime);
-                i.color = new Color(c.r, c.g, c.b, alpha);
-            }
-            return alpha >= 1.0f - 0.005f;
+            return MyUtility.Util.ImagesFadeIn(InGameUIImages, UIFadeInRate);
         });
-        yield return new WaitForSeconds(tutorialStayTime);
-        alpha = 1.0f;
-        yield return new WaitUntil(() => {
-            Color c = TutorialImage.color;
 
-            alpha = Mathf.Lerp(alpha, 0.0f, UIFadeOutRate * Time.deltaTime);
-            TutorialImage.color = new Color(c.r, c.g, c.b, alpha);
-            return alpha <= 0.0f + 0.005f;
+        yield return new WaitForSeconds(tutorialStayTime);
+        yield return new WaitUntil(() => {
+            return MyUtility.Util.ImageFadeOut(TutorialImage, UIFadeOutRate);
         });
         TutorialImage.gameObject.SetActive(false);
     }
 
+    IEnumerator GameOverWarmingFadeIn()
+    {
+        Image countdownImage = CountdownPage.GetComponent<Image>();
+        yield return new WaitUntil(() =>
+        {
+            return MyUtility.Util.ImageFadeIn(countdownImage, UISlowFadeInRate, UIFadeInAlpha) 
+            || !GameProgressManager.Instance.OutOfBoundary;
+        });
+        if (GameProgressManager.Instance.OutOfBoundary) {
+            GameEvents.OnGameOver?.Invoke();
+        }
+    }
+    IEnumerator GameOverWarmingFadeOut()
+    {
+        Image countdownImage = CountdownPage.GetComponent<Image>();
+        yield return new WaitUntil(() =>
+        {
+            return MyUtility.Util.ImageFadeOut(countdownImage, UIFadeOutRate)
+            || GameProgressManager.Instance.OutOfBoundary;
+        });
+        CountdownPage.SetActive(false);
+    }
+
+
     private void Start()
     {
-        StartPageUIImages = StartPageUI.GetComponentsInChildren<Image>();
-        StartPageUIButtons = StartPageUI.GetComponentsInChildren<Button>();
+        StartPageUIImages = StartPage.GetComponentsInChildren<Image>();
+        StartPageUIButtons = StartPage.GetComponentsInChildren<Button>();
         InGameUIImages = InGameUI.GetComponentsInChildren<Image>();
+        MyUtility.Util.ResetImageAlpha(CountdownPage.GetComponent<Image>(), 0.0f);
 
-        UIEvents.OnStartPressed += () => { 
-            StartCoroutine(StartPageUIFadeOut()); 
+        UIEvents.OnStartPressed += () =>
+        {
+            StartCoroutine(StartPageUIFadeOut());
         };
 
-        UIEvents.OnToWalkMode  += () => {
+
+        UIEvents.OnToWalkMode += () =>
+        {
             WalkMode.GetComponent<Image>().enabled = true;
             GlideMode.GetComponent<Image>().enabled = false;
             DiveMode.GetComponent<Image>().enabled = false;
         };
-        UIEvents.OnToGlideMode += () => {
+        UIEvents.OnToWalkMode.Invoke();
+        UIEvents.OnToGlideMode += () =>
+        {
             GlideMode.GetComponent<Image>().enabled = true;
             WalkMode.GetComponent<Image>().enabled = false;
             DiveMode.GetComponent<Image>().enabled = false;
         };
-        UIEvents.OnToDiveMode  += () => {
+        UIEvents.OnToDiveMode += () =>
+        {
             DiveMode.GetComponent<Image>().enabled = true;
             GlideMode.GetComponent<Image>().enabled = false;
             WalkMode.GetComponent<Image>().enabled = false;
         };
 
-        UIEvents.OnToWalkMode?.Invoke();
+
+        UIEvents.OnOutOfBoundary += () =>
+        {
+            StartCoroutine(GameOverWarmingFadeIn());
+        };
+        UIEvents.OnBackToBoundary += () =>
+        {
+            StartCoroutine(GameOverWarmingFadeOut());
+        };
+        //UIEvents.OnGameOver += () =>
+        //{
+        //    Debug.Log("Game Over Page");
+        //};
     }
+
 }

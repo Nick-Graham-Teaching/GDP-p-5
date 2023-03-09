@@ -69,7 +69,7 @@ public class EnergySys : Singleton<EnergySys>
     {
         PlayerMotionModeManager.Instance.Takeoff += onTakeOff;
 
-        EnergyChanged += (a) => { Debug.Log("Energy left: " + a); };
+        //EnergyChanged += (a) => { Debug.Log("Energy left: " + a); };
         Energy = MaxEnergy;
     }
 }
