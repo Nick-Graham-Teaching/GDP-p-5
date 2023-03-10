@@ -44791,7 +44791,7 @@ MonoBehaviour:
   MaxSlopeAngle: 60
   MinSlopeAngle: 3
   jumpAngle: 25
-  jumpStrength: 10
+  jumpStrength: 12
   groundLayerMask: 128
 --- !u!136 &6264529884054674511
 CapsuleCollider:

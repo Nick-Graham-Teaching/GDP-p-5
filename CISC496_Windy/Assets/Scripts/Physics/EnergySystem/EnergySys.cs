@@ -31,7 +31,6 @@ public class EnergySys : Singleton<EnergySys>
         }
     }
 
-    void ResetStatus() => Energy = MaxEnergy;
 
     public void RechargeEnergy(float rate = 1.0f) {
         Energy += rate * rechargeSpeed;
@@ -48,12 +47,22 @@ public class EnergySys : Singleton<EnergySys>
         return false;
     }
 
-    void onTakeOff(int way)
+
+    void Start()
+    {
+        PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
+
+        GameEvents.OnToStartPage += OnResetStatus;
+        GameEvents.OnRestart     += OnResetStatus;
+
+        Energy = MaxEnergy;
+    }
+    void OnTakeOff(int way)
     {
         switch (way)
         {
             case 0b001:
-                if (!ConsumeEnergy(toDiveConsumption)) 
+                if (!ConsumeEnergy(toDiveConsumption))
                 {
                     throw new MyUtility.TakeOffException("Energy is not enough!");
                 }
@@ -66,17 +75,7 @@ public class EnergySys : Singleton<EnergySys>
                 break;
         }
     }
-
-    void Start()
-    {
-        PlayerMotionModeManager.Instance.Takeoff += onTakeOff;
-
-        GameEvents.OnToStartPage += ResetStatus;
-        GameEvents.OnRestart += ResetStatus;
-
-        //EnergyChanged += (a) => { Debug.Log("Energy left: " + a); };
-        Energy = MaxEnergy;
-    }
+    void OnResetStatus() => Energy = MaxEnergy;
 }
 
 

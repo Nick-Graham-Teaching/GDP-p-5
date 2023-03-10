@@ -47,12 +47,12 @@ public class PlayerControlInAir : MonoBehaviour
     public Vector3 FlightAttitude_Forward
     {
         get {
-            Vector2 vXZ = new (rb.velocity.x, rb.velocity.z);
-            if (vXZ.magnitude < Mathf.Epsilon) {
+            Vector3 vXZ = new (rb.velocity.x, 0.0f, rb.velocity.z);
+            if (vXZ.magnitude < 1.0e-4)
+            {
                 return new Vector3(transform.forward.x, 0.0f, transform.forward.z).normalized;
             }
-            vXZ = vXZ.normalized;
-            return new Vector3(vXZ.x, 0.0f, vXZ.y);
+            return vXZ.normalized;
         }
     }
     public Vector3 FlightAttitude_Back    => -FlightAttitude_Forward;
@@ -111,7 +111,8 @@ public class PlayerControlInAir : MonoBehaviour
 
         yield return new WaitUntil(() => {
 
-            if (canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySys.Instance.ConsumeEnergy()) {
+            if (GameProgressManager.Instance.GameState.IsInGame() &&
+            canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySys.Instance.ConsumeEnergy()) {
                 canFlipWings = false;
                 flyInertia = flipWingsSpeed * Vector3.up;
                 StartCoroutine(MyUtility.Util.Timer(flipWingCD, () => canFlipWings = true));
@@ -239,8 +240,8 @@ public class PlayerControlInAir : MonoBehaviour
 
     private void Awake()
     {
-        PlayerMotionModeManager.Instance.Takeoff += onTakeOff;
-        PlayerMotionModeManager.Instance.Land += onLand;
+        PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
+        PlayerMotionModeManager.Instance.Land    += OnLand;
 
         onGroundControl = GetComponent<PlayerControlOnGround>();
         rb = GetComponent<Rigidbody>();
@@ -250,14 +251,14 @@ public class PlayerControlInAir : MonoBehaviour
     }
 
     #region callback functions
-    void onTakeOff(int way)
+    void OnTakeOff(int way)
     {
         float force = way == 0b001 ? flipWingsSpeed :
                       way == 0b100 ? flipWingsSpeed / 3.0f * 2.0f : 0.0f;
         flyInertia = force * Vector3.up;
         StartCoroutine(EnergyConsumptionSupervisor());
     }
-    void onLand(RaycastHit hitInfo)
+    void OnLand(RaycastHit hitInfo)
     {
         // Two ways of landing, which are determined by normal of ground and -rb.velocity.normalized
         float cosTheta = Vector3.Dot(hitInfo.normal, -rb.velocity.normalized);

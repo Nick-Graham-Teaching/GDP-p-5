@@ -12,6 +12,11 @@ public static class GameEvents
     public static Action OnBackToBoundary;
     public static Action OnGameOver;
 
+    // Reset Player's Transform
+    // Reset Camera's Transform
+    // Reset Motion Mode
+    // Reset Energy System
+    // Reset UI of the Energy System
     public static Action OnToStartPage;
 
     public static Action<int> OnInputDeviceChange;
@@ -19,6 +24,8 @@ public static class GameEvents
     public static Action<float> OnSentivityXChange;
     public static Action<float> OnSentivityYChange;
 }
+
+
 
 public class GameProgressManager : Singleton<GameProgressManager>
 {
@@ -35,6 +42,8 @@ public class GameProgressManager : Singleton<GameProgressManager>
 
     public bool OutOfBoundary { get; set; }
 
+    public Windy.GameState.GameState GameState { get; set; }
+
 
     public bool CameraAnimationTransition()
     {
@@ -44,7 +53,6 @@ public class GameProgressManager : Singleton<GameProgressManager>
 
     private void Start()
     {
-
         onGroundControl = Player.GetComponent<PlayerControlOnGround>();
         inAirControl = Player.GetComponent<PlayerControlInAir>();
         cameraFollow = Camera.GetComponent<CameraFollow>();
@@ -68,10 +76,10 @@ public class GameProgressManager : Singleton<GameProgressManager>
             UIEventsHandler.Instance.GameoverPage. SetActive(false);
             UIEvents.OnToStartPage?.Invoke();
         };
-        GameEvents.OnToStartPage.Invoke();
+        //GameEvents.OnToStartPage.Invoke();
+        GameState = new Windy.GameState.Ready();
 
 
-        // Register start pressed action;
         GameEvents.OnStart    += () =>
         {
             onGroundControl.enabled = true;
@@ -93,10 +101,10 @@ public class GameProgressManager : Singleton<GameProgressManager>
             inAirControl.enabled    = true;
             cameraFollow.updateView = true;
         };
-        GameEvents.OnRestart += () =>
+        GameEvents.OnRestart  += () =>
         {
             onGroundControl.enabled = true;
-            inAirControl.enabled = true;
+            inAirControl.enabled    = true;
             cameraFollow.updateView = true;
         };
 

@@ -10,7 +10,6 @@ public class EnergySysUI : MonoBehaviour
     float fillAmount;
     public float decreaseRate;
 
-    void ResetStatus() => FillImage.fillAmount = 1.0f;
 
     private void Update()
     {
@@ -25,4 +24,5 @@ public class EnergySysUI : MonoBehaviour
         EnergySys.Instance.EnergyChanged += (a) => fillAmount = a;
         GameEvents.OnToStartPage += ResetStatus;
     }
+    void ResetStatus() => FillImage.fillAmount = 1.0f;
 }

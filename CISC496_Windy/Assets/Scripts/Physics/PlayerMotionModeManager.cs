@@ -117,13 +117,13 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
             StartCoroutine(SwitchMotionModeToFlying(a == 0b100 ? PlayerMotionMode.GLIDE : PlayerMotionMode.DIVE));
         };
 
-        GameEvents.OnToStartPage += ResetStatus;
-        GameEvents.OnRestart += ResetStatus;
+        GameEvents.OnToStartPage += OnResetStatus;
+        GameEvents.OnRestart     += OnResetStatus;
     }
     IEnumerator SwitchMotionModeToFlying(PlayerMotionMode mm)
     {
         yield return new WaitUntil(() => inAirControl.AboveMinimumFlightHeight());
         MotionMode = mm;
     }
-    void ResetStatus() => MotionMode = PlayerMotionMode.WALK;
+    void OnResetStatus() => MotionMode = PlayerMotionMode.WALK;
 }

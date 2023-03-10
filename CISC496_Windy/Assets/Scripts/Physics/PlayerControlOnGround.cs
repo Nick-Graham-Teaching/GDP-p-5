@@ -270,12 +270,10 @@ public class PlayerControlOnGround : MonoBehaviour
         startLookingDirection = transform.forward;
         rotateDirection = transform.forward;
 
-        GameEvents.OnRestart += OnResetStatus;
-        GameEvents.OnRestart += () => { rotateDirection = startLookingDirection; };
+        GameEvents.OnRestart     += OnResetStatus;
         GameEvents.OnToStartPage += OnResetStatus;
-        GameEvents.OnToStartPage += () => { rotateDirection = startLookingDirection; };
-        GameEvents.OnPause += OnPauseStatus;
-        GameEvents.OnContinue += OnContinueStatus;
+        GameEvents.OnPause       += OnPauseStatus;
+        GameEvents.OnContinue    += OnContinueStatus;
 
     }
     private void OnCollisionStay(Collision collision)
@@ -299,7 +297,8 @@ public class PlayerControlOnGround : MonoBehaviour
     {
         transform.SetPositionAndRotation(startposition, startRotation);
         rb.velocity = Vector3.zero;
-        rb.useGravity = true;
+        rb.useGravity = true; 
+        rotateDirection = startLookingDirection;
     }
     void OnPauseStatus()
     {

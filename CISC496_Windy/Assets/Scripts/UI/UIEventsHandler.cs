@@ -120,7 +120,8 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
             || !GameProgressManager.Instance.OutOfBoundary;
         });
         if (GameProgressManager.Instance.OutOfBoundary) {
-            GameEvents.OnGameOver?.Invoke();
+            //GameEvents.OnGameOver?.Invoke();
+            GameProgressManager.Instance.GameState = new Windy.GameState.GameOver();
         }
     }
     IEnumerator GameOverWarmingFadeOut()
@@ -204,10 +205,6 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
         {
             StartCoroutine(GameOverWarmingFadeOut());
         };
-        //UIEvents.OnGameOver += () =>
-        //{
-        //    Debug.Log("Game Over Page");
-        //};
     }
 
 }

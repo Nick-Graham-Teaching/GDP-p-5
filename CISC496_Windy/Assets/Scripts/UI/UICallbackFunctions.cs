@@ -43,20 +43,24 @@ public class UICallbackFunctions : MonoBehaviour
 
     public void OnPause() 
     {
-        GameEvents.OnPause?.Invoke();
+        //GameEvents.OnPause?.Invoke();
+        GameProgressManager.Instance.GameState = new Windy.GameState.Pause();
     }
     public void OnContinue() 
     {
-        GameEvents.OnContinue?.Invoke();
+        //GameEvents.OnContinue?.Invoke();
+        GameProgressManager.Instance.GameState = new Windy.GameState.Continue();
     }
     public void OnRestart() 
     {
-        GameEvents.OnRestart?.Invoke();
+        //GameEvents.OnRestart?.Invoke();
+        GameProgressManager.Instance.GameState = new Windy.GameState.Restart();
     }
 
     public void OnHome() 
     {
-        GameEvents.OnToStartPage?.Invoke();
+        //GameEvents.OnToStartPage?.Invoke();
+        GameProgressManager.Instance.GameState = new Windy.GameState.Ready();
     }
 
 }
