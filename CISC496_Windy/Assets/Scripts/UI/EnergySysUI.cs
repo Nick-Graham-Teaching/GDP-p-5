@@ -10,6 +10,8 @@ public class EnergySysUI : MonoBehaviour
     float fillAmount;
     public float decreaseRate;
 
+    void ResetStatus() => FillImage.fillAmount = 1.0f;
+
     private void Update()
     {
         FillImage.fillAmount = Mathf.Lerp(FillImage.fillAmount, fillAmount, decreaseRate * Time.deltaTime);
@@ -21,5 +23,6 @@ public class EnergySysUI : MonoBehaviour
         fillAmount = FillImage.fillAmount;
 
         EnergySys.Instance.EnergyChanged += (a) => fillAmount = a;
+        GameEvents.OnToStartPage += ResetStatus;
     }
 }

@@ -6,6 +6,8 @@ public class PlayerControlOnGround : MonoBehaviour
     // For debug, reset object's position
     Vector3 startposition;
     Quaternion startRotation;
+    Vector3 startLookingDirection;
+    Vector3 velocityBeforePause;
 
     // The camera which focus on the object
     [SerializeField]
@@ -260,12 +262,21 @@ public class PlayerControlOnGround : MonoBehaviour
             }
         }
     }
-    private void OnEnable()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         startposition = transform.position;
         startRotation = transform.rotation;
+        startLookingDirection = transform.forward;
         rotateDirection = transform.forward;
+
+        GameEvents.OnRestart += OnResetStatus;
+        GameEvents.OnRestart += () => { rotateDirection = startLookingDirection; };
+        GameEvents.OnToStartPage += OnResetStatus;
+        GameEvents.OnToStartPage += () => { rotateDirection = startLookingDirection; };
+        GameEvents.OnPause += OnPauseStatus;
+        GameEvents.OnContinue += OnContinueStatus;
+
     }
     private void OnCollisionStay(Collision collision)
     {
@@ -284,9 +295,21 @@ public class PlayerControlOnGround : MonoBehaviour
 
     #endregion
 
-    public void ResetStatus() {
-        transform.position = startposition;
-        transform.rotation = startRotation;
+    void OnResetStatus()
+    {
+        transform.SetPositionAndRotation(startposition, startRotation);
         rb.velocity = Vector3.zero;
+        rb.useGravity = true;
+    }
+    void OnPauseStatus()
+    {
+        velocityBeforePause = rb.velocity;
+        rb.velocity = Vector3.zero;
+        rb.useGravity = false;
+    }
+    void OnContinueStatus()
+    {
+        rb.velocity = velocityBeforePause;
+        rb.useGravity = true;
     }
 }

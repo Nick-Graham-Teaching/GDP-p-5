@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UICallbackFunctions : MonoBehaviour
 {
@@ -16,11 +16,47 @@ public class UICallbackFunctions : MonoBehaviour
 #endif
     }
 
-    public void OnChangeInputDevice(int a) { 
-    
+
+    public void OnToOptionPage() 
+    {
+        UIEvents.OnToOptionPage?.Invoke();
     }
 
-    public void OnChangeFrameRate(int a) { }
+    public void OnChangeInputDevice(int a) 
+    {
+        GameSettings.Instance.InputDevice = a;
+    }
 
+    public void OnChangeFrameRate(int a) 
+    {
+        GameSettings.Instance.FrameRate = a;
+    }
+
+    public void OnChangeSensitivityX(Scrollbar s) 
+    {
+        GameSettings.Instance.SensitivityX = s.value;
+    }
+    public void OnChangeSensitivityY(Scrollbar s)
+    {
+        GameSettings.Instance.SensitivityY = s.value;
+    }
+
+    public void OnPause() 
+    {
+        GameEvents.OnPause?.Invoke();
+    }
+    public void OnContinue() 
+    {
+        GameEvents.OnContinue?.Invoke();
+    }
+    public void OnRestart() 
+    {
+        GameEvents.OnRestart?.Invoke();
+    }
+
+    public void OnHome() 
+    {
+        GameEvents.OnToStartPage?.Invoke();
+    }
 
 }

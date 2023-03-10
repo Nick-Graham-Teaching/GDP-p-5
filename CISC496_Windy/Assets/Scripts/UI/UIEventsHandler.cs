@@ -19,6 +19,9 @@ public static class UIEvents
     public static Action OnHomePressed;
     public static Action OnRestartPressed;
 
+    public static Action OnToStartPage;
+    public static Action OnToOptionPage;
+
     // InGame Game-UI interaction events
 
     public static Action OnToWalkMode;
@@ -41,13 +44,17 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
     public GameObject InGameUI;
     Image[] InGameUIImages;
 
+    public GameObject SettingsPage;
+    public GameObject PausePage;
     public GameObject CountdownPage;
     public GameObject GameoverPage;
 
     public float UIFadeOutRate;
     public float UIFadeInRate;
-    public float UISlowFadeInRate;
-    public float UIFadeInAlpha;
+
+    public float WarningUIFadeInRate;
+    public float WarningUIFadeInAlpha;
+    public float WarningUIFadeInThreshold;
 
     public Image TutorialImage;
     public float tutorialStayTime;
@@ -56,6 +63,13 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
     public GameObject GlideMode;
     public GameObject DiveMode;
 
+    public GameObject Keyboard;
+    public GameObject Mobile;
+    public GameObject FPS30;
+    public GameObject FPS60;
+    public GameObject FPS120;
+    public Scrollbar SensitivityX;
+    public Scrollbar SensitivityY;
 
     IEnumerator StartPageUIFadeOut()
     {
@@ -82,7 +96,7 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
             b.enabled = true;
         }
         // Enable all player and camera control files
-        GameEvents.OnStartPressed?.Invoke();
+        GameEvents.OnStart?.Invoke();
 
         MyUtility.Util.ResetImagesAlpha(InGameUIImages, 0.0f);
         yield return new WaitUntil(() =>
@@ -102,7 +116,7 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
         Image countdownImage = CountdownPage.GetComponent<Image>();
         yield return new WaitUntil(() =>
         {
-            return MyUtility.Util.ImageFadeIn(countdownImage, UISlowFadeInRate, UIFadeInAlpha) 
+            return MyUtility.Util.ImageFadeIn(countdownImage, WarningUIFadeInRate, WarningUIFadeInAlpha, WarningUIFadeInThreshold) 
             || !GameProgressManager.Instance.OutOfBoundary;
         });
         if (GameProgressManager.Instance.OutOfBoundary) {
@@ -120,6 +134,31 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
         CountdownPage.SetActive(false);
     }
 
+    public void PresetSettingPage() 
+    {
+        switch (GameSettings.Instance.InputDevice) {
+            case 0:
+                Keyboard.GetComponentInChildren<Button>().onClick?.Invoke();
+                break;
+            case 1:
+                Mobile.GetComponentInChildren<Button>().onClick?.Invoke();
+                break;
+        }
+        switch (GameSettings.Instance.FrameRate) {
+            case 0:
+                FPS30.GetComponentInChildren<Button>().onClick?.Invoke();
+                break;
+            case 1:
+                FPS60.GetComponentInChildren<Button>().onClick?.Invoke();
+                break;
+            case 2:
+                FPS120.GetComponentInChildren<Button>().onClick?.Invoke();
+                break;
+        }
+        SensitivityX.value = GameSettings.Instance.SensitivityX;
+        SensitivityY.value = GameSettings.Instance.SensitivityY;
+    }
+
 
     private void Start()
     {
@@ -133,6 +172,8 @@ public class UIEventsHandler : Singleton<UIEventsHandler>
             StartCoroutine(StartPageUIFadeOut());
         };
 
+        UIEvents.OnToStartPage += () => { MyUtility.Util.ResetImagesAlpha(StartPageUIImages, 1.0f);  };
+        UIEvents.OnToOptionPage += () => PresetSettingPage();
 
         UIEvents.OnToWalkMode += () =>
         {

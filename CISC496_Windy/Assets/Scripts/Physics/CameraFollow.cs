@@ -13,8 +13,13 @@ public class CameraFollow : MonoBehaviour
     public float viewDirEnlargeRate;
 
     // Coefficient of Mouse Movement
-    public float xRotateRate;
-    public float yRotateRate;
+    private float xRotateRate;
+    private float yRotateRate;
+
+    public float MinRotationRateX;
+    public float MinRotationRateY;
+    public float MaxRotationRateX;
+    public float MaxRotationRateY;
 
     // Set a boundary for viewDirection Length
     private float MaxLength;
@@ -25,7 +30,7 @@ public class CameraFollow : MonoBehaviour
     public float maxTargetOffsetY;
     private float targetOffset;
     public float raiseRate;
-    
+
     // The number of collision layer the camera is using
     public int numLayer;
 
@@ -37,6 +42,10 @@ public class CameraFollow : MonoBehaviour
     //Vector3 finalPosition;
     public float distanceThreshold;
     Quaternion finalRotation;
+
+    private Vector3 StartPosition;
+    private Quaternion StartRotation;
+    private Vector3 StartViewdirection;
 
     public bool StartPageTransitionAnimation() {
         transform.position = Vector3.Lerp(transform.position, target.position + viewDirection, positionUpdateRate * Time.deltaTime);
@@ -50,9 +59,22 @@ public class CameraFollow : MonoBehaviour
         return false;
     }
 
-    private void Start()
+    public void XRotateRateChange(float a) => xRotateRate = MinRotationRateX + a * (MaxRotationRateX - MinRotationRateX);
+    public void YRotateRateChange(float a) => yRotateRate = MinRotationRateY + a * (MaxRotationRateY - MinRotationRateY);
+
+    public void ResetTransform() {
+        viewDirection = StartViewdirection;
+        transform.SetPositionAndRotation(StartPosition, StartRotation);
+    }
+
+    private void OnEnable()
     {
         MaxLength = viewDirection.magnitude;
+        xRotateRate = MinRotationRateX;
+        yRotateRate = MinRotationRateY;
+        StartPosition = transform.position;
+        StartRotation = transform.rotation;
+        StartViewdirection = viewDirection;
         // Initial Position
         finalRotation = Quaternion.LookRotation(-viewDirection, Vector3.up);
         //transform.SetPositionAndRotation(target.position + viewDirection, Quaternion.LookRotation(-viewDirection, Vector3.up));
@@ -84,10 +106,12 @@ public class CameraFollow : MonoBehaviour
                 targetOffset = Mathf.Lerp(targetOffset, (cosTheta / MaxCosTheta) * maxTargetOffsetY, raiseRate * Time.deltaTime);
             }
         }
-        else if (length < MaxLength) {
+        else if (length < MaxLength)
+        {
             viewDirection = Vector3.Lerp(viewDirection, MaxLength / length * viewDirection, viewDirEnlargeRate * Time.deltaTime);
             targetOffset = Mathf.Lerp(targetOffset, 0.0f, raiseRate * Time.deltaTime);
         }
+        else targetOffset = 0.0f;
     }
     void PositionUpdate()
     {

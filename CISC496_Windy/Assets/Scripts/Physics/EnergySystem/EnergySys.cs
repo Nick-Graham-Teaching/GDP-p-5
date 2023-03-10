@@ -31,6 +31,8 @@ public class EnergySys : Singleton<EnergySys>
         }
     }
 
+    void ResetStatus() => Energy = MaxEnergy;
+
     public void RechargeEnergy(float rate = 1.0f) {
         Energy += rate * rechargeSpeed;
     }
@@ -68,6 +70,9 @@ public class EnergySys : Singleton<EnergySys>
     void Start()
     {
         PlayerMotionModeManager.Instance.Takeoff += onTakeOff;
+
+        GameEvents.OnToStartPage += ResetStatus;
+        GameEvents.OnRestart += ResetStatus;
 
         //EnergyChanged += (a) => { Debug.Log("Energy left: " + a); };
         Energy = MaxEnergy;

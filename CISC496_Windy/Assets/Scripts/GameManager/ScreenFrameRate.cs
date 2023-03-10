@@ -4,14 +4,19 @@ using UnityEngine;
 
 public class ScreenFrameRate : Singleton<ScreenFrameRate>
 {
-    public int frameRate;
+    [SerializeField]
+    private int _frameRate;
+
+    public int FrameRate { 
+        set 
+        {
+            _frameRate = value;
+            Application.targetFrameRate = value;
+        } 
+    }
     
     private void Start()
     {
-        Application.targetFrameRate = frameRate;
-    }
-    private void Update()
-    {
-        Application.targetFrameRate = frameRate;
+        Application.targetFrameRate = _frameRate;
     }
 }

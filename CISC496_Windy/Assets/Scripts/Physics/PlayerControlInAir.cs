@@ -117,7 +117,7 @@ public class PlayerControlInAir : MonoBehaviour
                 StartCoroutine(MyUtility.Util.Timer(flipWingCD, () => canFlipWings = true));
             }
 
-            return PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.LAND;
+            return PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.LAND || PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK;
         });
     }
 
@@ -237,10 +237,11 @@ public class PlayerControlInAir : MonoBehaviour
         }
     }
 
-    private void OnEnable()
+    private void Awake()
     {
         PlayerMotionModeManager.Instance.Takeoff += onTakeOff;
         PlayerMotionModeManager.Instance.Land += onLand;
+
         onGroundControl = GetComponent<PlayerControlOnGround>();
         rb = GetComponent<Rigidbody>();
         canFlipWings = true;
@@ -278,5 +279,6 @@ public class PlayerControlInAir : MonoBehaviour
         onGroundControl.Inertia = v;
         onGroundControl.RotationDirecion_Forward = v.normalized;
     }
+
     #endregion
 }

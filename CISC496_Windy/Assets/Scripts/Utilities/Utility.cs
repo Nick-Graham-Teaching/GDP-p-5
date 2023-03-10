@@ -26,17 +26,17 @@ namespace MyUtility
             }
         }
 
-        public static bool ImageFadeIn(Image i, float rate, float alpha = 1.0f) 
+        public static bool ImageFadeIn(Image i, float rate, float alpha = 1.0f, float threshold = 0.005f) 
         {
             i.color = Color.Lerp(i.color, new Color(i.color.r, i.color.g, i.color.b, alpha), rate * Time.deltaTime);
-            return i.color.a > alpha - 0.005f;
+            return i.color.a > alpha - threshold;
         }             
-        public static bool ImageFadeOut(Image i, float rate, float alpha = 0.0f)
+        public static bool ImageFadeOut(Image i, float rate, float alpha = 0.0f, float threshold = 0.005f)
         {
             i.color = Color.Lerp(i.color, new Color(i.color.r, i.color.g, i.color.b, alpha), rate * Time.deltaTime);
-            return i.color.a < alpha + 0.005f;
+            return i.color.a < alpha + threshold;
         }
-        public static bool ImagesFadeIn(Image[] images, float rate, float alpha = 1.0f) 
+        public static bool ImagesFadeIn(Image[] images, float rate, float alpha = 1.0f, float threshold = 0.005f) 
         {
             float a = 0.0f;
             foreach (Image i in images) {
@@ -44,9 +44,9 @@ namespace MyUtility
                 ImageFadeIn(i, rate, alpha);
                 a = i.color.a;
             }
-            return a > alpha - 0.005f;
+            return a > alpha - threshold;
         }
-        public static bool ImagesFadeOut(Image[] images, float rate, float alpha = 0.0f)
+        public static bool ImagesFadeOut(Image[] images, float rate, float alpha = 0.0f, float threshold = 0.005f)
         {
             float a = 0.0f;
             foreach (Image i in images)
@@ -55,7 +55,7 @@ namespace MyUtility
                 ImageFadeOut(i, rate, alpha);
                 a = i.color.a;
             }
-            return a < alpha + 0.005f;
+            return a < alpha + threshold;
         }
     }
 
