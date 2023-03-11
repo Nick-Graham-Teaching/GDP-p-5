@@ -5,6 +5,7 @@ using Pixeye.Unity;
 
 public class PlayerControlInAir : MonoBehaviour
 {
+
     PlayerControlOnGround onGroundControl;
     Rigidbody rb;
     
@@ -67,7 +68,7 @@ public class PlayerControlInAir : MonoBehaviour
     public Vector3 RightD   => turnRightRotation * ForwardD;
     public Vector3 BackD    => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
 
-
+     //  In Executor
     public bool AboveMinimumFlightHeight() 
     {
         return !Physics.Raycast(transform.position, Vector3.down, LowestFlyHeight, onGroundControl.GroundLayerMask);
@@ -280,6 +281,5 @@ public class PlayerControlInAir : MonoBehaviour
         onGroundControl.Inertia = v;
         onGroundControl.RotationDirecion_Forward = v.normalized;
     }
-
     #endregion
 }

@@ -50,9 +50,15 @@ public class Buoyancy : Singleton<Buoyancy>
     {
         yield return new WaitUntil(
                 () => {
-                    upForceDeltaTime += Time.deltaTime;
-                    glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
-                    return !Input.GetKey(Keys.UpCode) || upForceDeltaTime >= UpForceMaxUtilityTime;
+                    if (GameProgressManager.Instance.GameState.IsInGame())
+                    {
+                        upForceDeltaTime += Time.deltaTime;
+                        glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
+                        if (!Input.GetKey(Keys.UpCode)) {
+                            return true;
+                        }
+                    }
+                    return upForceDeltaTime >= UpForceMaxUtilityTime;
                 }
             );
 
