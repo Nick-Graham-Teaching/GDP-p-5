@@ -43,6 +43,10 @@ public class PlayerMotionModeManager : Singleton<PlayerMotionModeManager>
 
     private void Update()
     {
+
+        if (!GameProgressManager.Instance.GameState.IsInGame()) {
+            return;
+        }
         switch (MotionMode) {
 
             case PlayerMotionMode.WALK:

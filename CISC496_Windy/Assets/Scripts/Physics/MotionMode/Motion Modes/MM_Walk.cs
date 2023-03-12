@@ -13,11 +13,11 @@ namespace Windy.MotionMode
 
         protected internal Rigidbody rb;
 
-        protected internal Vector3 moveDirection;
+        Vector3 moveDirection;
         protected internal Vector3 rotateDirection;
         protected internal float rotateSpeed;
 
-        protected internal Vector3 walkAcceleration;
+        Vector3 walkAcceleration;
         protected internal float walkAccelScalar;
         protected internal float MaxWalkSpeedLevelOne;
         protected internal float MaxWalkSpeedLevelTwo;
@@ -205,5 +205,15 @@ namespace Windy.MotionMode
                 inertia = Vector3.zero;
             }
         }
+
+        public override void Start()
+        {
+            if (MM_Executor.Instance.EnergyComsumptionSupervisor != null)
+            {
+                MM_Executor.Instance.StopCoroutine(MM_Executor.Instance.EnergyComsumptionSupervisor);
+            }
+        }
+
+        public override string ToString() => "MotionMode -- Walk";
     }
 }

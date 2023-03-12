@@ -15,13 +15,22 @@ public class ZoneDetector : MonoBehaviour
 
     private void LateUpdate()
     {
+        //if (Physics.Raycast(Player.position, Vector3.down, out RaycastHit hitInfo, float.PositiveInfinity, specialZoneLayerMask))
+        //{
+        //    float maxDistance = hitInfo.collider.GetComponent<SpecialZone>().EffectoveDistance;
+        //    Windy.Obsolete.Buoyancy.Buoyancy.Instance.CloudUpwardAccel =
+        //        Coefficient(Mathf.Clamp(hitInfo.distance, 1.0f, maxDistance), maxDistance) *
+        //        (hitInfo.collider.GetComponent<SpecialZone>().Buoyancy + Mathf.Abs(Player.GetComponent<Rigidbody>().velocity.y));
+        //}
+        //else Windy.Obsolete.Buoyancy.Buoyancy.Instance.CloudUpwardAccel = 0.0f;
         if (Physics.Raycast(Player.position, Vector3.down, out RaycastHit hitInfo, float.PositiveInfinity, specialZoneLayerMask))
         {
             float maxDistance = hitInfo.collider.GetComponent<SpecialZone>().EffectoveDistance;
-            Buoyancy.Instance.CloudUpwardAccel =
+            Windy.Obsolete.Buoyancy.Buoyancy.Instance.CloudUpwardAccel =
                 Coefficient(Mathf.Clamp(hitInfo.distance, 1.0f, maxDistance), maxDistance) *
                 (hitInfo.collider.GetComponent<SpecialZone>().Buoyancy + Mathf.Abs(Player.GetComponent<Rigidbody>().velocity.y));
+
         }
-        else Buoyancy.Instance.CloudUpwardAccel = 0.0f;
+        else Windy.Obsolete.Buoyancy.Buoyancy.Instance.CloudUpwardAccel = 0.0f;
     }
 }

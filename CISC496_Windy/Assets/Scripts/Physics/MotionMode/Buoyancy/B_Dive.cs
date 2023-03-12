@@ -4,16 +4,20 @@ using UnityEngine;
 
 namespace Windy.Buoyancy
 {
-    public sealed class B_Dive : Buoyancy
+    public class B_Dive : Buoyancy
     {
-        public override void Start()
-        {
-            throw new System.NotImplementedException();
-        }
+        float diveUpwardAccel;
+        protected internal float MinDiveUpwardAccel;
+        protected internal float MaxDiveUpwardAccel;
+
+        public override float Force => diveUpwardAccel + CloudUpwardAccel;
 
         public override void Update()
         {
-            throw new System.NotImplementedException();
+            base.Update();
+            diveUpwardAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
         }
+
+        public override string ToString() => "Buoyancy -- Dive";
     }
 }

@@ -40,7 +40,6 @@ namespace MyUtility
         {
             float a = 0.0f;
             foreach (Image i in images) {
-                //i.color = Color.Lerp(i.color, new Color(i.color.r, i.color.g, i.color.b, 1.0f), rate * Time.deltaTime);
                 ImageFadeIn(i, rate, alpha);
                 a = i.color.a;
             }
@@ -51,7 +50,6 @@ namespace MyUtility
             float a = 0.0f;
             foreach (Image i in images)
             {
-                //i.color = Color.Lerp(i.color, new Color(i.color.r, i.color.g, i.color.b, 1.0f), rate * Time.deltaTime);
                 ImageFadeOut(i, rate, alpha);
                 a = i.color.a;
             }

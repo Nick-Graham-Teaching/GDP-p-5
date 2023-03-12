@@ -3,105 +3,110 @@ using System.Collections.Generic;
 using UnityEngine;
 using Pixeye.Unity;
 
-public class Buoyancy : Singleton<Buoyancy>
-{
-    [Foldout("Dive Floating Accel", true)]
-    float diveUpwardAccel;
-    [SerializeField]
-    private float MinDiveUpwardAccel;
-    [SerializeField]
-    private float MaxDiveUpwardAccel;
+namespace Windy.Obsolete.Buoyancy {
 
-    [Foldout("Glide Floating Accel", true)]
-    float glideUpwardAccel;
-    [SerializeField]
-    private float MinGlideUpwardAccel;
-    [SerializeField]
-    private float MaxGlideUpwardAccel;
-    [SerializeField]
-    private float PunishGlideUpwardAccel;
-    [SerializeField]
-    private float UpwardAccelSpeedUpRate;
-
-    [Foldout("Glide Upforce", true)]
-    float upForceDeltaTime;
-    [SerializeField]
-    private float UpForceMaxUtilityTime;
-    [SerializeField]
-    private float DeltaTimeRecoverRate;
-    [SerializeField]
-    private float PunishmentCD;
-
-    bool glideFloatSupervisorOn;
-
-    private float cloudUpwardAccel;
-    public float CloudUpwardAccel { private get => cloudUpwardAccel; set => cloudUpwardAccel = value; }
-
-    public float Force
+    public class Buoyancy : Singleton<Buoyancy>
     {
-        get {
-            return (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.DIVE ? diveUpwardAccel : glideUpwardAccel)
-                + CloudUpwardAccel;
-        }
-    }
+        [Foldout("Dive Floating Accel", true)]
+        float diveUpwardAccel;
+        [SerializeField]
+        private float MinDiveUpwardAccel;
+        [SerializeField]
+        private float MaxDiveUpwardAccel;
 
+        [Foldout("Glide Floating Accel", true)]
+        float glideUpwardAccel;
+        [SerializeField]
+        private float MinGlideUpwardAccel;
+        [SerializeField]
+        private float MaxGlideUpwardAccel;
+        [SerializeField]
+        private float PunishGlideUpwardAccel;
+        [SerializeField]
+        private float UpwardAccelSpeedUpRate;
 
-    IEnumerator GlideUpForceTimer()
-    {
-        yield return new WaitUntil(
-                () => {
-                    if (GameProgressManager.Instance.GameState.IsInGame())
-                    {
-                        upForceDeltaTime += Time.deltaTime;
-                        glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
-                        if (!Input.GetKey(Keys.UpCode)) {
-                            return true;
-                        }
-                    }
-                    return upForceDeltaTime >= UpForceMaxUtilityTime;
-                }
-            );
+        [Foldout("Glide Upforce", true)]
+        float upForceDeltaTime;
+        [SerializeField]
+        private float UpForceMaxUtilityTime;
+        [SerializeField]
+        private float DeltaTimeRecoverRate;
+        [SerializeField]
+        private float PunishmentCD;
 
-        if (upForceDeltaTime >= UpForceMaxUtilityTime)
+        bool glideFloatSupervisorOn;
+
+        private float cloudUpwardAccel;
+        public float CloudUpwardAccel { private get => cloudUpwardAccel; set => cloudUpwardAccel = value; }
+
+        public float Force
         {
-            glideUpwardAccel = PunishGlideUpwardAccel;
-            yield return new WaitForSeconds(PunishmentCD);
-            glideUpwardAccel = MinGlideUpwardAccel;
-            upForceDeltaTime = 0.0f;
+            get
+            {
+                return (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.DIVE ? diveUpwardAccel : glideUpwardAccel)
+                    + CloudUpwardAccel;
+            }
         }
-        else
+
+
+        IEnumerator GlideUpForceTimer()
         {
-            glideUpwardAccel = MinGlideUpwardAccel;
             yield return new WaitUntil(
-                () => {
-                    upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
-                    return Input.GetKeyDown(Keys.UpCode) || upForceDeltaTime < Mathf.Epsilon;
-                }
-            );
+                    () => {
+                        if (GameProgressManager.Instance.GameState.IsInGame())
+                        {
+                            upForceDeltaTime += Time.deltaTime;
+                            glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
+                            if (!Input.GetKey(Keys.UpCode))
+                            {
+                                return true;
+                            }
+                        }
+                        return upForceDeltaTime >= UpForceMaxUtilityTime;
+                    }
+                );
+
+            if (upForceDeltaTime >= UpForceMaxUtilityTime)
+            {
+                glideUpwardAccel = PunishGlideUpwardAccel;
+                yield return new WaitForSeconds(PunishmentCD);
+                glideUpwardAccel = MinGlideUpwardAccel;
+                upForceDeltaTime = 0.0f;
+            }
+            else
+            {
+                glideUpwardAccel = MinGlideUpwardAccel;
+                yield return new WaitUntil(
+                    () => {
+                        upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
+                        return Input.GetKeyDown(Keys.UpCode) || upForceDeltaTime < Mathf.Epsilon;
+                    }
+                );
+            }
+
+            glideFloatSupervisorOn = false;
         }
 
-        glideFloatSupervisorOn = false;
-    }
-
-    private void Update()
-    {
-        switch (PlayerMotionModeManager.Instance.MotionMode)
+        private void Update()
         {
-            case PlayerMotionMode.GLIDE:
-                if (!glideFloatSupervisorOn && KIH.Instance.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
-                {
-                    StartCoroutine(GlideUpForceTimer());
-                    glideFloatSupervisorOn = true;
-                }
-                break;
-            case PlayerMotionMode.DIVE:
-                diveUpwardAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
-                break;
+            switch (PlayerMotionModeManager.Instance.MotionMode)
+            {
+                case PlayerMotionMode.GLIDE:
+                    if (!glideFloatSupervisorOn && KIH.Instance.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
+                    {
+                        StartCoroutine(GlideUpForceTimer());
+                        glideFloatSupervisorOn = true;
+                    }
+                    break;
+                case PlayerMotionMode.DIVE:
+                    diveUpwardAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
+                    break;
+            }
         }
-    }
 
-    private void Start()
-    {
-        glideUpwardAccel = MinGlideUpwardAccel;
+        private void Start()
+        {
+            glideUpwardAccel = MinGlideUpwardAccel;
+        }
     }
 }

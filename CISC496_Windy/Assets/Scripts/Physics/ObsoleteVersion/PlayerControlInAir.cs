@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Pixeye.Unity;
+using Windy.Obsolete.Buoyancy;
 
 public class PlayerControlInAir : MonoBehaviour
 {
 
     PlayerControlOnGround onGroundControl;
     Rigidbody rb;
-    
-    public Vector3 Gravity;
 
     public float rotateRate;
 
@@ -21,13 +20,13 @@ public class PlayerControlInAir : MonoBehaviour
     public float MaxFlySpeed;
     public float LowestFlyHeight;
 
-    Vector3 flyInertia;
-    Vector3 flyDirection;
+    Vector3 flyInertia;              // Change
+    Vector3 flyDirection;            // Change
 
     [Foldout("Flip Wings", true)]
     public float flipWingsSpeed;
     public float flipWingCD;
-    bool canFlipWings;
+    bool canFlipWings;               
 
     [Foldout("Flying Angle", true)]
     // Angle between ground and negation of velocity direction
@@ -36,7 +35,6 @@ public class PlayerControlInAir : MonoBehaviour
     public float turnAroundAngle;
     Quaternion turnLeftRotation;
     Quaternion turnRightRotation;
-    public float pitchAngle;
     public float rotationAngle_turnAround;
 
     [Foldout("Landing", true)]
@@ -241,8 +239,8 @@ public class PlayerControlInAir : MonoBehaviour
 
     private void Awake()
     {
-        PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
-        PlayerMotionModeManager.Instance.Land    += OnLand;
+        //PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
+        //PlayerMotionModeManager.Instance.Land += OnLand;
 
         onGroundControl = GetComponent<PlayerControlOnGround>();
         rb = GetComponent<Rigidbody>();

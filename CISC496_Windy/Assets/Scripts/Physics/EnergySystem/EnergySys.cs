@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class EnergySys : Singleton<EnergySys>
 {
     float _energyDelta;
@@ -11,8 +13,6 @@ public class EnergySys : Singleton<EnergySys>
     [SerializeField]
     float rechargeSpeed;
 
-    [SerializeField]
-    float toDiveConsumption;
     [SerializeField]
     float toGlideConsumption;
 
@@ -50,19 +50,19 @@ public class EnergySys : Singleton<EnergySys>
 
     void Start()
     {
-        PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
+        //PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
 
         GameEvents.OnToStartPage += OnResetStatus;
         GameEvents.OnRestart     += OnResetStatus;
 
         Energy = MaxEnergy;
     }
-    void OnTakeOff(int way)
+    public void OnTakeOff(int way)
     {
         switch (way)
         {
             case 0b001:
-                if (!ConsumeEnergy(toDiveConsumption))
+                if (!ConsumeEnergy())
                 {
                     throw new MyUtility.TakeOffException("Energy is not enough!");
                 }

@@ -7984,7 +7984,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &944510041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37072,10 +37072,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1249506562966889419}
   - {fileID: 1249506562344073925}
-  - {fileID: 1249506563693578113}
-  - {fileID: 1249506562931601985}
   m_Father: {fileID: 1249506563076219402}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -37109,7 +37106,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxEnergy: 5
   rechargeSpeed: 0.01
-  toDiveConsumption: 1
   toGlideConsumption: 0.5
 --- !u!4 &1249506562344073925
 Transform:
@@ -37124,7 +37120,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1249506562244511753}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1249506562344073930
 GameObject:
@@ -37178,97 +37174,6 @@ Transform:
   - {fileID: 318916452}
   m_Father: {fileID: 1249506563076219402}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1249506562931601984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1249506562931601990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a60c2ab6d33df245931589a56a38bcd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player: {fileID: 6264529884054674498}
-  specialZoneLayerMask: 256
---- !u!4 &1249506562931601985
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1249506562931601990}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1249506562244511753}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1249506562931601990
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1249506562931601985}
-  - component: {fileID: 1249506562931601984}
-  m_Layer: 0
-  m_Name: ZoneDetector
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!1 &1249506562966889416
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1249506562966889419}
-  - component: {fileID: 1249506562966889418}
-  m_Layer: 0
-  m_Name: MotionModeManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1249506562966889418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1249506562966889416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b5da5096f599d5641831da1b4a60eb25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 6264529884054674501}
---- !u!4 &1249506562966889419
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1249506562966889416}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1249506562244511753}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1249506563076219402
 Transform:
@@ -37395,59 +37300,6 @@ Transform:
   m_Father: {fileID: 1249506562529335027}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1249506563693578112
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1249506563693578118}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb082b4c958cac34da284a83662341c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MinDiveUpwardAccel: 3
-  MaxDiveUpwardAccel: 5.5
-  MinGlideUpwardAccel: 7
-  MaxGlideUpwardAccel: 80
-  PunishGlideUpwardAccel: -15
-  UpwardAccelSpeedUpRate: 8
-  UpForceMaxUtilityTime: 1.25
-  DeltaTimeRecoverRate: 0.15
-  PunishmentCD: 6
---- !u!4 &1249506563693578113
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1249506563693578118}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1249506562244511753}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1249506563693578118
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1249506563693578113}
-  - component: {fileID: 1249506563693578112}
-  m_Layer: 0
-  m_Name: Buoyancy
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!33 &1256079606283210381
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -44762,6 +44614,7 @@ GameObject:
   - component: {fileID: 6264529884054674502}
   - component: {fileID: 6264529884054674510}
   - component: {fileID: 6264529884054674508}
+  - component: {fileID: 6264529884054674512}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -44792,12 +44645,11 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6264529884054674501}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 89023d5fde5d0f34c857ca4f67ea24bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Gravity: {x: 0, y: -9.81, z: 0}
   rotateRate: 3
   flyDrag: 0.23
   flyAccelScalar: 40
@@ -44808,7 +44660,6 @@ MonoBehaviour:
   LandAngle: 50
   diveAngle: 60
   turnAroundAngle: 30
-  pitchAngle: 20
   rotationAngle_turnAround: 80
   LandStopAngle: 95
   LandStopRatio: 0.8
@@ -44819,7 +44670,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6264529884054674501}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1202fb0a16547114ab5e32c013e361c9, type: 3}
   m_Name: 
@@ -44833,7 +44684,7 @@ MonoBehaviour:
   slowDownRate: 1
   MaxDrag: 1.4
   MinDrag: 0.35
-  MaxSlopeAngle: 60
+  MaxSlopeAngle: 80
   MinSlopeAngle: 3
   jumpAngle: 25
   jumpStrength: 12
@@ -44852,6 +44703,55 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6264529884054674512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6264529884054674501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61771219bb4fa6c49b27ad8066e72084, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerCamera: {fileID: 4444038512262354683}
+  bottomTransform: {fileID: 640211894214679198}
+  rotateSpeed: 10
+  walkAccelScalar: 40
+  MaxWalkSpeedLevelOne: 10
+  MaxWalkSpeedLevelTwo: 20
+  slowDownRate: 1
+  MaxDrag: 1.4
+  MinDrag: 0.35
+  MaxSlopeAngle: 80
+  MinSlopeAngle: 3
+  jumpAngle: 25
+  jumpStrength: 12
+  groundLayerMask: 128
+  rotateRate: 3
+  flyDrag: 0.23
+  flyAccelScalar: 40
+  MaxFlySpeed: 30
+  LowestFlyHeight: 5
+  flipWingsSpeed: 15
+  flipWingCD: 1
+  LandAngle: 50
+  diveAngle: 60
+  turnAroundAngle: 30
+  rotationAngle_turnAround: 80
+  LandStopAngle: 95
+  LandStopRatio: 0.8
+  MinDiveUpwardAccel: 3
+  MaxDiveUpwardAccel: 5.5
+  MinGlideUpwardAccel: 7
+  MaxGlideUpwardAccel: 80
+  PunishGlideUpwardAccel: -15
+  UpwardAccelSpeedUpRate: 8
+  UpForceMaxUtilityTime: 1.25
+  DeltaTimeRecoverRate: 0.15
+  PunishmentCD: 6
+  SpecialZoneLayerMask: 256
 --- !u!23 &6270105763920109802
 MeshRenderer:
   m_ObjectHideFlags: 0

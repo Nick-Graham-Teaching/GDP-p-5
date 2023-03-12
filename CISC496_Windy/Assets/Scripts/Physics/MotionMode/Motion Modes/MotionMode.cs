@@ -9,7 +9,11 @@ namespace Windy.MotionMode
         public virtual void Start() { }
         public abstract void Update();
         public abstract void FixedUpdate();
+        public virtual void Quit() { }
 
         public virtual bool IsGlide() => false;
+
+        public override string ToString() => "MotionMode Class";
+
     }
 }

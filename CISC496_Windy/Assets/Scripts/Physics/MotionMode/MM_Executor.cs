@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 namespace Windy
 {
+
     public sealed class MM_Executor : Singleton<MM_Executor>
     {
         
@@ -21,51 +21,40 @@ namespace Windy
         public Builder.Builder_MM_Land B_M_Land { get; } = new();
         public Builder.Builder_MM_Takeoff B_M_Takeoff { get; } = new();
         public Builder.Builder_MM_Walk B_M_Walk { get; } = new();
-        
+
+        public Builder.Builder_B_Glide B_B_Glide { get; } = new();
+        public Builder.Builder_B_Dive B_B_Dive { get; } = new();
+
+
+        public Coroutine EnergyComsumptionSupervisor { get; set; }
 
         // Rigidbody component of the object
         Rigidbody rb;
 
         #region OnGround Part
         [Pixeye.Unity.Foldout("OnGround Part", true)]
-        // For debug, reset object's position
         Vector3 startposition;
         Quaternion startRotation;
         Vector3 startLookingDirection;
         Vector3 velocityBeforePause;
 
-        // The camera which focus on the object
         [SerializeField]
         Transform PlayerCamera;
-        // An Empty game object at bottom
         [SerializeField]
         Transform bottomTransform;
 
-        // Walking direction
-        Vector3 moveDirection;
-        // Rotate Direction
         Vector3 rotateDirection;
-        // Rotation speed
         [SerializeField]
         float rotateSpeed;
 
-        // Acceleration of the object when it's on the ground
-        Vector3 walkAcceleration;
-        // scalar value of acceleration
         [SerializeField]
         float walkAccelScalar;
-        // First speed limit (walking)
         [SerializeField]
         float MaxWalkSpeedLevelOne;
-        // Second speed limit (downhill, falls, jump)
         [SerializeField]
         float MaxWalkSpeedLevelTwo;
-        // interpolation value between two limits
-        float MaxWalkSpeedDelta;
-        // Slow down Coefficeint
         [SerializeField]
         float slowDownRate;
-        // Rigidbody.drag initial value
         [SerializeField]
         float MaxDrag;
         [SerializeField]
@@ -77,9 +66,6 @@ namespace Windy
         // The minimun slope angle that the object has acceleration
         [SerializeField]
         float MinSlopeAngle;
-
-        // inertia after jump (for now)
-        Vector3 inertia;
 
         // Jump Angle in degree
         [SerializeField]
@@ -101,8 +87,7 @@ namespace Windy
 
         #region InAir Part
 
-        [SerializeField]
-        Vector3 Gravity;
+        [Pixeye.Unity.Foldout("Flying", true)]
 
         [SerializeField]
         float rotateRate;
@@ -111,16 +96,12 @@ namespace Windy
         [SerializeField]
         float flyDrag;
 
-        [Pixeye.Unity.Foldout("Flying", true)]
         [SerializeField]
         float flyAccelScalar;
         [SerializeField]
         float MaxFlySpeed;
         [SerializeField]
         float LowestFlyHeight;
-
-        Vector3 flyInertia;
-        Vector3 flyDirection;
 
         [Pixeye.Unity.Foldout("Flip Wings", true)]
         [SerializeField]
@@ -140,8 +121,6 @@ namespace Windy
         Quaternion turnLeftRotation;
         Quaternion turnRightRotation;
         [SerializeField]
-        float pitchAngle;
-        [SerializeField]
         float rotationAngle_turnAround;
 
         [Pixeye.Unity.Foldout("Landing", true)]
@@ -149,10 +128,34 @@ namespace Windy
         float LandStopAngle;
         [SerializeField]
         float LandStopRatio;
-        bool momentumMaintain;
         #endregion
 
+        #region Buoyancy Part
+        [Pixeye.Unity.Foldout("Buoyancy Part", true)]
+        [SerializeField]
+        private float MinDiveUpwardAccel;
+        [SerializeField]
+        private float MaxDiveUpwardAccel;
 
+        [SerializeField]
+        private float MinGlideUpwardAccel;
+        [SerializeField]
+        private float MaxGlideUpwardAccel;
+        [SerializeField]
+        private float PunishGlideUpwardAccel;
+        [SerializeField]
+        private float UpwardAccelSpeedUpRate;
+
+        [SerializeField]
+        private float UpForceMaxUtilityTime;
+        [SerializeField]
+        private float DeltaTimeRecoverRate;
+        [SerializeField]
+        private float PunishmentCD;
+
+        [SerializeField]
+        private int SpecialZoneLayerMask;
+        #endregion
 
         public bool AboveMinimumFlightHeight()
         {
@@ -163,9 +166,28 @@ namespace Windy
             return !Physics.Raycast(transform.position, Vector3.down, out hitInfo, LowestFlyHeight, groundLayerMask);
         }
 
+        internal IEnumerator EnergyConsumptionSupervisor()
+        {
+            yield return new WaitForSeconds(flipWingCD);
+
+            while (true)
+            {
+                if (GameProgressManager.Instance.GameState.IsInGame() &&
+                    canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySys.Instance.ConsumeEnergy())
+                {
+                    canFlipWings = false;
+                    ((MotionMode.MM_InAir)MotionMode).FlyInertia = flipWingsSpeed * Vector3.up;
+                    StartCoroutine(MyUtility.Util.Timer(flipWingCD, () => canFlipWings = true));
+                }
+                yield return null;
+            }
+        }
 
         public void SwitchMode(Builder.IBuilder_MotionMode modeBuilder, Builder.Builder_Switcher switcherBuilder)
         {
+            Switcher.Quit();
+            MotionMode.Quit();
+            
             Switcher = switcherBuilder.Build();
             MotionMode = modeBuilder.Build();
 
@@ -188,18 +210,120 @@ namespace Windy
             turnLeftRotation = Quaternion.AngleAxis(turnAroundAngle, Vector3.down);
             turnRightRotation = Quaternion.AngleAxis(turnAroundAngle, Vector3.up);
 
-            B_S_Walk.SetBody(rb).SetTakeOffSpeed(MaxWalkSpeedLevelTwo);
-            B_S_Land.SetBody(rb).SetGroundLayerMask(groundLayerMask);
+
+            B_S_Walk
+                .SetBody(rb)
+                .SetTakeOffSpeed(MaxWalkSpeedLevelTwo);
+            B_S_Land
+                .SetBody(rb)
+                .SetGroundLayerMask(groundLayerMask);
+
+            B_B_Glide
+                .SetForceFloats(
+                    buoyancy => 
+                    {
+                        buoyancy.MinGlideUpwardAccel = MinGlideUpwardAccel;
+                        buoyancy.MaxGlideUpwardAccel = MaxGlideUpwardAccel;
+                        buoyancy.PunishGlideUpwardAccel = PunishGlideUpwardAccel;
+                        buoyancy.UpwardAccelSpeedUpRate = UpwardAccelSpeedUpRate;
+                    }
+                )
+                .SetTimeFloats(
+                    buoyancy =>
+                    {
+                        buoyancy.UpForceMaxUtilityTime = UpForceMaxUtilityTime;
+                        buoyancy.DeltaTimeRecoverRate = DeltaTimeRecoverRate;
+                        buoyancy.PunishmentCD = PunishmentCD;
+                    }
+                )
+                .SetDetector(
+                    buoyancy =>
+                    {
+                        buoyancy.SpecialZoneLayerMask = SpecialZoneLayerMask;
+                        buoyancy.PlayerTransform = transform;
+                    }
+                );
+            B_B_Dive
+                .SetForceFloats(
+                    buoyancy =>
+                    {
+                        buoyancy.MinDiveUpwardAccel = MinDiveUpwardAccel;
+                        buoyancy.MaxDiveUpwardAccel = MaxDiveUpwardAccel;
+                    }
+                )
+                .SetDetector(
+                    buoyancy =>
+                    {
+                        buoyancy.SpecialZoneLayerMask = SpecialZoneLayerMask;
+                        buoyancy.PlayerTransform = transform;
+                    }
+                );
 
             B_M_Walk
                 .SetTransforms(PlayerCamera, bottomTransform, transform)
                 .SetBody(rb)
-                .SetDirection(moveDirection, rotateDirection, rotateSpeed)
-                .SetFloatValues(walkAccelScalar, MaxWalkSpeedLevelOne, MaxWalkSpeedLevelTwo, MaxWalkSpeedDelta,
-                                slowDownRate, MaxDrag, MinDrag, MaxSlopeAngle, MinSlopeAngle, jumpAngle, jumpStrength)
-                .SetAccel(walkAcceleration)
-                .SetInertia(inertia)
+                .SetRotationDirection(rotateDirection)
+                .SetRotationSpeed(rotateSpeed)
+                .SetFloatValues(
+                    mode =>
+                    {
+                        mode.walkAccelScalar = walkAccelScalar;
+                        mode.MaxWalkSpeedLevelOne = MaxWalkSpeedLevelOne;
+                        mode.MaxWalkSpeedLevelTwo = MaxWalkSpeedLevelTwo;
+                        mode.slowDownRate = slowDownRate;
+                        mode.MaxDrag = MaxDrag;
+                        mode.MinDrag = MinDrag;
+                        mode.MaxSlopeAngle = MaxSlopeAngle;
+                        mode.MinSlopeAngle = MinSlopeAngle;
+                        mode.jumpAngle = jumpAngle;
+                        mode.jumpStrength = jumpStrength;
+                    }
+                )
                 .SetGroundLayerMask(groundLayerMask);
+            B_M_Takeoff
+                .SetBody(rb)
+                .SetFlipWingSpeed(flipWingsSpeed)
+                .SetDragValue(flyDrag);
+            B_M_Land
+                .SetBodyAndTransform(rb, transform)
+                .SetGroundLayerMask(groundLayerMask)
+                .SetFloatValues(
+                    mode =>
+                    {
+                        mode.LandAngle = LandAngle;
+                        mode.LandStopRatio = LandStopRatio;
+                        mode.LandStopAngle = LandStopAngle;
+                    }
+                )
+                .SetRotationRate(rotateRate);
+            B_M_Glide
+                .SetBodyAndTransform(rb, transform)
+                .SetRotationQuaternions(turnLeftRotation, turnRightRotation)
+                .SetFloatValues(
+                    mode =>
+                    {
+                        mode.rotateRate = rotateRate;
+                        mode.flyAccelScalar = flyAccelScalar;
+                        mode.MaxFlySpeed = MaxFlySpeed;
+                        mode.rotationAngle_turnAround = rotationAngle_turnAround;
+                        mode.diveAngle = diveAngle;
+                    }
+                )
+                .SetBuoyancy(B_B_Glide.Build());
+            B_M_Dive
+                .SetBodyAndTransform(rb, transform)
+                .SetRotationQuaternions(turnLeftRotation, turnRightRotation)
+                .SetFloatValues(
+                    mode =>
+                    {
+                        mode.rotateRate = rotateRate;
+                        mode.flyAccelScalar = flyAccelScalar;
+                        mode.MaxFlySpeed = MaxFlySpeed;
+                        mode.rotationAngle_turnAround = rotationAngle_turnAround;
+                        mode.diveAngle = diveAngle;
+                    }
+                )
+                .SetBuoyancy(B_B_Dive.Build());
 
             Switcher   = B_S_Walk.Build();
             MotionMode = B_M_Walk.Build();
@@ -212,13 +336,19 @@ namespace Windy
 
         private void Update()
         {
-            Switcher.Update();
-            MotionMode.Update();
+            if (GameProgressManager.Instance.GameState.IsInGame())
+            {
+                Switcher.Update();
+                MotionMode.Update();
+            }
         }
 
         private void FixedUpdate()
         {
-            MotionMode.FixedUpdate();
+            if (GameProgressManager.Instance.GameState.IsInGame())
+            {
+                MotionMode.FixedUpdate();
+            }
         }
 
         private void OnCollisionStay(Collision collision)
@@ -245,7 +375,9 @@ namespace Windy
             transform.SetPositionAndRotation(startposition, startRotation);
             rb.velocity = Vector3.zero;
             rb.useGravity = true;
-            rotateDirection = startLookingDirection;
+            B_M_Walk.SetRotationDirection(startLookingDirection);
+
+            SwitchMode(B_M_Walk, B_S_Walk);
         }
         void OnPauseStatus()
         {
@@ -258,36 +390,7 @@ namespace Windy
             rb.velocity = velocityBeforePause;
             rb.useGravity = true;
         }
-        //void OnTakeOff(int way)
-        //{
-        //    float force = way == 0b001 ? flipWingsSpeed :
-        //                  way == 0b100 ? flipWingsSpeed / 3.0f * 2.0f : 0.0f;
-        //    flyInertia = force * Vector3.up;
-        //    StartCoroutine(EnergyConsumptionSupervisor());
-        //}
-        //void OnLand(RaycastHit hitInfo)
-        //{
-        //    // Two ways of landing, which are determined by normal of ground and -rb.velocity.normalized
-        //    float cosTheta = Vector3.Dot(hitInfo.normal, -rb.velocity.normalized);
-        //    if (cosTheta < Mathf.Cos((90.0f - LandAngle) * Mathf.Deg2Rad))
-        //    {
-        //        // keep momentum
-        //        StartCoroutine(MomentumMaintain(rb.velocity.magnitude * new Vector3(rb.velocity.x, 0.0f, rb.velocity.z).normalized));   // May lose some velocity, but can be ignored.
-        //        momentumMaintain = true;
-        //    }
-        //    else
-        //    {
-        //        // sudden stop
-        //        flyInertia = LandStopRatio * -rb.velocity;
-        //        momentumMaintain = false;
-        //    }
-        //}
-        //IEnumerator MomentumMaintain(Vector3 v)
-        //{
-        //    yield return new WaitUntil(() => PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK);
-        //    onGroundControl.Inertia = v;
-        //    onGroundControl.RotationDirecion_Forward = v.normalized;
-        //}
+
         #endregion
     }
 }

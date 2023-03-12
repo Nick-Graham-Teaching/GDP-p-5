@@ -8,6 +8,8 @@ namespace Windy
     {
         public abstract void Start();
         public abstract void Update();
+        public abstract void Quit();
+        public abstract string ToString();
 
     }
 }

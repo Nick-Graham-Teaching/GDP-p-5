@@ -22,7 +22,7 @@ public class EnergySysUI : MonoBehaviour
         fillAmount = FillImage.fillAmount;
 
         EnergySys.Instance.EnergyChanged += (a) => fillAmount = a;
-        GameEvents.OnToStartPage += ResetStatus;
+        GameEvents.OnToStartPage += OnResetStatus;
     }
-    void ResetStatus() => FillImage.fillAmount = 1.0f;
+    void OnResetStatus() => FillImage.fillAmount = 1.0f;
 }

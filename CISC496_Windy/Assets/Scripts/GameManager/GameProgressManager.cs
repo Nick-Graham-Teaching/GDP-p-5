@@ -3,6 +3,7 @@ using UnityEngine;
 
 public static class GameEvents 
 {
+    // Button Events
     public static Action OnStart;
     public static Action OnPause;
     public static Action OnContinue;
@@ -31,8 +32,6 @@ public class GameProgressManager : Singleton<GameProgressManager>
 {
 
     public GameObject Player;
-    PlayerControlOnGround onGroundControl;
-    PlayerControlInAir inAirControl;
 
     public GameObject Camera;
     CameraFollow cameraFollow;
@@ -53,19 +52,15 @@ public class GameProgressManager : Singleton<GameProgressManager>
 
     private void Start()
     {
-        onGroundControl = Player.GetComponent<PlayerControlOnGround>();
-        inAirControl = Player.GetComponent<PlayerControlInAir>();
+
         cameraFollow = Camera.GetComponent<CameraFollow>();
 
         GameEvents.OnToStartPage += () =>
         {
             cameraFollow.ResetTransform();
-            // Player cannot move
-            onGroundControl.enabled = false;
-            inAirControl.enabled    = false;
             // Camera does not follow mouse movement
             cameraFollow.updateView = false;
-            // TurnOff Clouds
+            // Turn Off Clouds
             Clouds.SetActive(false);
             // UI Preparation
             UIEventsHandler.Instance.StartPage.    SetActive(true);
@@ -76,35 +71,28 @@ public class GameProgressManager : Singleton<GameProgressManager>
             UIEventsHandler.Instance.GameoverPage. SetActive(false);
             UIEvents.OnToStartPage?.Invoke();
         };
-        //GameEvents.OnToStartPage.Invoke();
+
         GameState = new Windy.GameState.Ready();
 
 
         GameEvents.OnStart    += () =>
         {
-            onGroundControl.enabled = true;
-            inAirControl.enabled    = true;
             cameraFollow.updateView = true;
             Clouds.SetActive(true);
             UIEventsHandler.Instance.StartPage.SetActive(false);
             UIEventsHandler.Instance.InGameUI. SetActive(true);
+            GameState = new Windy.GameState.InGame();
         };
         GameEvents.OnPause    += () => 
         {
-            onGroundControl.enabled = false;
-            inAirControl.enabled    = false;
             cameraFollow.updateView = false;
         };
         GameEvents.OnContinue += () =>
         {
-            onGroundControl.enabled = true;
-            inAirControl.enabled    = true;
             cameraFollow.updateView = true;
         };
         GameEvents.OnRestart  += () =>
         {
-            onGroundControl.enabled = true;
-            inAirControl.enabled    = true;
             cameraFollow.updateView = true;
         };
 
@@ -125,8 +113,6 @@ public class GameProgressManager : Singleton<GameProgressManager>
         };
         GameEvents.OnGameOver       += () => 
         {
-            onGroundControl.enabled = false;
-            inAirControl.enabled = false;
             cameraFollow.updateView = false;
 
             UIEventsHandler.Instance.InGameUI.SetActive(false);

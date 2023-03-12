@@ -8,42 +8,14 @@ namespace Windy.MotionMode
     {
         protected internal Transform transform;
         protected internal Rigidbody rb;
-
-        protected internal Vector3 Gravity;
-
-        protected internal float rotateRate;
-
-        // Now assume all flying modes are using same drag value
-        protected internal float flyDrag;
-
-        protected internal float flyAccelScalar;
-        protected internal float MaxFlySpeed;
-        protected internal float LowestFlyHeight;
-
-        protected internal Vector3 flyInertia;
-        protected internal Vector3 flyDirection;
-
-        protected internal float flipWingsSpeed;
-        protected internal float flipWingCD;
-        protected internal bool canFlipWings;
-
-        // Angle between ground and negation of velocity direction
-        protected internal float LandAngle;
         protected internal float diveAngle;
-        protected internal float turnAroundAngle;
         protected internal Quaternion turnLeftRotation;
         protected internal Quaternion turnRightRotation;
-        protected internal float pitchAngle;
-        protected internal float rotationAngle_turnAround;
 
-        protected internal float LandStopAngle;
-        protected internal float LandStopRatio;
-        protected internal bool momentumMaintain;
-
-        protected internal int groundLayerMask;
+        public Vector3 FlyInertia { get; set; }
 
         // Axes of the transform in world space, but won't be influenced by rotation when rotation around y axis is not larger than 90 degrees
-        protected internal Vector3 FlightAttitude_Forward
+        protected Vector3 FlightAttitude_Forward
         {
             get
             {
@@ -55,16 +27,18 @@ namespace Windy.MotionMode
                 return vXZ.normalized;
             }
         }
-        protected internal Vector3 FlightAttitude_Back => -FlightAttitude_Forward;
-        protected internal Vector3 FlightAttitude_Left => Vector3.Cross(FlightAttitude_Forward, Vector3.up).normalized;
-        protected internal Vector3 FlightAttitude_Right => -FlightAttitude_Left;
-        protected internal Vector3 FlightAttitude_Up => Vector3.up;
-        protected internal Vector3 FlightAttitude_Down => Vector3.down;
+        protected Vector3 FlightAttitude_Back => -FlightAttitude_Forward;
+        protected Vector3 FlightAttitude_Left => Vector3.Cross(FlightAttitude_Forward, Vector3.up).normalized;
+        protected Vector3 FlightAttitude_Right => -FlightAttitude_Left;
+        protected Vector3 FlightAttitude_Up => Vector3.up;
+        protected Vector3 FlightAttitude_Down => Vector3.down;
 
         // Flying Directions
-        protected internal Vector3 ForwardD => FlightAttitude_Forward;
-        protected internal Vector3 LeftD => turnLeftRotation * ForwardD;
-        protected internal Vector3 RightD => turnRightRotation * ForwardD;
-        protected internal Vector3 BackD => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
+        protected Vector3 ForwardD => FlightAttitude_Forward;
+        protected Vector3 LeftD => turnLeftRotation * ForwardD;
+        protected Vector3 RightD => turnRightRotation * ForwardD;
+        protected Vector3 BackD => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
+
+        public override string ToString() => "MotionMode -- InAir";
     }
 }
