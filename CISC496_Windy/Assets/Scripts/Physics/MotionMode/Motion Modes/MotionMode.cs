@@ -6,6 +6,9 @@ namespace Windy.MotionMode
 {
     public abstract class MotionMode : IBehaviour
     {
+        protected internal Rigidbody rb;
+        protected internal Transform transform;
+
         public virtual void Start() { }
         public abstract void Update();
         public abstract void FixedUpdate();

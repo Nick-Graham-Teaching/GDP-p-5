@@ -6,9 +6,8 @@ namespace Windy.MotionModeSwitcher
 {
     public sealed class S_InAir : MM_Switcher
     {
-        public override void Update()
+        public sealed override void Update()
         {
-            // Switch flying mode in air
             if (Input.GetKeyDown(Keys.ModeSwitchCode))
             {
                 if (MM_Executor.Instance.MotionMode.IsGlide())

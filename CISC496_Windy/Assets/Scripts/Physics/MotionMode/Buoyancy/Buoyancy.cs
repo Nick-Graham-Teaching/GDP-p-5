@@ -8,13 +8,14 @@ namespace Windy.Buoyancy
     {
 
         protected internal Transform PlayerTransform;
+
         protected internal int SpecialZoneLayerMask;
 
         protected float CloudUpwardAccel { get; set; }
 
         public abstract float Force { get; }
 
-        private float Coefficient(float distance, float effectiveDistance)
+        float Coefficient(float distance, float effectiveDistance)
         {
             float coefficient = Mathf.Pow(Mathf.Cos((Mathf.PI / (2.0f * effectiveDistance)) * distance), 10.1f);
             if (coefficient is float.NaN) coefficient = 0.0f;

@@ -184,7 +184,7 @@ namespace Windy
             }
         }
 
-        public void SwitchMode(Builder.IBuilder_MotionMode modeBuilder, Builder.Builder_Switcher switcherBuilder)
+        public void SwitchMode(Builder.IBuilder_MotionMode modeBuilder, Builder.IBuilder_Switcher switcherBuilder)
         {
             Switcher.Quit();
             MotionMode.Quit();
@@ -201,6 +201,7 @@ namespace Windy
         private new void Awake()
         {
             base.Awake();
+
             rb = GetComponent<Rigidbody>();
             startposition = transform.position;
             startRotation = transform.rotation;

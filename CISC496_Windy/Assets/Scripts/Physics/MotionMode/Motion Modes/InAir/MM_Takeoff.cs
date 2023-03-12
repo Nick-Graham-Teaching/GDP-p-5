@@ -8,7 +8,7 @@ namespace Windy.MotionMode {
         protected internal float flipWingsSpeed;
         protected internal float flyDrag;
 
-        public override void Start()
+        public sealed override void Start()
         {
             float force = Method == 0b001 ? flipWingsSpeed :
                           Method == 0b100 ? flipWingsSpeed / 3.0f * 2.0f : 0.0f;
@@ -26,17 +26,9 @@ namespace Windy.MotionMode {
             }
         }
 
-        public override void Update()
+        public sealed override void Update()
         {
             rb.drag = flyDrag;
-        }
-        public override void FixedUpdate()
-        {
-            if (FlyInertia != Vector3.zero)
-            {
-                rb.AddForce(FlyInertia, ForceMode.VelocityChange);
-                FlyInertia = Vector3.zero;
-            }
         }
 
         public override string ToString() => "MotionMode -- Takeoff";

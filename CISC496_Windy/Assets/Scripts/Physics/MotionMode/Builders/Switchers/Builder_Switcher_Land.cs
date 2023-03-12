@@ -5,8 +5,9 @@ using UnityEngine;
 namespace Windy.Builder
 {
 
-    public sealed class Builder_Switcher_Land : Builder_Switcher
+    public sealed class Builder_Switcher_Land : MotionModeSwitcher.S_Land, IBuilder_Switcher
     {
+        private MotionModeSwitcher.S_Land _switcher;
 
         public Builder_Switcher_Land() {
             _switcher = new MotionModeSwitcher.S_Land();
@@ -23,5 +24,7 @@ namespace Windy.Builder
             _switcher.GroundLayerMask = groundLayerMask;
             return this;
         }
+
+        public MotionModeSwitcher.MM_Switcher Build() => _switcher;
     }
 }

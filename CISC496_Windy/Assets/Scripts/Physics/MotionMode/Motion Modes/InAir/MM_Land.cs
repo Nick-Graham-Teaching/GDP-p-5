@@ -15,7 +15,7 @@ namespace Windy.MotionMode {
 
         protected internal float rotateRate;
 
-        public override void Start()
+        public sealed override void Start()
         {
             MM_Executor.Instance.StopCoroutine(MM_Executor.Instance.EnergyComsumptionSupervisor);
 
@@ -40,7 +40,7 @@ namespace Windy.MotionMode {
             }
         }
 
-        public override void Update()
+        public sealed override void Update()
         {
             if (momentumMaintain)
             {
@@ -58,14 +58,6 @@ namespace Windy.MotionMode {
                     Quaternion.LookRotation(rotatedFacingD, Vector3.Cross(rotatedFacingD, transform.right).normalized),
                     rotateRate * Time.deltaTime
                 );
-            }
-        }
-        public override void FixedUpdate()
-        {
-            if (FlyInertia != Vector3.zero)
-            {
-                rb.AddForce(FlyInertia, ForceMode.VelocityChange);
-                FlyInertia = Vector3.zero;
             }
         }
 

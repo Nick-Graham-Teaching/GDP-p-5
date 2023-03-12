@@ -4,5 +4,9 @@ using UnityEngine;
 
 namespace Windy.Builder
 {
-    public interface IBuilder_Buoyancy : IBuilder<Buoyancy.Buoyancy> {}
+    public interface IBuilder<T>
+    {
+        public abstract T Build();
+    }
+
 }

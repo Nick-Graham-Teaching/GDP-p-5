@@ -6,8 +6,9 @@ namespace Windy.MotionModeSwitcher {
 
     public class S_Takeoff : MM_Switcher
     {
+        protected internal Builder.IBuilder_MotionMode targetMode;
 
-        public override void Start()
+        public sealed override void Start()
         {
             MM_Executor.Instance.StartCoroutine(SwitchMotionModeToFlying());
         }
@@ -18,7 +19,7 @@ namespace Windy.MotionModeSwitcher {
             MM_Executor.Instance.SwitchMode(targetMode, MM_Executor.Instance.B_S_InAir);
         }
 
-        public override void Update()
+        public sealed override void Update()
         {
 
         }

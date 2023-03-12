@@ -43,7 +43,7 @@ namespace Windy.Game
 
         public bool OutOfBoundary { get; set; }
 
-        public Windy.Game.GameState GameState { get; set; }
+        public GameState GameState { get; set; }
 
 
         public bool CameraAnimationTransition()
@@ -74,7 +74,7 @@ namespace Windy.Game
                 UI.UIEvents.OnToStartPage?.Invoke();
             };
 
-            GameState = new Windy.Game.Ready();
+            GameState = new Ready();
 
 
             GameEvents.OnStart += () =>
@@ -83,7 +83,7 @@ namespace Windy.Game
                 Clouds.SetActive(true);
                 UI.UIEventsHandler.Instance.StartPage.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
-                GameState = new Windy.Game.InGame();
+                GameState = new InGame();
             };
             GameEvents.OnPause += () =>
             {

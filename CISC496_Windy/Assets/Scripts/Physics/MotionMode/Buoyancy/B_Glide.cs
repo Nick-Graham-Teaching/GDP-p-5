@@ -19,7 +19,7 @@ namespace Windy.Buoyancy
 
         bool glideFloatSupervisorOn;
 
-        public override float Force => glideUpwardAccel + CloudUpwardAccel;
+        public sealed override float Force => glideUpwardAccel + CloudUpwardAccel;
 
 
         IEnumerator GlideUpForceTimer()
@@ -61,7 +61,7 @@ namespace Windy.Buoyancy
         }
 
 
-        public override void Update()
+        public sealed override void Update()
         {
             base.Update();
             if (!glideFloatSupervisorOn && KIH.Instance.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
@@ -70,7 +70,7 @@ namespace Windy.Buoyancy
                 glideFloatSupervisorOn = true;
             }
         }
-        public override void Start()
+        public sealed override void Start()
         {
             glideUpwardAccel = MinGlideUpwardAccel;
         }

@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace Windy.Builder { 
 
-    public sealed class Builder_Switcher_Walk : Builder_Switcher
+    public sealed class Builder_Switcher_Walk : MotionModeSwitcher.S_Walk, IBuilder_Switcher
     {
+        private MotionModeSwitcher.S_Walk _switcher;
 
         public Builder_Switcher_Walk()
         {
@@ -22,6 +23,8 @@ namespace Windy.Builder {
             _switcher.takeOffSpeed = takeOffSpeed;
             return this;
         }
+
+        public MotionModeSwitcher.MM_Switcher Build() => _switcher;
     }
 }
 

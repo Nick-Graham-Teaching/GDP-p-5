@@ -10,9 +10,9 @@ namespace Windy.Buoyancy
         protected internal float MinDiveUpwardAccel;
         protected internal float MaxDiveUpwardAccel;
 
-        public override float Force => diveUpwardAccel + CloudUpwardAccel;
+        public sealed override float Force => diveUpwardAccel + CloudUpwardAccel;
 
-        public override void Update()
+        public sealed override void Update()
         {
             base.Update();
             diveUpwardAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;

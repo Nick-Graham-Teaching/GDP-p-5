@@ -9,9 +9,6 @@ namespace Windy.MotionMode
 
         protected internal Transform PlayerCamera;
         protected internal Transform bottomTransform;
-        protected internal Transform transform;
-
-        protected internal Rigidbody rb;
 
         Vector3 moveDirection;
         protected internal Vector3 rotateDirection;
@@ -206,7 +203,7 @@ namespace Windy.MotionMode
             }
         }
 
-        public override void Start()
+        public sealed override void Start()
         {
             if (MM_Executor.Instance.EnergyComsumptionSupervisor != null)
             {

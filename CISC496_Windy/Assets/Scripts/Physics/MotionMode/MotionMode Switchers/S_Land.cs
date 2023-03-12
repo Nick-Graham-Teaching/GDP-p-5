@@ -4,9 +4,12 @@ using UnityEngine;
 
 namespace Windy.MotionModeSwitcher {
 
-    public sealed class S_Land : MM_Switcher
+    public class S_Land : MM_Switcher
     {
-        public override void Update()
+        protected internal Rigidbody playerBody;
+        protected internal int GroundLayerMask;
+
+        public sealed override void Update()
         {
             if (MM_Executor.Instance.OnGround ||
                 Physics.Raycast(playerBody.gameObject.transform.position, Vector3.down, playerBody.gameObject.transform.localScale.y, GroundLayerMask))

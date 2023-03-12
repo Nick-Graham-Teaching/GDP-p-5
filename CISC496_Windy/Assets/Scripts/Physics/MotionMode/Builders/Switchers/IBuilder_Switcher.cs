@@ -4,5 +4,5 @@ using UnityEngine;
 
 namespace Windy.Builder
 {
-    public interface IBuilder_Buoyancy : IBuilder<Buoyancy.Buoyancy> {}
+    public interface IBuilder_Switcher : IBuilder<MotionModeSwitcher.MM_Switcher> { }
 }

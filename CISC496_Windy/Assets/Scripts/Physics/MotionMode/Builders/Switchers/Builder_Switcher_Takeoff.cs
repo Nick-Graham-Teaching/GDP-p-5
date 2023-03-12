@@ -5,8 +5,9 @@ using UnityEngine;
 namespace Windy.Builder
 {
 
-    public class Builder_Switcher_Takeoff : Builder_Switcher
+    public class Builder_Switcher_Takeoff : MotionModeSwitcher.S_Takeoff, IBuilder_Switcher
     {
+        private MotionModeSwitcher.S_Takeoff _switcher;
 
         public Builder_Switcher_Takeoff()
         {
@@ -17,6 +18,8 @@ namespace Windy.Builder
             _switcher.targetMode = mode;
             return this;
         }
+
+        public MotionModeSwitcher.MM_Switcher Build() => _switcher;
 
     }
 }

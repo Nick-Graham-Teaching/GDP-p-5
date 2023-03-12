@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Windy.MotionMode {
-
-    public class MM_Glide : MM_InAir
+namespace Windy.MotionMode
+{
+    public abstract class MM_Flying : MM_InAir
     {
         protected internal Buoyancy.Buoyancy buoyancy;
 
@@ -17,35 +17,9 @@ namespace Windy.MotionMode {
 
         protected internal float rotationAngle_turnAround;
 
-        void FlyDirectionUpdate()
-        {
+        protected abstract void FlyDirectionUpdate();
 
-            flyDirection = Vector3.zero;
-
-            if (KIH.Instance.GetKeyPress(Keys.UpCode))
-            {
-                flyDirection += ForwardD;
-            }
-            if (KIH.Instance.GetKeyPress(Keys.DownCode))
-            {
-                flyDirection += BackD;
-            }
-            if (KIH.Instance.GetKeyPress(Keys.LeftCode))
-            {
-                flyDirection += LeftD;
-            }
-            if (KIH.Instance.GetKeyPress(Keys.RightCode))
-            {
-                flyDirection += RightD;
-            }
-            if (flyDirection == Vector3.zero)
-            {
-                flyDirection = ForwardD;
-            }
-
-            flyDirection = flyDirection.normalized;
-        }
-        void RotationUpdate()
+        protected void RotationUpdate()
         {
 
             Vector3 forward = FlightAttitude_Forward;
@@ -84,7 +58,8 @@ namespace Windy.MotionMode {
                 rotateRate * Time.deltaTime
             );
         }
-        void RestrictVelocity()
+
+        protected void RestrictVelocity()
         {
             Vector2 velocityXZ = new(rb.velocity.x, rb.velocity.z);
             if (velocityXZ.magnitude > MaxFlySpeed)
@@ -93,28 +68,18 @@ namespace Windy.MotionMode {
                 rb.velocity = new Vector3(velocityXZ.x, rb.velocity.y, velocityXZ.y);
             }
         }
-        public override void Update()
+
+        public sealed override void Update()
         {
             buoyancy.Update();
             FlyDirectionUpdate();
             RotationUpdate();
         }
+
         public override void FixedUpdate()
         {
+            base.FixedUpdate();
             RestrictVelocity();
-            rb.AddForce(buoyancy.Force * Vector3.up, ForceMode.Acceleration);
-            rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
-
-            if (FlyInertia != Vector3.zero)
-            {
-                rb.AddForce(FlyInertia, ForceMode.VelocityChange);
-                FlyInertia = Vector3.zero;
-            }
         }
-
-        public override bool IsGlide() => true;
-
-        public override string ToString() => "MotionMode -- Glide";
     }
-
 }

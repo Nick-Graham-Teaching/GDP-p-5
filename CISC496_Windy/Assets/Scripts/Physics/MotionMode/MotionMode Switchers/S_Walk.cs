@@ -5,10 +5,12 @@ using UnityEngine;
 namespace Windy.MotionModeSwitcher
 {
 
-    public sealed class S_Walk : MM_Switcher
+    public class S_Walk : MM_Switcher
     {
+        protected internal Rigidbody playerBody;
+        protected internal float takeOffSpeed;
 
-        public override void Update()
+        public sealed override void Update()
         {
             float playerSpeed = playerBody.velocity.magnitude;
 

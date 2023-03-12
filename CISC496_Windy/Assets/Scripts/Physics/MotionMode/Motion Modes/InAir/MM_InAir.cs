@@ -6,8 +6,6 @@ namespace Windy.MotionMode
 {
     public abstract class MM_InAir : MotionMode
     {
-        protected internal Transform transform;
-        protected internal Rigidbody rb;
         protected internal float diveAngle;
         protected internal Quaternion turnLeftRotation;
         protected internal Quaternion turnRightRotation;
@@ -38,6 +36,15 @@ namespace Windy.MotionMode
         protected Vector3 LeftD => turnLeftRotation * ForwardD;
         protected Vector3 RightD => turnRightRotation * ForwardD;
         protected Vector3 BackD => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
+
+        public override void FixedUpdate()
+        {
+            if (FlyInertia != Vector3.zero)
+            {
+                rb.AddForce(FlyInertia, ForceMode.VelocityChange);
+                FlyInertia = Vector3.zero;
+            }
+        }
 
         public override string ToString() => "MotionMode -- InAir";
     }
