@@ -1,314 +1,323 @@
 using UnityEngine;
 
-public class PlayerControlOnGround : MonoBehaviour
+namespace Windy.Obsolete.Physics
 {
-    #region Attribute
-    // For debug, reset object's position
-    Vector3 startposition;
-    Quaternion startRotation;
-    Vector3 startLookingDirection;
-    Vector3 velocityBeforePause;
-
-    // The camera which focus on the object
-    [SerializeField]
-    Transform PlayerCamera;
-    // An Empty game object at bottom
-    [SerializeField]
-    Transform bottomTransform;
-    
-    // Rigidbody component of the object
-    Rigidbody rb;
-
-    // Walking direction
-    Vector3 moveDirection;
-    // Rotate Direction
-    Vector3 rotateDirection;
-    // Rotation speed
-    [SerializeField]
-    float rotateSpeed;
-
-    // Acceleration of the object when it's on the ground
-    Vector3 walkAcceleration;
-    // scalar value of acceleration
-    [SerializeField]
-    float walkAccelScalar;
-    // First speed limit (walking)
-    [SerializeField]
-    float MaxWalkSpeedLevelOne;
-    // Second speed limit (downhill, falls, jump)
-    [SerializeField]
-    float MaxWalkSpeedLevelTwo;
-    // interpolation value between two limits
-    float MaxWalkSpeedDelta;
-    // Slow down Coefficeint
-    [SerializeField]
-    float slowDownRate;
-    // Rigidbody.drag initial value
-    [SerializeField]
-    float MaxDrag;
-    [SerializeField]
-    float MinDrag;
-
-    // The maximum slope angle that the object can climb
-    [SerializeField]
-    float MaxSlopeAngle;
-    // The minimun slope angle that the object has acceleration
-    [SerializeField]
-    float MinSlopeAngle;
-
-    // inertia after jump (for now)
-    Vector3 inertia;
-
-    // Jump Angle in degree
-    [SerializeField]
-    float jumpAngle;
-    // Jump Strength
-    [SerializeField]
-    float jumpStrength;
-
-    // Used by raycast, only apply raycast to the layer Ground
-    [SerializeField]
-    int groundLayerMask;
-
-    // If collided with Ground tag object, return true
-    public bool OnGround { get; private set; }
-
-    public int GroundLayerMask => groundLayerMask;
-    public float TakeOffSpeed => MaxWalkSpeedLevelTwo;
-    public Vector3 Inertia { 
-        set 
-        { 
-            inertia = value;
-            MaxWalkSpeedDelta = value.magnitude - MaxWalkSpeedLevelOne;
-        } 
-    }
-    public Vector3 RotationDirecion_Forward
+    public class PlayerControlOnGround : MonoBehaviour
     {
-        set {
-            rotateDirection = value;
-        }
-    }
-    #endregion
+        #region Attribute
+        // For debug, reset object's position
+        Vector3 startposition;
+        Quaternion startRotation;
+        Vector3 startLookingDirection;
+        Vector3 velocityBeforePause;
 
-    #region Relative Direction to Camera
-    // All facing directions are based on relative positions of the camera
-    public Vector3 ForwardD
-    {
-        get 
+        // The camera which focus on the object
+        [SerializeField]
+        Transform PlayerCamera;
+        // An Empty game object at bottom
+        [SerializeField]
+        Transform bottomTransform;
+
+        // Rigidbody component of the object
+        Rigidbody rb;
+
+        // Walking direction
+        Vector3 moveDirection;
+        // Rotate Direction
+        Vector3 rotateDirection;
+        // Rotation speed
+        [SerializeField]
+        float rotateSpeed;
+
+        // Acceleration of the object when it's on the ground
+        Vector3 walkAcceleration;
+        // scalar value of acceleration
+        [SerializeField]
+        float walkAccelScalar;
+        // First speed limit (walking)
+        [SerializeField]
+        float MaxWalkSpeedLevelOne;
+        // Second speed limit (downhill, falls, jump)
+        [SerializeField]
+        float MaxWalkSpeedLevelTwo;
+        // interpolation value between two limits
+        float MaxWalkSpeedDelta;
+        // Slow down Coefficeint
+        [SerializeField]
+        float slowDownRate;
+        // Rigidbody.drag initial value
+        [SerializeField]
+        float MaxDrag;
+        [SerializeField]
+        float MinDrag;
+
+        // The maximum slope angle that the object can climb
+        [SerializeField]
+        float MaxSlopeAngle;
+        // The minimun slope angle that the object has acceleration
+        [SerializeField]
+        float MinSlopeAngle;
+
+        // inertia after jump (for now)
+        Vector3 inertia;
+
+        // Jump Angle in degree
+        [SerializeField]
+        float jumpAngle;
+        // Jump Strength
+        [SerializeField]
+        float jumpStrength;
+
+        // Used by raycast, only apply raycast to the layer Ground
+        [SerializeField]
+        int groundLayerMask;
+
+        // If collided with Ground tag object, return true
+        public bool OnGround { get; private set; }
+
+        public int GroundLayerMask => groundLayerMask;
+        public float TakeOffSpeed => MaxWalkSpeedLevelTwo;
+        public Vector3 Inertia
         {
-            if (PlayerCamera != null)
+            set
             {
-                Vector3 direction = transform.position - PlayerCamera.position;
-                return new Vector3(direction.x, 0.0f, direction.z).normalized;
-            }
-            return Vector3.forward;
-        }
-    }
-    public Vector3 BackD => -ForwardD;
-    public Vector3 LeftD
-    {
-        get
-        {
-            Vector3 forward = ForwardD;
-            return new Vector3(-forward.z, 0.0f, forward.x);
-        }
-    }
-    public Vector3 RightD => -LeftD;
-    #endregion
-
-    #region OnGround Physics
-    void AccelerationUpdate()
-    {
-        // If getting direction key input, return a direction vector while considering slope of ground
-        // If not getting any input, return a zero vector
-        moveDirection = MoveDirectionWithSlope();
-        walkAcceleration = walkAccelScalar * (moveDirection);
-    }
-    Vector3 MoveDirectionWithSlope()
-    {
-        Vector3 direction = Vector3.zero;
-
-        if (KIH.Instance.GetKeyPress(Keys.UpCode))
-        {
-            direction += ForwardD;
-        }
-        if (KIH.Instance.GetKeyPress(Keys.DownCode))
-        {
-            direction += BackD;
-        }
-        if (KIH.Instance.GetKeyPress(Keys.LeftCode))
-        {
-            direction += LeftD;
-        }
-        if (KIH.Instance.GetKeyPress(Keys.RightCode))
-        {
-            direction += RightD;
-        }
-
-        if (OnGround && direction != Vector3.zero && 
-            // Collect slope of the ground
-            Physics.Raycast(bottomTransform.position, Vector3.down, out RaycastHit rayHit, 1.0f, groundLayerMask))
-        {
-            Vector3 surfaceNormal = rayHit.normal;
-            float angle = Vector3.Angle(Vector3.up, surfaceNormal);
-            if (angle < MaxSlopeAngle)
-            {
-                return Vector3.ProjectOnPlane(direction, surfaceNormal).normalized;
+                inertia = value;
+                MaxWalkSpeedDelta = value.magnitude - MaxWalkSpeedLevelOne;
             }
         }
-        return direction.normalized;
-    }
-
-    void RotationUpdate() {
-        if (moveDirection != Vector3.zero) {
-            rotateDirection = new Vector3(moveDirection.x, 0.0f, moveDirection.z).normalized;
-        }
-        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(rotateDirection, Vector3.up), rotateSpeed * Time.deltaTime);
-    }
-
-    void GravityOnVericalMovement()
-    {
-        // The amount of gravity projection on moving direction
-        float gravityProjection = Vector3.Dot(Vector3.down, rb.velocity.normalized);
-        // When going downhill or falls, the object has a higher speed limit.
-        if (gravityProjection > Mathf.Cos((90.0f - MinSlopeAngle) * Mathf.Deg2Rad))
+        public Vector3 RotationDirecion_Forward
         {
-            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne, MaxDrag * Time.deltaTime);
-            rb.drag = MinDrag;
-        }
-        // When going uphill or on the ground or jump up, the object's speed limit will generally return to normal level.
-        else
-        {
-            MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, 0.0f, slowDownRate * MaxDrag * Time.deltaTime);
-            rb.drag = MaxDrag;
-        }
-    }
-
-    void Jump() 
-    {
-        if (OnGround) {
-            if (KIH.Instance.GetKeyTap(Keys.JumpCode))
+            set
             {
-                inertia += Quaternion.AngleAxis(jumpAngle, -transform.right) * (jumpStrength * transform.forward);
-                MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-            }
-            else if (KIH.Instance.GetKeyTap(Keys.UpCode))
-            {
-                inertia += Quaternion.AngleAxis(jumpAngle, LeftD) * (jumpStrength * (moveDirection = ForwardD));
-                MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-            }
-            else if (KIH.Instance.GetKeyTap(Keys.DownCode))
-            {
-                inertia += Quaternion.AngleAxis(jumpAngle, RightD) * (jumpStrength * (moveDirection = BackD));
-                MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-            }
-            else if (KIH.Instance.GetKeyTap(Keys.LeftCode))
-            {
-                inertia += Quaternion.AngleAxis(jumpAngle, BackD) * (jumpStrength * (moveDirection = LeftD));
-                MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-            }
-            else if (KIH.Instance.GetKeyTap(Keys.RightCode))
-            {
-                inertia += Quaternion.AngleAxis(jumpAngle, ForwardD) * (jumpStrength * (moveDirection = RightD));
-                MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
+                rotateDirection = value;
             }
         }
-    }
-    void SpeedRestriction()
-    {
-        // If onGround is true, directly apply restrictions to Rigidbody.speed
-        // If not, only apply restrictions to Rigidbody.velocity on x and z axes
-        if (OnGround)
+        #endregion
+
+        #region Relative Direction to Camera
+        // All facing directions are based on relative positions of the camera
+        public Vector3 ForwardD
         {
-            if (rb.velocity.magnitude > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta)
+            get
             {
-                rb.velocity = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * rb.velocity.normalized;
+                if (PlayerCamera != null)
+                {
+                    Vector3 direction = transform.position - PlayerCamera.position;
+                    return new Vector3(direction.x, 0.0f, direction.z).normalized;
+                }
+                return Vector3.forward;
             }
         }
-        else 
+        public Vector3 BackD => -ForwardD;
+        public Vector3 LeftD
         {
-            Vector2 magnitude = new(rb.velocity.x, rb.velocity.z);
-            float speedOnXZ = magnitude.magnitude;
-            if (speedOnXZ > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta)
+            get
             {
-                magnitude = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * magnitude.normalized;
-                rb.velocity = new Vector3(magnitude.x, rb.velocity.y, magnitude.y);
+                Vector3 forward = ForwardD;
+                return new Vector3(-forward.z, 0.0f, forward.x);
             }
         }
-    }
-    #endregion
+        public Vector3 RightD => -LeftD;
+        #endregion
 
-    #region Unity Functions
-    void Update()
-    {
-        if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
+        #region OnGround Physics
+        void AccelerationUpdate()
         {
-            AccelerationUpdate();
-            GravityOnVericalMovement();
-            Jump();
-            RotationUpdate();
+            // If getting direction key input, return a direction vector while considering slope of ground
+            // If not getting any input, return a zero vector
+            moveDirection = MoveDirectionWithSlope();
+            walkAcceleration = walkAccelScalar * (moveDirection);
         }
-    }
-    private void FixedUpdate()
-    {
-        if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
+        Vector3 MoveDirectionWithSlope()
         {
-            SpeedRestriction();
-            rb.AddForce(walkAcceleration, ForceMode.Acceleration);
-            if (inertia != Vector3.zero)
+            Vector3 direction = Vector3.zero;
+
+            if (KIH.Instance.GetKeyPress(Keys.UpCode))
             {
-                rb.AddForce(inertia, ForceMode.VelocityChange);
-                inertia = Vector3.zero;
+                direction += ForwardD;
+            }
+            if (KIH.Instance.GetKeyPress(Keys.DownCode))
+            {
+                direction += BackD;
+            }
+            if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+            {
+                direction += LeftD;
+            }
+            if (KIH.Instance.GetKeyPress(Keys.RightCode))
+            {
+                direction += RightD;
+            }
+
+            if (OnGround && direction != Vector3.zero &&
+                // Collect slope of the ground
+                UnityEngine.Physics.Raycast(bottomTransform.position, Vector3.down, out RaycastHit rayHit, 1.0f, groundLayerMask))
+            {
+                Vector3 surfaceNormal = rayHit.normal;
+                float angle = Vector3.Angle(Vector3.up, surfaceNormal);
+                if (angle < MaxSlopeAngle)
+                {
+                    return Vector3.ProjectOnPlane(direction, surfaceNormal).normalized;
+                }
+            }
+            return direction.normalized;
+        }
+
+        void RotationUpdate()
+        {
+            if (moveDirection != Vector3.zero)
+            {
+                rotateDirection = new Vector3(moveDirection.x, 0.0f, moveDirection.z).normalized;
+            }
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(rotateDirection, Vector3.up), rotateSpeed * Time.deltaTime);
+        }
+
+        void GravityOnVericalMovement()
+        {
+            // The amount of gravity projection on moving direction
+            float gravityProjection = Vector3.Dot(Vector3.down, rb.velocity.normalized);
+            // When going downhill or falls, the object has a higher speed limit.
+            if (gravityProjection > Mathf.Cos((90.0f - MinSlopeAngle) * Mathf.Deg2Rad))
+            {
+                MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne, MaxDrag * Time.deltaTime);
+                rb.drag = MinDrag;
+            }
+            // When going uphill or on the ground or jump up, the object's speed limit will generally return to normal level.
+            else
+            {
+                MaxWalkSpeedDelta = Mathf.Lerp(MaxWalkSpeedDelta, 0.0f, slowDownRate * MaxDrag * Time.deltaTime);
+                rb.drag = MaxDrag;
             }
         }
-    }
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-        startposition = transform.position;
-        startRotation = transform.rotation;
-        startLookingDirection = transform.forward;
-        rotateDirection = transform.forward;
 
-        GameEvents.OnRestart     += OnResetStatus;
-        GameEvents.OnToStartPage += OnResetStatus;
-        GameEvents.OnPause       += OnPauseStatus;
-        GameEvents.OnContinue    += OnContinueStatus;
-
-    }
-    private void OnCollisionStay(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground")) 
+        void Jump()
         {
-            OnGround = true;
+            if (OnGround)
+            {
+                if (KIH.Instance.GetKeyTap(Keys.JumpCode))
+                {
+                    inertia += Quaternion.AngleAxis(jumpAngle, -transform.right) * (jumpStrength * transform.forward);
+                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
+                }
+                else if (KIH.Instance.GetKeyTap(Keys.UpCode))
+                {
+                    inertia += Quaternion.AngleAxis(jumpAngle, LeftD) * (jumpStrength * (moveDirection = ForwardD));
+                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
+                }
+                else if (KIH.Instance.GetKeyTap(Keys.DownCode))
+                {
+                    inertia += Quaternion.AngleAxis(jumpAngle, RightD) * (jumpStrength * (moveDirection = BackD));
+                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
+                }
+                else if (KIH.Instance.GetKeyTap(Keys.LeftCode))
+                {
+                    inertia += Quaternion.AngleAxis(jumpAngle, BackD) * (jumpStrength * (moveDirection = LeftD));
+                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
+                }
+                else if (KIH.Instance.GetKeyTap(Keys.RightCode))
+                {
+                    inertia += Quaternion.AngleAxis(jumpAngle, ForwardD) * (jumpStrength * (moveDirection = RightD));
+                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
+                }
+            }
+        }
+        void SpeedRestriction()
+        {
+            // If onGround is true, directly apply restrictions to Rigidbody.speed
+            // If not, only apply restrictions to Rigidbody.velocity on x and z axes
+            if (OnGround)
+            {
+                if (rb.velocity.magnitude > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta)
+                {
+                    rb.velocity = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * rb.velocity.normalized;
+                }
+            }
+            else
+            {
+                Vector2 magnitude = new(rb.velocity.x, rb.velocity.z);
+                float speedOnXZ = magnitude.magnitude;
+                if (speedOnXZ > MaxWalkSpeedLevelOne + MaxWalkSpeedDelta)
+                {
+                    magnitude = (MaxWalkSpeedLevelOne + MaxWalkSpeedDelta) * magnitude.normalized;
+                    rb.velocity = new Vector3(magnitude.x, rb.velocity.y, magnitude.y);
+                }
+            }
+        }
+        #endregion
+
+        #region Unity Functions
+        void Update()
+        {
+            if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
+            {
+                AccelerationUpdate();
+                GravityOnVericalMovement();
+                Jump();
+                RotationUpdate();
+            }
+        }
+        private void FixedUpdate()
+        {
+            if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
+            {
+                SpeedRestriction();
+                rb.AddForce(walkAcceleration, ForceMode.Acceleration);
+                if (inertia != Vector3.zero)
+                {
+                    rb.AddForce(inertia, ForceMode.VelocityChange);
+                    inertia = Vector3.zero;
+                }
+            }
+        }
+        private void Awake()
+        {
+            rb = GetComponent<Rigidbody>();
+            startposition = transform.position;
+            startRotation = transform.rotation;
+            startLookingDirection = transform.forward;
+            rotateDirection = transform.forward;
+
+            Game.GameEvents.OnRestart += OnResetStatus;
+            Game.GameEvents.OnToStartPage += OnResetStatus;
+            Game.GameEvents.OnPause += OnPauseStatus;
+            Game.GameEvents.OnContinue += OnContinueStatus;
+
+        }
+        private void OnCollisionStay(Collision collision)
+        {
+            if (collision.gameObject.CompareTag("Ground"))
+            {
+                OnGround = true;
+            }
+        }
+        private void OnCollisionExit(Collision collision)
+        {
+            if (collision.gameObject.CompareTag("Ground"))
+            {
+                OnGround = false;
+            }
+        }
+
+        #endregion
+
+        void OnResetStatus()
+        {
+            transform.SetPositionAndRotation(startposition, startRotation);
+            rb.velocity = Vector3.zero;
+            rb.useGravity = true;
+            rotateDirection = startLookingDirection;
+        }
+        void OnPauseStatus()
+        {
+            velocityBeforePause = rb.velocity;
+            rb.velocity = Vector3.zero;
+            rb.useGravity = false;
+        }
+        void OnContinueStatus()
+        {
+            rb.velocity = velocityBeforePause;
+            rb.useGravity = true;
         }
     }
-    private void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            OnGround = false;
-        }
-    }
 
-    #endregion
-
-    void OnResetStatus()
-    {
-        transform.SetPositionAndRotation(startposition, startRotation);
-        rb.velocity = Vector3.zero;
-        rb.useGravity = true; 
-        rotateDirection = startLookingDirection;
-    }
-    void OnPauseStatus()
-    {
-        velocityBeforePause = rb.velocity;
-        rb.velocity = Vector3.zero;
-        rb.useGravity = false;
-    }
-    void OnContinueStatus()
-    {
-        rb.velocity = velocityBeforePause;
-        rb.useGravity = true;
-    }
 }

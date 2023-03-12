@@ -4,78 +4,82 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
-public class EnergySys : Singleton<EnergySys>
+namespace Windy.EnergySystem
 {
-    float _energyDelta;
-    [SerializeField]
-    float MaxEnergy;
-    [SerializeField]
-    float rechargeSpeed;
-
-    [SerializeField]
-    float toGlideConsumption;
-
-    public event Action<float> EnergyChanged;
-
-    public float Energy 
+    public class EnergySys : Singleton<EnergySys>
     {
-        set 
+        float _energyDelta;
+        [SerializeField]
+        float MaxEnergy;
+        [SerializeField]
+        float rechargeSpeed;
+
+        [SerializeField]
+        float toGlideConsumption;
+
+        public event Action<float> EnergyChanged;
+
+        public float Energy
         {
-            _energyDelta = Mathf.Min(value, MaxEnergy);
-            EnergyChanged?.Invoke(_energyDelta / MaxEnergy);
+            set
+            {
+                _energyDelta = Mathf.Min(value, MaxEnergy);
+                EnergyChanged?.Invoke(_energyDelta / MaxEnergy);
+            }
+            get
+            {
+                return _energyDelta;
+            }
         }
-        get
+
+
+        public void RechargeEnergy(float rate = 1.0f)
         {
-            return _energyDelta;
+            Energy += rate * rechargeSpeed;
         }
-    }
 
-
-    public void RechargeEnergy(float rate = 1.0f) {
-        Energy += rate * rechargeSpeed;
-    }
-
-    public bool ConsumeEnergy(float consumption = 1.0f) {
-        consumption = Mathf.Clamp(consumption, 0.0f, 1.0f);
-        if (Energy - consumption > -Mathf.Epsilon)
+        public bool ConsumeEnergy(float consumption = 1.0f)
         {
-            Energy -= consumption;
-            return true;
+            consumption = Mathf.Clamp(consumption, 0.0f, 1.0f);
+            if (Energy - consumption > -Mathf.Epsilon)
+            {
+                Energy -= consumption;
+                return true;
+            }
+            Debug.LogError(new TakeOffException("Energy is not enough!"));
+            return false;
         }
-        Debug.LogError(new MyUtility.TakeOffException("Energy is not enough!"));
-        return false;
-    }
 
 
-    void Start()
-    {
-        //PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
-
-        GameEvents.OnToStartPage += OnResetStatus;
-        GameEvents.OnRestart     += OnResetStatus;
-
-        Energy = MaxEnergy;
-    }
-    public void OnTakeOff(int way)
-    {
-        switch (way)
+        void Start()
         {
-            case 0b001:
-                if (!ConsumeEnergy())
-                {
-                    throw new MyUtility.TakeOffException("Energy is not enough!");
-                }
-                break;
-            case 0b100:
-                if (!ConsumeEnergy(toGlideConsumption))
-                {
-                    throw new MyUtility.TakeOffException("Energy is not enough!");
-                }
-                break;
+            //PlayerMotionModeManager.Instance.Takeoff += OnTakeOff;
+
+            Game.GameEvents.OnToStartPage += OnResetStatus;
+            Game.GameEvents.OnRestart += OnResetStatus;
+
+            Energy = MaxEnergy;
         }
+        public void OnTakeOff(int way)
+        {
+            switch (way)
+            {
+                case 0b001:
+                    if (!ConsumeEnergy())
+                    {
+                        throw new TakeOffException("Energy is not enough!");
+                    }
+                    break;
+                case 0b100:
+                    if (!ConsumeEnergy(toGlideConsumption))
+                    {
+                        throw new TakeOffException("Energy is not enough!");
+                    }
+                    break;
+            }
+        }
+        void OnResetStatus() => Energy = MaxEnergy;
     }
-    void OnResetStatus() => Energy = MaxEnergy;
 }
 
 

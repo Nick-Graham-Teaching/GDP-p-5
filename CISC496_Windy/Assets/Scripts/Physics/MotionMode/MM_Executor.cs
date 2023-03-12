@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Windy.Game;
 
 namespace Windy
 {
@@ -173,11 +174,11 @@ namespace Windy
             while (true)
             {
                 if (GameProgressManager.Instance.GameState.IsInGame() &&
-                    canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySys.Instance.ConsumeEnergy())
+                    canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySystem.EnergySys.Instance.ConsumeEnergy())
                 {
                     canFlipWings = false;
                     ((MotionMode.MM_InAir)MotionMode).FlyInertia = flipWingsSpeed * Vector3.up;
-                    StartCoroutine(MyUtility.Util.Timer(flipWingCD, () => canFlipWings = true));
+                    StartCoroutine(Util.Timer(flipWingCD, () => canFlipWings = true));
                 }
                 yield return null;
             }

@@ -15,12 +15,12 @@ namespace Windy.MotionMode {
             FlyInertia = force * Vector3.up;
             try
             {
-                EnergySys.Instance.OnTakeOff(Method);
+                EnergySystem.EnergySys.Instance.OnTakeOff(Method);
                 
                 MM_Executor.Instance.EnergyComsumptionSupervisor =
                                 MM_Executor.Instance.StartCoroutine(MM_Executor.Instance.EnergyConsumptionSupervisor());
             } 
-            catch (MyUtility.TakeOffException)
+            catch (TakeOffException)
             {
                 MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Walk, MM_Executor.Instance.B_S_Walk);
             }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-namespace MyUtility
+namespace Windy
 {
     public static class Util
     {

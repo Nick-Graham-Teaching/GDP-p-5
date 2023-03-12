@@ -26,7 +26,7 @@ namespace Windy.Buoyancy
         {
             yield return new WaitUntil(
                     () => {
-                        if (GameProgressManager.Instance.GameState.IsInGame())
+                        if (Game.GameProgressManager.Instance.GameState.IsInGame())
                         {
                             upForceDeltaTime += Time.deltaTime;
                             glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);

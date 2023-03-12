@@ -43,7 +43,7 @@ namespace Windy.Obsolete.Buoyancy {
         {
             get
             {
-                return (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.DIVE ? diveUpwardAccel : glideUpwardAccel)
+                return (Physics.PlayerMotionModeManager.Instance.MotionMode == Physics.PlayerMotionMode.DIVE ? diveUpwardAccel : glideUpwardAccel)
                     + CloudUpwardAccel;
             }
         }
@@ -53,7 +53,7 @@ namespace Windy.Obsolete.Buoyancy {
         {
             yield return new WaitUntil(
                     () => {
-                        if (GameProgressManager.Instance.GameState.IsInGame())
+                        if (Game.GameProgressManager.Instance.GameState.IsInGame())
                         {
                             upForceDeltaTime += Time.deltaTime;
                             glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
@@ -89,16 +89,16 @@ namespace Windy.Obsolete.Buoyancy {
 
         private void Update()
         {
-            switch (PlayerMotionModeManager.Instance.MotionMode)
+            switch (Physics.PlayerMotionModeManager.Instance.MotionMode)
             {
-                case PlayerMotionMode.GLIDE:
+                case Physics.PlayerMotionMode.GLIDE:
                     if (!glideFloatSupervisorOn && KIH.Instance.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
                     {
                         StartCoroutine(GlideUpForceTimer());
                         glideFloatSupervisorOn = true;
                     }
                     break;
-                case PlayerMotionMode.DIVE:
+                case Physics.PlayerMotionMode.DIVE:
                     diveUpwardAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
                     break;
             }

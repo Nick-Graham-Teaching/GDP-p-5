@@ -2,20 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Singleton<T> : MonoBehaviour where T : Singleton<T>
+namespace Windy
 {
-    public static T Instance { get; private set; }
-
-    protected void Awake()
+    public class Singleton<T> : MonoBehaviour where T : Singleton<T>
     {
-        if (Instance == null)
+        public static T Instance { get; private set; }
+
+        protected void Awake()
         {
-            Instance = (T)this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
+            if (Instance == null)
+            {
+                Instance = (T)this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

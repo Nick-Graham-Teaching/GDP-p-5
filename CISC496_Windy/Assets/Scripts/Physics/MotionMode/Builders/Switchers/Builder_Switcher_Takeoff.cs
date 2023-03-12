@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Windy.MotionModeSwitcher;
 
 namespace Windy.Builder
 {
@@ -11,7 +10,7 @@ namespace Windy.Builder
 
         public Builder_Switcher_Takeoff()
         {
-            _switcher = new S_Takeoff();
+            _switcher = new MotionModeSwitcher.S_Takeoff();
         }
 
         public Builder_Switcher_Takeoff SetTargetMode(IBuilder_MotionMode mode) {

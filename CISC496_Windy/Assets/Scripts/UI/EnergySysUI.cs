@@ -3,26 +3,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class EnergySysUI : MonoBehaviour
+namespace Windy.UI
 {
-
-    Image FillImage;
-    float fillAmount;
-    public float decreaseRate;
-
-
-    private void Update()
+    public class EnergySysUI : MonoBehaviour
     {
-        FillImage.fillAmount = Mathf.Lerp(FillImage.fillAmount, fillAmount, decreaseRate * Time.deltaTime);
-    }
 
-    private void Start()
-    {
-        FillImage = GetComponent<Image>();
-        fillAmount = FillImage.fillAmount;
+        Image FillImage;
+        float fillAmount;
+        public float decreaseRate;
 
-        EnergySys.Instance.EnergyChanged += (a) => fillAmount = a;
-        GameEvents.OnToStartPage += OnResetStatus;
+
+        private void Update()
+        {
+            FillImage.fillAmount = Mathf.Lerp(FillImage.fillAmount, fillAmount, decreaseRate * Time.deltaTime);
+        }
+
+        private void Start()
+        {
+            FillImage = GetComponent<Image>();
+            fillAmount = FillImage.fillAmount;
+
+            EnergySystem.EnergySys.Instance.EnergyChanged += (a) => fillAmount = a;
+            Game.GameEvents.OnToStartPage += OnResetStatus;
+        }
+        void OnResetStatus() => FillImage.fillAmount = 1.0f;
     }
-    void OnResetStatus() => FillImage.fillAmount = 1.0f;
 }
+

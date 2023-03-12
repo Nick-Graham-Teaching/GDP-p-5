@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Windy.MotionModeSwitcher;
 
 namespace Windy.Builder { 
 
@@ -10,7 +9,7 @@ namespace Windy.Builder {
 
         public Builder_Switcher_Walk()
         {
-            _switcher = new S_Walk();
+            _switcher = new MotionModeSwitcher.S_Walk();
         }
 
         public Builder_Switcher_Walk SetBody(Rigidbody rb)

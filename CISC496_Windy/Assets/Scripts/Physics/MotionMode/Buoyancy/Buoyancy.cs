@@ -25,10 +25,10 @@ namespace Windy.Buoyancy
         {
             if (Physics.Raycast(PlayerTransform.position, Vector3.down, out RaycastHit hitInfo, float.PositiveInfinity, SpecialZoneLayerMask))
             {
-                float maxDistance = hitInfo.collider.GetComponent<SpecialZone>().EffectoveDistance;
+                float maxDistance = hitInfo.collider.GetComponent<SpecialZone.SpecialZone>().EffectoveDistance;
                 CloudUpwardAccel =
                     Coefficient(Mathf.Clamp(hitInfo.distance, 1.0f, maxDistance), maxDistance) *
-                    (hitInfo.collider.GetComponent<SpecialZone>().Buoyancy + Mathf.Abs(PlayerTransform.GetComponent<Rigidbody>().velocity.y));
+                    (hitInfo.collider.GetComponent<SpecialZone.SpecialZone>().Buoyancy + Mathf.Abs(PlayerTransform.GetComponent<Rigidbody>().velocity.y));
 
             }
             else CloudUpwardAccel = 0.0f;

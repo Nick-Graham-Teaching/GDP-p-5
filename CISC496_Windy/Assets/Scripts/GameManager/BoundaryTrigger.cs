@@ -2,20 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoundaryTrigger : MonoBehaviour
+namespace Windy.Game
 {
-    private void OnTriggerExit(Collider other)
+    public class BoundaryTrigger : MonoBehaviour
     {
-        if (other.CompareTag("Player")) {
-            GameEvents.OnOutOfBoundary?.Invoke();
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        private void OnTriggerExit(Collider other)
         {
-            GameEvents.OnBackToBoundary?.Invoke();
+            if (other.CompareTag("Player"))
+            {
+                GameEvents.OnOutOfBoundary?.Invoke();
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.CompareTag("Player"))
+            {
+                GameEvents.OnBackToBoundary?.Invoke();
+            }
         }
     }
 }

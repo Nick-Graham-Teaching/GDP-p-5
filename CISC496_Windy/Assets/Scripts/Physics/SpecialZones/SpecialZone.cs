@@ -1,12 +1,16 @@
 using UnityEngine;
 
-public class SpecialZone : MonoBehaviour
+namespace Windy.SpecialZone
 {
-    [SerializeField]
-    protected float effectiveDistance;
-    [SerializeField]
-    protected float buoyancy;
+    public class SpecialZone : MonoBehaviour
+    {
+        [SerializeField]
+        protected float effectiveDistance;
+        [SerializeField]
+        protected float buoyancy;
 
-    public virtual float EffectoveDistance { get; }
-    public virtual float Buoyancy { get; }
+        public virtual float EffectoveDistance { get; }
+        public virtual float Buoyancy { get; }
+    }
+
 }

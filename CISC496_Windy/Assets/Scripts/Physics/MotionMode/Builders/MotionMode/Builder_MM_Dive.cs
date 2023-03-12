@@ -43,7 +43,7 @@ namespace Windy.Builder
 
         public MotionMode.MotionMode Build()
         {
-            UIEvents.OnToDiveMode?.Invoke();
+            UI.UIEvents.OnToDiveMode?.Invoke();
             return _mode;
         }
 
