@@ -124,8 +124,7 @@ namespace Windy.UI
             });
             if (GameProgressManager.Instance.OutOfBoundary)
             {
-                //GameEvents.OnGameOver?.Invoke();
-                GameProgressManager.Instance.GameState = new Windy.Game.GameOver();
+                GameProgressManager.Instance.GameState = new GameOver();
             }
         }
         IEnumerator GameOverWarmingFadeOut()
@@ -172,6 +171,7 @@ namespace Windy.UI
             StartPageUIImages = StartPage.GetComponentsInChildren<Image>();
             StartPageUIButtons = StartPage.GetComponentsInChildren<Button>();
             InGameUIImages = InGameUI.GetComponentsInChildren<Image>();
+
             Util.ResetImageAlpha(CountdownPage.GetComponent<Image>(), 0.0f);
 
             UIEvents.OnStartPressed += () =>
@@ -180,6 +180,7 @@ namespace Windy.UI
             };
 
             UIEvents.OnToStartPage += () => { Util.ResetImagesAlpha(StartPageUIImages, 1.0f); };
+
             UIEvents.OnToOptionPage += () => PresetSettingPage();
 
             UIEvents.OnToWalkMode += () =>

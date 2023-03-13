@@ -16,9 +16,11 @@ namespace Windy.UI
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+            Application.Quit();
 #endif
         }
+
+
 
 
         public void OnToOptionPage()
@@ -45,22 +47,24 @@ namespace Windy.UI
             GameSettings.Instance.SensitivityY = s.value;
         }
 
+
+
+
         public void OnPause()
         {
-            GameProgressManager.Instance.GameState = new Windy.Game.Pause();
+            GameProgressManager.Instance.GameState = new Pause();
         }
         public void OnContinue()
         {
-            GameProgressManager.Instance.GameState = new Windy.Game.Continue();
+            GameProgressManager.Instance.GameState = new Continue();
         }
         public void OnRestart()
         {
-            GameProgressManager.Instance.GameState = new Windy.Game.Restart();
+            GameProgressManager.Instance.GameState = new Restart();
         }
-
         public void OnHome()
         {
-            GameProgressManager.Instance.GameState = new Windy.Game.Ready();
+            GameProgressManager.Instance.GameState = new Ready();
         }
     }
 }

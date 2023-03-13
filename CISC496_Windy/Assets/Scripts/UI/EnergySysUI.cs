@@ -8,25 +8,28 @@ namespace Windy.UI
     public class EnergySysUI : MonoBehaviour
     {
 
-        Image FillImage;
-        float fillAmount;
+        Image _imageToControl;
+        float _fillAmount;
         public float decreaseRate;
 
 
         private void Update()
         {
-            FillImage.fillAmount = Mathf.Lerp(FillImage.fillAmount, fillAmount, decreaseRate * Time.deltaTime);
+            _imageToControl.fillAmount = Mathf.Lerp(_imageToControl.fillAmount, _fillAmount, decreaseRate * Time.deltaTime);
         }
 
         private void Start()
         {
-            FillImage = GetComponent<Image>();
-            fillAmount = FillImage.fillAmount;
+            _imageToControl = GetComponent<Image>();
+            _fillAmount = _imageToControl.fillAmount;
 
-            EnergySystem.EnergySys.Instance.EnergyChanged += (a) => fillAmount = a;
+            EnergySystem.EnergySys.Instance.EnergyChanged += (a) => _fillAmount = a;
+
             Game.GameEvents.OnToStartPage += OnResetStatus;
+            Game.GameEvents.OnRestart     += OnResetStatus;
         }
-        void OnResetStatus() => FillImage.fillAmount = 1.0f;
+
+        void OnResetStatus() => _imageToControl.fillAmount = 1.0f;
     }
 }
 

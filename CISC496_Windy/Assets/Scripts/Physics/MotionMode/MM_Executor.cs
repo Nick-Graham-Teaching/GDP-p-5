@@ -7,27 +7,36 @@ namespace Windy
 {
 
     public sealed class MM_Executor : Singleton<MM_Executor>
-    {
+    { 
         
-        public MotionModeSwitcher.MM_Switcher Switcher { get; private set; }
-        public MotionMode.MotionMode MotionMode { get; private set; }
+        public MotionModeSwitcher.MM_Switcher   Switcher     { get; private set; }
+        public MotionMode.MotionMode            MotionMode   { get; private set; }
 
-        public Builder.Builder_Switcher_InAir B_S_InAir { get; } = new();
-        public Builder.Builder_Switcher_Land B_S_Land { get; } = new();
-        public Builder.Builder_Switcher_Takeoff B_S_Takeoff { get; } = new();
-        public Builder.Builder_Switcher_Walk B_S_Walk { get; } = new();
+        public Builder.IBuilder_Switcher        B_S_Previous { get; private set; }
+        public Builder.IBuilder_MotionMode      B_M_Previous { get; private set; }
+        public Builder.IBuilder_Switcher        B_S_Current  { get; private set; }
+        public Builder.IBuilder_MotionMode      B_M_Curent   { get; private set; }
+                                                
+        public Builder.Builder_Switcher_InAir   B_S_InAir    { get; } = new();
+        public Builder.Builder_Switcher_Land    B_S_Land     { get; } = new();
+        public Builder.Builder_Switcher_Takeoff B_S_Takeoff  { get; } = new();
+        public Builder.Builder_Switcher_Walk    B_S_Walk     { get; } = new();
+        public Builder.Builder_Switcher_Trapped B_S_Trapped  { get; } = new();
+                                                             
+        public Builder.Builder_MM_Dive          B_M_Dive     { get; } = new();
+        public Builder.Builder_MM_Glide         B_M_Glide    { get; } = new();
+        public Builder.Builder_MM_Land          B_M_Land     { get; } = new();
+        public Builder.Builder_MM_Takeoff       B_M_Takeoff  { get; } = new();
+        public Builder.Builder_MM_Walk          B_M_Walk     { get; } = new();
+        public Builder.Builder_MM_Trapped       B_M_Trapped  { get; } = new();
+                                                             
+        public Builder.Builder_B_Glide          B_B_Glide    { get; } = new();
+        public Builder.Builder_B_Dive           B_B_Dive     { get; } = new();
 
-        public Builder.Builder_MM_Dive B_M_Dive { get; } = new();
-        public Builder.Builder_MM_Glide B_M_Glide { get; } = new();
-        public Builder.Builder_MM_Land B_M_Land { get; } = new();
-        public Builder.Builder_MM_Takeoff B_M_Takeoff { get; } = new();
-        public Builder.Builder_MM_Walk B_M_Walk { get; } = new();
 
-        public Builder.Builder_B_Glide B_B_Glide { get; } = new();
-        public Builder.Builder_B_Dive B_B_Dive { get; } = new();
+        Coroutine EnergyConsumptionSupervisorCoroutine { get; set; }
 
-
-        public Coroutine EnergyComsumptionSupervisor { get; set; }
+        public bool ShowMotionMode;
 
         // Rigidbody component of the object
         Rigidbody rb;
@@ -167,9 +176,9 @@ namespace Windy
             return !Physics.Raycast(transform.position, Vector3.down, out hitInfo, LowestFlyHeight, groundLayerMask);
         }
 
-        internal IEnumerator EnergyConsumptionSupervisor()
+        IEnumerator EnergyConsumptionSupervisor(float CD)
         {
-            yield return new WaitForSeconds(flipWingCD);
+            yield return new WaitForSeconds(CD);
 
             while (true)
             {
@@ -183,17 +192,34 @@ namespace Windy
                 yield return null;
             }
         }
+        public void StartEnergySupervisor(float CD = 0.0f) => EnergyConsumptionSupervisorCoroutine = StartCoroutine(EnergyConsumptionSupervisor(CD));
+        public bool StopEnergySupervisor()
+        {
+            if (EnergyConsumptionSupervisorCoroutine is not null)
+            {
+                StopCoroutine(EnergyConsumptionSupervisorCoroutine);
+                EnergyConsumptionSupervisorCoroutine = null;
+                return true;
+            }
+            return false;
+        }
 
         public void SwitchMode(Builder.IBuilder_MotionMode modeBuilder, Builder.IBuilder_Switcher switcherBuilder)
         {
-            Switcher.Quit();
-            MotionMode.Quit();
+            B_S_Previous = B_S_Current;
+            B_M_Previous = B_M_Curent;
+
+            B_S_Current  = switcherBuilder;
+            B_M_Curent   = modeBuilder;
+
+            if (Switcher is not null)   Switcher.  Quit();
+            if (MotionMode is not null) MotionMode.Quit();
             
-            Switcher = switcherBuilder.Build();
+            Switcher   = switcherBuilder.Build();
             MotionMode = modeBuilder.Build();
 
+            Switcher.  Start();
             MotionMode.Start();
-            Switcher.Start();
         }
 
 
@@ -284,7 +310,7 @@ namespace Windy
                 .SetGroundLayerMask(groundLayerMask);
             B_M_Takeoff
                 .SetBody(rb)
-                .SetFlipWingSpeed(flipWingsSpeed)
+                .SetFlipWingFloats(flipWingsSpeed, flipWingCD)
                 .SetDragValue(flyDrag);
             B_M_Land
                 .SetBodyAndTransform(rb, transform)
@@ -326,9 +352,8 @@ namespace Windy
                     }
                 )
                 .SetBuoyancy(B_B_Dive.Build());
-
-            Switcher   = B_S_Walk.Build();
-            MotionMode = B_M_Walk.Build();
+            B_M_Trapped
+                .SetBody(rb);
 
             GameEvents.OnRestart     += OnResetStatus;
             GameEvents.OnToStartPage += OnResetStatus;
@@ -340,6 +365,7 @@ namespace Windy
         {
             if (GameProgressManager.Instance.GameState.IsInGame())
             {
+                if (ShowMotionMode) Debug.Log(MotionMode);
                 Switcher.Update();
                 MotionMode.Update();
             }
@@ -377,8 +403,8 @@ namespace Windy
             transform.SetPositionAndRotation(startposition, startRotation);
             rb.velocity = Vector3.zero;
             rb.useGravity = true;
-            B_M_Walk.SetRotationDirection(startLookingDirection);
 
+            B_M_Walk.SetRotationDirection(startLookingDirection);
             SwitchMode(B_M_Walk, B_S_Walk);
         }
         void OnPauseStatus()
@@ -392,7 +418,6 @@ namespace Windy
             rb.velocity = velocityBeforePause;
             rb.useGravity = true;
         }
-
         #endregion
     }
 }

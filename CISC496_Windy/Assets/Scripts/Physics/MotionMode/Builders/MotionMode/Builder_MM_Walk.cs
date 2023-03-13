@@ -56,5 +56,7 @@ namespace Windy.Builder
             UI.UIEvents.OnToWalkMode?.Invoke();
             return _mode;
         }
+
+        public override string ToString() => "Builder -- MM -- Walk";
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Windy.Builder
 {
 
-    public class Builder_Switcher_InAir : IBuilder_Switcher
+    public class Builder_Switcher_InAir : MotionModeSwitcher.S_InAir, IBuilder_Switcher
     {
         private MotionModeSwitcher.S_InAir _switcher;
 
@@ -14,5 +14,7 @@ namespace Windy.Builder
         }
 
         public MotionModeSwitcher.MM_Switcher Build() => _switcher;
+
+        public override string ToString() => "Builder -- Switcher -- InAir";
     }
 }

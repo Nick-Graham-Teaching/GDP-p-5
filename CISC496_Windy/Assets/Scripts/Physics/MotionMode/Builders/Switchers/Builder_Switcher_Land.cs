@@ -26,5 +26,7 @@ namespace Windy.Builder
         }
 
         public MotionModeSwitcher.MM_Switcher Build() => _switcher;
+
+        public override string ToString() => "Builder -- Switcher -- Land";
     }
 }

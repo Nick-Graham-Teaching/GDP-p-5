@@ -205,10 +205,7 @@ namespace Windy.MotionMode
 
         public sealed override void Start()
         {
-            if (MM_Executor.Instance.EnergyComsumptionSupervisor != null)
-            {
-                MM_Executor.Instance.StopCoroutine(MM_Executor.Instance.EnergyComsumptionSupervisor);
-            }
+            MM_Executor.Instance.StopEnergySupervisor();
         }
 
         public override string ToString() => "MotionMode -- Walk";

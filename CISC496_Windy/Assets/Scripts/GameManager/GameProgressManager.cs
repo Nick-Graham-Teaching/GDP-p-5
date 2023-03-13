@@ -15,11 +15,6 @@ namespace Windy.Game
         public static Action OnBackToBoundary;
         public static Action OnGameOver;
 
-        // Reset Player's Transform
-        // Reset Camera's Transform
-        // Reset Motion Mode
-        // Reset Energy System
-        // Reset UI of the Energy System
         public static Action OnToStartPage;
 
         public static Action<int> OnInputDeviceChange;
@@ -57,7 +52,8 @@ namespace Windy.Game
 
             cameraFollow = Camera.GetComponent<CameraFollow>();
 
-            GameEvents.OnToStartPage += () =>
+            
+            GameEvents.OnToStartPage += () =>           // Invoked by new Ready();
             {
                 cameraFollow.ResetTransform();
                 // Camera does not follow mouse movement
@@ -73,11 +69,23 @@ namespace Windy.Game
                 UI.UIEventsHandler.Instance.GameoverPage.SetActive(false);
                 UI.UIEvents.OnToStartPage?.Invoke();
             };
+            // void EnergySystem.   OnResetStatus() => Energy = MaxEnergy;
+            // void Player.         OnResetStatus()
+            // {
+            //     transform.SetPositionAndRotation(startposition, startRotation);
+            //     rb.velocity = Vector3.zero;
+            //     rb.useGravity = true;
+               
+            //     B_M_Walk.SetRotationDirection(startLookingDirection);
+            //     SwitchMode(B_M_Walk, B_S_Walk);
+            // }
+            // void EnergySystemUI. OnResetStatus() => _imageToControl.fillAmount = 1.0f;
 
-            GameState = new Ready();
+
+            GameState = new Ready();                    // Has Called GameEvents.OnToStartPage
 
 
-            GameEvents.OnStart += () =>
+            GameEvents.OnStart += () =>                 // Invoked in UIEventsHandler, after start page transition animation
             {
                 cameraFollow.updateView = true;
                 Clouds.SetActive(true);
@@ -85,18 +93,40 @@ namespace Windy.Game
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
                 GameState = new InGame();
             };
-            GameEvents.OnPause += () =>
+            GameEvents.OnPause += () =>                 // Invoked by new Pause();
             {
                 cameraFollow.updateView = false;
             };
-            GameEvents.OnContinue += () =>
+            // void Player. OnPauseStatus()
+            // {
+            //     velocityBeforePause = rb.velocity;
+            //     rb.velocity = Vector3.zero;
+            //     rb.useGravity = false;
+            // }
+            GameEvents.OnContinue += () =>              // Invoked by new Continue();
             {
                 cameraFollow.updateView = true;
             };
-            GameEvents.OnRestart += () =>
+            // void PLayer. OnContinueStatus()
+            // {
+            //     rb.velocity = velocityBeforePause;
+            //     rb.useGravity = true;
+            // }
+            GameEvents.OnRestart += () =>               // Invoked by new Restart();
             {
                 cameraFollow.updateView = true;
             };
+            // void EnergySystem.   OnResetStatus() => Energy = MaxEnergy;
+            // void Player.         OnResetStatus()
+            // {
+            //     transform.SetPositionAndRotation(startposition, startRotation);
+            //     rb.velocity = Vector3.zero;
+            //     rb.useGravity = true;
+
+            //     B_M_Walk.SetRotationDirection(startLookingDirection);
+            //     SwitchMode(B_M_Walk, B_S_Walk);
+            // }
+            // void EnergySystemUI. OnResetStatus() => _imageToControl.fillAmount = 1.0f;
 
 
             GameEvents.OnOutOfBoundary += () =>

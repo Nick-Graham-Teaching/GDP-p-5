@@ -4,8 +4,10 @@ namespace Windy.MotionMode {
 
     public class MM_Takeoff : MM_InAir
     {
+
         protected internal int Method;
         protected internal float flipWingsSpeed;
+        protected internal float flipWingCD;
         protected internal float flyDrag;
 
         public sealed override void Start()
@@ -16,9 +18,7 @@ namespace Windy.MotionMode {
             try
             {
                 EnergySystem.EnergySys.Instance.OnTakeOff(Method);
-                
-                MM_Executor.Instance.EnergyComsumptionSupervisor =
-                                MM_Executor.Instance.StartCoroutine(MM_Executor.Instance.EnergyConsumptionSupervisor());
+                MM_Executor.Instance.StartEnergySupervisor(flipWingCD);
             } 
             catch (TakeOffException)
             {

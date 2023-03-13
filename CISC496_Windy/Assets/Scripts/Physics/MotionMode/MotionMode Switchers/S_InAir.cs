@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Windy.MotionModeSwitcher
 {
-    public sealed class S_InAir : MM_Switcher
+    public class S_InAir : MM_Switcher
     {
         public sealed override void Update()
         {

@@ -24,6 +24,8 @@ namespace Windy.Builder
         }
 
         public Buoyancy.Buoyancy Build() => _buoyancy;
+
+        public override string ToString() => "Builder -- Buoyancy -- Dive";
     }
 }
 

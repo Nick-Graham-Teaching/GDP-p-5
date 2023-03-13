@@ -24,8 +24,9 @@ namespace Windy.Builder
             return this;
         }
 
-        public Builder_MM_Takeoff SetFlipWingSpeed(float s) {
+        public Builder_MM_Takeoff SetFlipWingFloats(float s, float CD) {
             _mode.flipWingsSpeed = s;
+            _mode.flipWingCD = CD;
             return this;
         }
 
@@ -37,6 +38,8 @@ namespace Windy.Builder
 
 
         public MotionMode.MotionMode Build() => _mode;
+
+        public override string ToString() => "Builder -- MM -- Takeoff";
 
     }
 }

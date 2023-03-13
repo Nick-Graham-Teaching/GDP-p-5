@@ -17,7 +17,7 @@ namespace Windy.MotionMode {
 
         public sealed override void Start()
         {
-            MM_Executor.Instance.StopCoroutine(MM_Executor.Instance.EnergyComsumptionSupervisor);
+            MM_Executor.Instance.StopEnergySupervisor();
 
             RaycastHit hitInfo;
             Physics.Raycast(transform.position, Vector3.down, out hitInfo, float.PositiveInfinity, GroundLayerMask);
