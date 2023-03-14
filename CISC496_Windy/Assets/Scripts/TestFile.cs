@@ -68,24 +68,40 @@ namespace Windy
 
         Vector3 vec;
 
+        static int countNum = 0;
+
         // Start is called before the first frame update
         void Start()
         {
-            vec = new(1, 1, 1);
-            p = new Child();
+            //vec = new(1, 1, 1);
+            //p = new Child();
             //Debug.Log(transform.position);
             //transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
 
             //Debug.Log(p.tr.position);
             //Debug.Log(transform.position);
+            //StartCoroutine(Test());
             StartCoroutine(Test());
         }
 
         IEnumerator Test()
         {
-            yield return new WaitForSeconds(5.0f);
-            Debug.Log("here");
-            StopCoroutine(p.testCoroutine);
+            while (true)
+            {
+
+                StartCoroutine(count());
+                yield return new WaitForSeconds(1.0f);
+            }
+        }
+
+        IEnumerator count()
+        {
+            countNum++;
+            while (true)
+            {
+                Debug.Log("count " + countNum);
+                yield return null;
+            }
         }
     }
 }

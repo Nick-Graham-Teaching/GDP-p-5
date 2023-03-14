@@ -25,7 +25,7 @@ namespace Windy.MotionMode
             Vector3 forward = FlightAttitude_Forward;
             Vector3 down = FlightAttitude_Down;
 
-            if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+            if (KIH.GetKeyPress(Keys.LeftCode))
             {
                 Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, forward);
                 transform.rotation = Quaternion.Slerp(
@@ -33,7 +33,7 @@ namespace Windy.MotionMode
                     Quaternion.LookRotation(turnAroundRotation * down, turnAroundRotation * forward),
                     rotateRate * Time.deltaTime);
             }
-            if (KIH.Instance.GetKeyPress(Keys.RightCode))
+            if (KIH.GetKeyPress(Keys.RightCode))
             {
                 Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, FlightAttitude_Back);
                 transform.rotation = Quaternion.Slerp(

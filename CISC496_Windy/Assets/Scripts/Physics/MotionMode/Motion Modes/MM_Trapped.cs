@@ -15,12 +15,12 @@ namespace Windy.MotionMode
             MM_Executor.Instance.StopEnergySupervisor();
 
             rb.useGravity = false;
-            rb.velocity = Vector3.zero;
+            //rb.velocity = Vector3.zero;
         }
 
         public sealed override void Update()
         {
-            if (KIH.Instance.GetKeyPress(Keys.JumpCode))
+            if (KIH.GetKeyPress(Keys.JumpCode))
             {
                 MM_Executor.Instance.B_S_Trapped.SetIsTrapped(false);
             }

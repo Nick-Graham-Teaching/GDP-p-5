@@ -64,7 +64,7 @@ namespace Windy.Buoyancy
         public sealed override void Update()
         {
             base.Update();
-            if (!glideFloatSupervisorOn && KIH.Instance.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
+            if (!glideFloatSupervisorOn && KIH.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
             {
                 MM_Executor.Instance.StartCoroutine(GlideUpForceTimer());
                 glideFloatSupervisorOn = true;

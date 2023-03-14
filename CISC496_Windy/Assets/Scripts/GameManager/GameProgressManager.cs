@@ -46,6 +46,11 @@ namespace Windy.Game
             return cameraFollow.StartPageTransitionAnimation();
         }
 
+        private void Update()
+        {
+            GameState.Update();
+        }
+
 
         private void Start()
         {
@@ -68,6 +73,8 @@ namespace Windy.Game
                 UI.UIEventsHandler.Instance.CountdownPage.SetActive(false);
                 UI.UIEventsHandler.Instance.GameoverPage.SetActive(false);
                 UI.UIEvents.OnToStartPage?.Invoke();
+
+                Cursor.lockState = CursorLockMode.None;
             };
             // void EnergySystem.   OnResetStatus() => Energy = MaxEnergy;
             // void Player.         OnResetStatus()
@@ -92,10 +99,14 @@ namespace Windy.Game
                 UI.UIEventsHandler.Instance.StartPage.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
                 GameState = new InGame();
+
+                //Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             };
             GameEvents.OnPause += () =>                 // Invoked by new Pause();
             {
                 cameraFollow.updateView = false;
+                Cursor.lockState = CursorLockMode.None;
             };
             // void Player. OnPauseStatus()
             // {
@@ -106,6 +117,7 @@ namespace Windy.Game
             GameEvents.OnContinue += () =>              // Invoked by new Continue();
             {
                 cameraFollow.updateView = true;
+                Cursor.lockState = CursorLockMode.Locked;
             };
             // void PLayer. OnContinueStatus()
             // {
@@ -115,6 +127,7 @@ namespace Windy.Game
             GameEvents.OnRestart += () =>               // Invoked by new Restart();
             {
                 cameraFollow.updateView = true;
+                Cursor.lockState = CursorLockMode.Locked;
             };
             // void EnergySystem.   OnResetStatus() => Energy = MaxEnergy;
             // void Player.         OnResetStatus()
@@ -146,6 +159,7 @@ namespace Windy.Game
             GameEvents.OnGameOver += () =>
             {
                 cameraFollow.updateView = false;
+                Cursor.lockState = CursorLockMode.None;
 
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
                 UI.UIEventsHandler.Instance.GameoverPage.SetActive(true);

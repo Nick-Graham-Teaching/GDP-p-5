@@ -10,19 +10,19 @@ namespace Windy.MotionMode {
         {
             flyDirection = Vector3.zero;
 
-            if (KIH.Instance.GetKeyPress(Keys.UpCode))
+            if (KIH.GetKeyPress(Keys.UpCode))
             {
                 flyDirection += ForwardD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.DownCode))
+            if (KIH.GetKeyPress(Keys.DownCode))
             {
                 flyDirection += BackD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+            if (KIH.GetKeyPress(Keys.LeftCode))
             {
                 flyDirection += LeftD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.RightCode))
+            if (KIH.GetKeyPress(Keys.RightCode))
             {
                 flyDirection += RightD;
             }

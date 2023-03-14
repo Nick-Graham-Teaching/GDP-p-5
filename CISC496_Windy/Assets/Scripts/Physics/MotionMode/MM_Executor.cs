@@ -183,7 +183,7 @@ namespace Windy
             while (true)
             {
                 if (GameProgressManager.Instance.GameState.IsInGame() &&
-                    canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySystem.EnergySys.Instance.ConsumeEnergy())
+                    canFlipWings && KIH.GetKeyPress(Keys.JumpCode) && EnergySystem.EnergySys.Instance.ConsumeEnergy())
                 {
                     canFlipWings = false;
                     ((MotionMode.MM_InAir)MotionMode).FlyInertia = flipWingsSpeed * Vector3.up;

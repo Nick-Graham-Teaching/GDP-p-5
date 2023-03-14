@@ -84,19 +84,19 @@ namespace Windy.Obsolete.Physics
 
             flyDirection = Vector3.zero;
 
-            if (KIH.Instance.GetKeyPress(Keys.UpCode))
+            if (KIH.GetKeyPress(Keys.UpCode))
             {
                 flyDirection += ForwardD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.DownCode))
+            if (KIH.GetKeyPress(Keys.DownCode))
             {
                 flyDirection += BackD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+            if (KIH.GetKeyPress(Keys.LeftCode))
             {
                 flyDirection += LeftD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.RightCode))
+            if (KIH.GetKeyPress(Keys.RightCode))
             {
                 flyDirection += RightD;
             }
@@ -115,7 +115,7 @@ namespace Windy.Obsolete.Physics
             yield return new WaitUntil(() => {
 
                 if (Game.GameProgressManager.Instance.GameState.IsInGame() &&
-                canFlipWings && KIH.Instance.GetKeyPress(Keys.JumpCode) && EnergySystem.EnergySys.Instance.ConsumeEnergy())
+                canFlipWings && KIH.GetKeyPress(Keys.JumpCode) && EnergySystem.EnergySys.Instance.ConsumeEnergy())
                 {
                     canFlipWings = false;
                     flyInertia = flipWingsSpeed * Vector3.up;
@@ -132,7 +132,7 @@ namespace Windy.Obsolete.Physics
             Vector3 forward = FlightAttitude_Forward;
             Vector3 down = FlightAttitude_Down;
 
-            if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+            if (KIH.GetKeyPress(Keys.LeftCode))
             {
                 Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, forward);
                 transform.rotation = Quaternion.Slerp(
@@ -140,7 +140,7 @@ namespace Windy.Obsolete.Physics
                     Quaternion.LookRotation(turnAroundRotation * down, turnAroundRotation * forward),
                     rotateRate * Time.deltaTime);
             }
-            if (KIH.Instance.GetKeyPress(Keys.RightCode))
+            if (KIH.GetKeyPress(Keys.RightCode))
             {
                 Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, FlightAttitude_Back);
                 transform.rotation = Quaternion.Slerp(

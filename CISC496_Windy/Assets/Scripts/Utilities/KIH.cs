@@ -26,13 +26,14 @@ namespace Windy
         public static readonly KeyCode RightCode = KeyCode.D;   // Going right
         public static readonly KeyCode JumpCode = KeyCode.Space;   // Jump
         public static readonly KeyCode ModeSwitchCode = KeyCode.LeftShift;   // ModeSwithc
+        public static readonly KeyCode PauseCode = KeyCode.P;
 
 
-        public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode, ModeSwitchCode };
+        public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode, ModeSwitchCode, PauseCode };
     }
 
     // Stand for KeyInputHandler
-    public class KIH : Singleton<KIH>
+    public class KIH : MonoBehaviour
     {
 
         // After receving getkeydown event, wait for keyBufferCD seconds to see if getkey events get recveived.
@@ -40,15 +41,14 @@ namespace Windy
         private float DirectionKeyColdDown;
         [SerializeField]
         private float JumpKeyColdDown;
-        private bool keyUp;
 
-        private Dictionary<KeyCode, Key> keyDic;
-        private Dictionary<KeyCode, int> directionKeyPresseds;
+        private static Dictionary<KeyCode, Key> keyDic;
+        private static Dictionary<KeyCode, float> pressingKeys;
 
         private void Start()
         {
             keyDic = new Dictionary<KeyCode, Key>();
-            directionKeyPresseds = new Dictionary<KeyCode, int>();
+            pressingKeys = new Dictionary<KeyCode, float>();
 
             foreach (KeyCode keyCode in Keys.keys)
             {
@@ -61,61 +61,58 @@ namespace Windy
         {
             while (true)
             {
-                if (keyDic[key].Value == KEYSTAT.UP)
-                {
-                    keyUp = false;
-                    keyDic[key].Value = KEYSTAT.IDLE;
-                }
                 if (Input.GetKeyDown(key))
                 {
+                    pressingKeys.Add(key, 0.0f);
                     StartCoroutine(KeyColdDownTimer(key));
-                }
-                if (keyDic[key].Value == KEYSTAT.TAP)
-                {
-                    keyDic[key].Value = KEYSTAT.UP;
                 }
                 yield return null;
             }
         }
         private IEnumerator KeyColdDownTimer(KeyCode key)
         {
-            yield return new WaitForSeconds(key == Keys.JumpCode ? JumpKeyColdDown : DirectionKeyColdDown);
+            yield return new WaitUntil(() => {
+
+                pressingKeys[key] += Time.deltaTime;
+
+                return Input.GetKeyUp(key) || pressingKeys[key] >= (key==Keys.JumpCode ? JumpKeyColdDown : DirectionKeyColdDown);
+            });
+
             keyDic[key].Value = Input.GetKey(key) ? KEYSTAT.PRESS : KEYSTAT.TAP;
+            pressingKeys.Remove(key);
+
             if (keyDic[key].Value == KEYSTAT.PRESS)
             {
-                directionKeyPresseds[key] = 0;
                 StartCoroutine(WaitForKeyUp(key));
+            }
+            else
+            {
+                yield return null;
+                keyDic[key].Value = KEYSTAT.UP;
+                yield return null;
+                keyDic[key].Value = KEYSTAT.IDLE;
             }
         }
         private IEnumerator WaitForKeyUp(KeyCode key)
         {
             yield return new WaitUntil(() => Input.GetKeyUp(key));
             keyDic[key].Value = KEYSTAT.UP;
-            directionKeyPresseds.Remove(key);
-            keyUp = true;
+            yield return null;
+            keyDic[key].Value = KEYSTAT.IDLE;
         }
 
 
-        public bool GetKeyUp(KeyCode kc)
+        public static bool GetKeyUp(KeyCode kc)
         {
             return keyDic[kc].Value == KEYSTAT.UP;
         }
-        public bool GetKeyTap(KeyCode kc)
+        public static bool GetKeyTap(KeyCode kc)
         {
             return keyDic[kc].Value == KEYSTAT.TAP;
         }
-        public bool GetKeyPress(KeyCode kc)
+        public static bool GetKeyPress(KeyCode kc)
         {
             return keyDic[kc].Value == KEYSTAT.PRESS;
-        }
-        public bool LastKeyUpAfterPress()
-        {
-            return directionKeyPresseds.Keys.Count == 0 && keyUp;
-        }
-        public bool GetKeyTapOrPress(KeyCode kc)
-        {
-            return keyDic[kc].Value == KEYSTAT.TAP ||
-                keyDic[kc].Value == KEYSTAT.PRESS;
         }
     }
 }

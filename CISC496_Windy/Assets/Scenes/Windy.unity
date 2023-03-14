@@ -45038,7 +45038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61771219bb4fa6c49b27ad8066e72084, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowMotionMode: 1
+  ShowMotionMode: 0
   PlayerCamera: {fileID: 4444038512262354683}
   bottomTransform: {fileID: 640211894214679198}
   rotateSpeed: 10

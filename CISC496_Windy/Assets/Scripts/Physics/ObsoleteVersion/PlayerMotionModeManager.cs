@@ -60,7 +60,7 @@ namespace Windy.Obsolete.Physics
                     float playerSpeed = playerBody.velocity.magnitude;
                     // Using three ways switches to two different flying modes
                     // Pressing jump key
-                    if (KIH.Instance.GetKeyPress(Keys.JumpCode))
+                    if (KIH.GetKeyPress(Keys.JumpCode))
 
                         // Consume One Energy and receive a large acceleration on +Y direction
                         // To Dive
@@ -74,7 +74,7 @@ namespace Windy.Obsolete.Physics
                         Takeoff?.Invoke(0b010);
 
                     // Running fast on the ground and tap jump key
-                    else if (onGroundControl.OnGround && KIH.Instance.GetKeyTap(Keys.JumpCode) && playerSpeed > onGroundControl.TakeOffSpeed)
+                    else if (onGroundControl.OnGround && KIH.GetKeyTap(Keys.JumpCode) && playerSpeed > onGroundControl.TakeOffSpeed)
 
                         // Consume a bit of energy and receive a small acceleration on +Y direction
                         // To Glide

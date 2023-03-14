@@ -92,14 +92,14 @@ namespace Windy.Obsolete.Buoyancy {
             switch (Physics.PlayerMotionModeManager.Instance.MotionMode)
             {
                 case Physics.PlayerMotionMode.GLIDE:
-                    if (!glideFloatSupervisorOn && KIH.Instance.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
+                    if (!glideFloatSupervisorOn && KIH.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
                     {
                         StartCoroutine(GlideUpForceTimer());
                         glideFloatSupervisorOn = true;
                     }
                     break;
                 case Physics.PlayerMotionMode.DIVE:
-                    diveUpwardAccel = KIH.Instance.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
+                    diveUpwardAccel = KIH.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
                     break;
             }
         }

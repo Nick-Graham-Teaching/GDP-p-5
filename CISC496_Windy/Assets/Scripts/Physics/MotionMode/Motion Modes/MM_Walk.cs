@@ -71,19 +71,19 @@ namespace Windy.MotionMode
         {
             Vector3 direction = Vector3.zero;
 
-            if (KIH.Instance.GetKeyPress(Keys.UpCode))
+            if (KIH.GetKeyPress(Keys.UpCode))
             {
                 direction += ForwardD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.DownCode))
+            if (KIH.GetKeyPress(Keys.DownCode))
             {
                 direction += BackD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.LeftCode))
+            if (KIH.GetKeyPress(Keys.LeftCode))
             {
                 direction += LeftD;
             }
-            if (KIH.Instance.GetKeyPress(Keys.RightCode))
+            if (KIH.GetKeyPress(Keys.RightCode))
             {
                 direction += RightD;
             }
@@ -133,27 +133,27 @@ namespace Windy.MotionMode
         {
             if (MM_Executor.Instance.OnGround)
             {
-                if (KIH.Instance.GetKeyTap(Keys.JumpCode))
+                if (KIH.GetKeyTap(Keys.JumpCode))
                 {
                     inertia += Quaternion.AngleAxis(jumpAngle, -transform.right) * (jumpStrength * transform.forward);
                     MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
                 }
-                else if (KIH.Instance.GetKeyTap(Keys.UpCode))
+                else if (KIH.GetKeyTap(Keys.UpCode))
                 {
                     inertia += Quaternion.AngleAxis(jumpAngle, LeftD) * (jumpStrength * (moveDirection = ForwardD));
                     MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
                 }
-                else if (KIH.Instance.GetKeyTap(Keys.DownCode))
+                else if (KIH.GetKeyTap(Keys.DownCode))
                 {
                     inertia += Quaternion.AngleAxis(jumpAngle, RightD) * (jumpStrength * (moveDirection = BackD));
                     MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
                 }
-                else if (KIH.Instance.GetKeyTap(Keys.LeftCode))
+                else if (KIH.GetKeyTap(Keys.LeftCode))
                 {
                     inertia += Quaternion.AngleAxis(jumpAngle, BackD) * (jumpStrength * (moveDirection = LeftD));
                     MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
                 }
-                else if (KIH.Instance.GetKeyTap(Keys.RightCode))
+                else if (KIH.GetKeyTap(Keys.RightCode))
                 {
                     inertia += Quaternion.AngleAxis(jumpAngle, ForwardD) * (jumpStrength * (moveDirection = RightD));
                     MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);

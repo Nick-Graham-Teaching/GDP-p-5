@@ -4,70 +4,91 @@ using UnityEngine;
 
 namespace Windy.Game
 {
-    public abstract class GameState
+    public abstract class GameState : IBehaviour
     {
         public GameState() { OnStateChange(); }
-        protected abstract void OnStateChange();
+
+        protected virtual void OnStateChange() { }
         public abstract bool IsInGame();
+
+        public virtual void Start(){ }
+
+        public virtual void Update() { }
+
+        public virtual void Quit() {}
     }
 
 
-    public sealed class InGame : GameState
+    public class InGame : GameState
     {
-        protected override void OnStateChange() { }
+        public override void Update()
+        {
+            if (Input.GetKeyDown(Keys.PauseCode))
+            {
+                GameProgressManager.Instance.GameState = new Pause();
+                UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
+                UI.UIEventsHandler.Instance.PausePage.SetActive(true);
+            }
+        }
         public override bool IsInGame() => true;
+
+        public override string ToString() => "InGame";
     }
 
 
-    public sealed class Continue : GameState
+    public sealed class Continue : InGame
     {
         protected override void OnStateChange()
         {
             GameEvents.OnContinue?.Invoke();
-            GameProgressManager.Instance.GameState = new InGame();
         }
-        public override bool IsInGame() => true;
+        public override string ToString() => "Continue";
     }
 
 
-    public sealed class Restart : GameState
+    public sealed class Restart : InGame
     {
         protected override void OnStateChange()
         {
             GameEvents.OnRestart?.Invoke();
-            GameProgressManager.Instance.GameState = new InGame();
         }
-        public override bool IsInGame() => true;
+        public override string ToString() => "Restart";
+    }
+
+    public class OutOfGame : GameState
+    {
+        public override bool IsInGame() => false;
+        public override string ToString() => "OutOfGame";
     }
 
 
-    public sealed class Pause : GameState
+    public sealed class Pause : OutOfGame
     {
         protected override void OnStateChange()
         {
             GameEvents.OnPause?.Invoke();
         }
-        public override bool IsInGame() => false;
+        public override string ToString() => "Pause";
     }
 
 
-    public sealed class Ready : GameState
+    public sealed class Ready : OutOfGame
     {
         protected override void OnStateChange()
         {
             GameEvents.OnToStartPage?.Invoke();
         }
-        public override bool IsInGame() => false;
+        public override string ToString() => "Ready";
     }
 
 
-    public sealed class GameOver : GameState
+    public sealed class GameOver : OutOfGame
     {
         protected override void OnStateChange()
         {
             GameEvents.OnGameOver?.Invoke();
         }
-        public override bool IsInGame() => false;
+        public override string ToString() => "GameOver";
     }
 
 }
