@@ -46,7 +46,6 @@ namespace Windy.EnergySystem
                 Energy -= consumption;
                 return true;
             }
-            Debug.LogError(new TakeOffException("Energy is not enough!"));
             return false;
         }
 

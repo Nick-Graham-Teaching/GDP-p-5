@@ -15,6 +15,10 @@ namespace Windy.Controller
         public static readonly byte LEFT  = (byte)5;
         public static readonly byte RIGHT = (byte)6;
 
+        public static readonly byte JUMP = (byte)7;
+
+        public static readonly byte Pause = (byte)8;
+
         public static int maxMessageSize = 128; // maximum size of a message in bytes
 
 		#region Camera Rotation X
@@ -146,6 +150,46 @@ namespace Windy.Controller
 		{
 			type = (FingerType)ExtractFloat(message, 1);
 			degree = ExtractFloat(message, 5);
+		}
+		#endregion
+
+		#region Jump Key    
+		public static byte[] CreateJumpMessage(KEYSTAT keyStatus)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+
+			byte[] m = new byte[5];
+			m[0] = JUMP;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+
+			return m;
+		}
+		public static void GetJumpMessage(byte[] message, out KEYSTAT keyStatus)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+		}
+		#endregion
+
+		#region Pause Key    
+		public static byte[] CreatePauseMessage(KEYSTAT keyStatus)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+
+			byte[] m = new byte[5];
+			m[0] = Pause;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+
+			return m;
+		}
+		public static void GetPauseMessage(byte[] message, out KEYSTAT keyStatus)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
 		}
 		#endregion
 

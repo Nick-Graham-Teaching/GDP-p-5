@@ -37130,7 +37130,7 @@ GameObject:
   - component: {fileID: 543450653032095267}
   m_Layer: 0
   m_Name: MainLand2
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -38995,7 +38995,7 @@ GameObject:
   - component: {fileID: 8889378591208850432}
   m_Layer: 7
   m_Name: Obj3d66-1286577-6-602
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -39723,7 +39723,7 @@ GameObject:
   - component: {fileID: 7987358751477436325}
   m_Layer: 7
   m_Name: Obj3d66-1286577-5-721
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -39841,7 +39841,7 @@ GameObject:
   - component: {fileID: 8031220055229888989}
   m_Layer: 7
   m_Name: Obj3d66-1286577-4-808
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -43600,7 +43600,7 @@ GameObject:
   - component: {fileID: 8797629100244122452}
   m_Layer: 7
   m_Name: Obj3d66-1286577-2-235
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -43936,7 +43936,7 @@ GameObject:
   - component: {fileID: 5392417095246573488}
   m_Layer: 7
   m_Name: Obj3d66-1286577-3-879
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -44604,7 +44604,7 @@ GameObject:
   - component: {fileID: 2234470320326523809}
   m_Layer: 0
   m_Name: 3d66Model-7788712-0000002-456
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -45304,7 +45304,7 @@ GameObject:
   - component: {fileID: 4485709619797449393}
   m_Layer: 0
   m_Name: Obj3d66-7788712-2-208
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

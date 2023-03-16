@@ -18,7 +18,7 @@ namespace Windy.Controller
             keyDic = new Dictionary<KeyCode, Key>();
             pressingKeys = new Dictionary<KeyCode, float>();
 
-            foreach (KeyCode keyCode in Keys.KeyboardKeys)
+            foreach (KeyCode keyCode in Keys.keys)
             {
                 keyDic.Add(keyCode, new Key());
             }
@@ -26,7 +26,7 @@ namespace Windy.Controller
 
         public void Update()
         {
-            foreach (KeyCode key in Keys.KeyboardKeys)
+            foreach (KeyCode key in Keys.keys)
             {
                 if (Input.GetKeyDown(key))
                 {

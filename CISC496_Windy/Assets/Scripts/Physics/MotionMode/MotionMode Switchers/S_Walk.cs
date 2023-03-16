@@ -14,7 +14,7 @@ namespace Windy.MotionModeSwitcher
         {
             float playerSpeed = playerBody.velocity.magnitude;
 
-            if ( KIH.GetKeyPress(Keys.JumpCode))
+            if ( Controller.Controller.ControlDevice.GetKeyPress(Keys.JumpCode, out float _))
             {
                 MM_Executor.Instance.B_S_Takeoff.SetTargetMode(MM_Executor.Instance.B_M_Dive);
                 MM_Executor.Instance.B_M_Takeoff.SetMethod(0b001);
@@ -26,7 +26,7 @@ namespace Windy.MotionModeSwitcher
                 MM_Executor.Instance.B_M_Takeoff.SetMethod(0b010);
                 MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Takeoff, MM_Executor.Instance.B_S_Takeoff);
             }
-            else if (MM_Executor.Instance.OnGround && KIH.GetKeyTap(Keys.JumpCode) && playerSpeed > takeOffSpeed)
+            else if (MM_Executor.Instance.OnGround && Controller.Controller.ControlDevice.GetKeyTap(Keys.JumpCode, out float _) && playerSpeed > takeOffSpeed)
             {
                 MM_Executor.Instance.B_S_Takeoff.SetTargetMode(MM_Executor.Instance.B_M_Glide);
                 MM_Executor.Instance.B_M_Takeoff.SetMethod(0b100);

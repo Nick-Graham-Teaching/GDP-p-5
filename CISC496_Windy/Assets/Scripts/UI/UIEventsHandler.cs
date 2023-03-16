@@ -143,22 +143,22 @@ namespace Windy.UI
             switch (GameSettings.InputDevice)
             {
                 case 0:
-                    Keyboard.GetComponentInChildren<Button>().onClick?.Invoke();
+                    Keyboard.GetComponentInChildren<UnityEngine.UI.Button>().onClick?.Invoke();
                     break;
                 case 1:
-                    Mobile.GetComponentInChildren<Button>().onClick?.Invoke();
+                    Mobile.GetComponentInChildren<UnityEngine.UI.Button>().onClick?.Invoke();
                     break;
             }
             switch (GameSettings.FrameRate)
             {
                 case 0:
-                    FPS30.GetComponentInChildren<Button>().onClick?.Invoke();
+                    FPS30.GetComponentInChildren<UnityEngine.UI.Button>().onClick?.Invoke();
                     break;
                 case 1:
-                    FPS60.GetComponentInChildren<Button>().onClick?.Invoke();
+                    FPS60.GetComponentInChildren<UnityEngine.UI.Button>().onClick?.Invoke();
                     break;
                 case 2:
-                    FPS120.GetComponentInChildren<Button>().onClick?.Invoke();
+                    FPS120.GetComponentInChildren<UnityEngine.UI.Button>().onClick?.Invoke();
                     break;
             }
             SensitivityX.value = GameSettings.SensitivityX;

@@ -28,7 +28,7 @@ namespace Windy.Controller
         {
             keyDic = new();
 
-            foreach (KeyCode key in Keys.PhoneKeys)
+            foreach (KeyCode key in Keys.keys)
             {
                 keyDic.Add(key, new Key());
             }
@@ -45,6 +45,25 @@ namespace Windy.Controller
             topology = new HostTopology(config, maxConnections);
             hostId = NetworkTransport.AddHost(topology, serverPort);
         }
+        
+        void UpdateKeyStatus(KeyCode key, FingerType type, float degree)
+        {
+            if (type == FingerType.Press)
+            {
+                keyDic[key].Value = KEYSTAT.PRESS;
+                keyDic[key].degree = degree;
+            }
+            else if (type == FingerType.Tap)
+            {
+                keyDic[key].Value = KEYSTAT.TAP;
+                keyDic[key].degree = degree;
+            }
+            else
+            {
+                keyDic[key].Value = KEYSTAT.IDLE;
+                keyDic[key].degree = degree;
+            }
+        }
 
         void ProcessMessage(byte[] message)
         {
@@ -52,6 +71,7 @@ namespace Windy.Controller
 
             FingerType type;
             float degree;
+            KEYSTAT keystatus;
 
             switch (messageType)
             {
@@ -63,58 +83,29 @@ namespace Windy.Controller
                     break;
                 case 3:  // Up Key
                     Message.GetUpMessage(message, out type, out degree);
-                    if (type == FingerType.Press)
-                    {
-                        keyDic[Keys.UpCode].Value = KEYSTAT.PRESS;
-                        keyDic[Keys.UpCode].degree = degree;
-                    }
-                    else
-                    {
-                        keyDic[Keys.UpCode].Value = KEYSTAT.IDLE;
-                        keyDic[Keys.UpCode].degree = degree;
-                    }
+                    UpdateKeyStatus(Keys.UpCode, type,  degree);
                     break;
                 case 4:  // Down Key
                     Message.GetDownMessage(message, out type, out degree);
-                    if (type == FingerType.Press)
-                    {
-                        keyDic[Keys.DownCode].Value = KEYSTAT.PRESS;
-                        keyDic[Keys.DownCode].degree = degree;
-                    }
-                    else
-                    {
-                        keyDic[Keys.DownCode].Value = KEYSTAT.IDLE;
-                        keyDic[Keys.DownCode].degree = degree;
-                    }
+                    UpdateKeyStatus(Keys.DownCode, type, degree);
                     break;
                 case 5:  // Left Key
                     Message.GetLeftMessage(message, out type, out degree);
-                    if (type == FingerType.Press)
-                    {
-                        keyDic[Keys.LeftCode].Value = KEYSTAT.PRESS;
-                        keyDic[Keys.LeftCode].degree = degree;
-                    }
-                    else
-                    {
-                        keyDic[Keys.LeftCode].Value = KEYSTAT.IDLE;
-                        keyDic[Keys.LeftCode].degree = degree;
-                    }
+                    UpdateKeyStatus(Keys.LeftCode, type, degree);
                     break;
                 case 6:  // Right Key
                     Message.GetRightMessage(message, out type, out degree);
-                    if (type == FingerType.Press)
-                    {
-                        keyDic[Keys.RightCode].Value = KEYSTAT.PRESS;
-                        keyDic[Keys.RightCode].degree = degree;
-                    }
-                    else
-                    {
-                        keyDic[Keys.RightCode].Value = KEYSTAT.IDLE;
-                        keyDic[Keys.RightCode].degree = degree;
-                    }
+                    UpdateKeyStatus(Keys.RightCode, type, degree);
+                    break;
+                case 7:  // Jump Key
+                    Message.GetJumpMessage(message, out keystatus);
+                    keyDic[Keys.JumpCode].Value = keystatus;
+                    break;
+                case 8:  // Pause Key
+                    Message.GetPauseMessage(message , out keystatus);
+                    keyDic[Keys.PauseCode].Value = keystatus;
                     break;
             }
-
         }
 
         public void Update()
@@ -139,6 +130,7 @@ namespace Windy.Controller
                         messagesAvailable = false;
                         break;
                     case NetworkEventType.ConnectEvent:
+                        Logger.LogFormat("Connection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
                         this.connectionId = connectionId;
                         break;
                     case NetworkEventType.DataEvent:
@@ -146,7 +138,7 @@ namespace Windy.Controller
                         ProcessMessage(recBuffer);
                         break;
                     case NetworkEventType.DisconnectEvent:
-                        Logger.Log(string.Format("Disconnection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId));
+                        Logger.LogFormat("Disconnection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
                         break;
                 }
             }
@@ -173,7 +165,8 @@ namespace Windy.Controller
 
         public bool GetKeyTap(KeyCode key, out float degree)
         {
-            throw new System.NotImplementedException();
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.TAP;
         }
     }
 }

@@ -14,10 +14,6 @@ namespace Windy.Controller
         private float JumpKeyColdDown;
         #endregion
 
-        #region Mobile Phone
-        #endregion
-
-
         public static IController ControlDevice               { get; private set; }
 
         private static Builder.Builder_C_KM B_C_KeyboardMouse { get; } = new();
@@ -48,12 +44,9 @@ namespace Windy.Controller
             }
         }
 
-        private void Update()
+        private void LateUpdate()
         {
-            if (Game.GameProgressManager.Instance.GameState.IsInGame())
-            {
-                ControlDevice.Update();
-            }
+            ControlDevice.Update();
         }
 
         private void Start()

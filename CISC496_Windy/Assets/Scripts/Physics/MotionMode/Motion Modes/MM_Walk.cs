@@ -71,22 +71,6 @@ namespace Windy.MotionMode
         {
             Vector3 direction = Vector3.zero;
 
-            //if (KIH.GetKeyPress(Keys.UpCode))
-            //{
-            //    direction += ForwardD;
-            //}
-            //if (KIH.GetKeyPress(Keys.DownCode))
-            //{
-            //    direction += BackD;
-            //}
-            //if (KIH.GetKeyPress(Keys.LeftCode))
-            //{
-            //    direction += LeftD;
-            //}
-            //if (KIH.GetKeyPress(Keys.RightCode))
-            //{
-            //    direction += RightD;
-            //}
             float degree;
             if (Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out degree))
             {
@@ -153,31 +137,40 @@ namespace Windy.MotionMode
         {
             if (MM_Executor.Instance.OnGround)
             {
-                if (KIH.GetKeyTap(Keys.JumpCode))
+                Vector3 direction = Vector3.zero;
+
+                if (Controller.Controller.ControlDevice.GetKeyTap(Keys.JumpCode, out float degree))
                 {
-                    inertia += Quaternion.AngleAxis(jumpAngle, -transform.right) * (jumpStrength * transform.forward);
+                    direction += Quaternion.AngleAxis(jumpAngle, -transform.right) * (degree * transform.forward);
+                }
+
+                if (Controller.Controller.ControlDevice.GetKeyTap(Keys.UpCode, out degree))
+                {
+                    moveDirection += degree * ForwardD;
+                    direction += Quaternion.AngleAxis(jumpAngle, LeftD) * (degree * ForwardD);
+                }
+                if (Controller.Controller.ControlDevice.GetKeyTap(Keys.DownCode, out degree))
+                {
+                    moveDirection += degree * BackD;
+                    direction += Quaternion.AngleAxis(jumpAngle, RightD) * (degree * BackD);
+                }
+                if (Controller.Controller.ControlDevice.GetKeyTap(Keys.LeftCode, out degree))
+                {
+                    moveDirection += degree * LeftD;
+                    direction += Quaternion.AngleAxis(jumpAngle, BackD) * (degree * LeftD);
+                }
+                if (Controller.Controller.ControlDevice.GetKeyTap(Keys.RightCode, out degree))
+                {
+                    moveDirection += degree * RightD;
+                    direction += Quaternion.AngleAxis(jumpAngle, ForwardD) * (degree * RightD);
+                }
+
+                if (direction != Vector3.zero) 
+                {
+                    inertia = jumpStrength * direction.normalized;
                     MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
                 }
-                else if (KIH.GetKeyTap(Keys.UpCode))
-                {
-                    inertia += Quaternion.AngleAxis(jumpAngle, LeftD) * (jumpStrength * (moveDirection = ForwardD));
-                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-                }
-                else if (KIH.GetKeyTap(Keys.DownCode))
-                {
-                    inertia += Quaternion.AngleAxis(jumpAngle, RightD) * (jumpStrength * (moveDirection = BackD));
-                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-                }
-                else if (KIH.GetKeyTap(Keys.LeftCode))
-                {
-                    inertia += Quaternion.AngleAxis(jumpAngle, BackD) * (jumpStrength * (moveDirection = LeftD));
-                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-                }
-                else if (KIH.GetKeyTap(Keys.RightCode))
-                {
-                    inertia += Quaternion.AngleAxis(jumpAngle, ForwardD) * (jumpStrength * (moveDirection = RightD));
-                    MaxWalkSpeedDelta = Mathf.Clamp(MaxWalkSpeedDelta + jumpStrength - MaxWalkSpeedLevelOne, 0.0f, MaxWalkSpeedLevelTwo - MaxWalkSpeedLevelOne);
-                }
+                if (moveDirection != Vector3.zero) moveDirection = moveDirection.normalized;
             }
         }
         void SpeedRestriction()

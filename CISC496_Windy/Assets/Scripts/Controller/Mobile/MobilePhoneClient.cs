@@ -67,6 +67,12 @@ namespace Windy.Controller
             NetworkTransport.Send(_hostId, _connectionId, _dataChannelId, message, message.Length, out error);
         }
 
+        void SendImportantMessageToServer(byte[] message)
+        {
+            byte error;
+            NetworkTransport.Send(_hostId, _connectionId, _controlChannelId, message, message.Length, out error);
+        }
+
         void SendMessages()
         {
             float temp;
@@ -112,6 +118,33 @@ namespace Windy.Controller
 
             byte error;
             _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out error);
+        }
+
+
+        public void OnJumpPress()
+        {
+            SendMessageToServer(Message.CreateJumpMessage(KEYSTAT.PRESS));
+        }
+        public void OnJumpPressEnd()
+        {
+            SendMessageToServer(Message.CreateJumpMessage(KEYSTAT.IDLE));
+        }
+        public void OnJumpClick()
+        {
+            SendMessageToServer(Message.CreateJumpMessage(KEYSTAT.TAP));
+        }
+        public void OnJumpClickEnd()
+        {
+            SendMessageToServer(Message.CreateJumpMessage(KEYSTAT.IDLE));
+        }
+
+        public void OnPauseClick()
+        {
+            SendMessageToServer(Message.CreatePauseMessage(KEYSTAT.TAP));
+        }
+        public void OnPauseClickEnd()
+        {
+            SendMessageToServer(Message.CreatePauseMessage(KEYSTAT.IDLE));
         }
     }
 }

@@ -23,7 +23,8 @@ namespace Windy.Game
     {
         public override void Update()
         {
-            if (Input.GetKeyDown(Keys.PauseCode))
+            //if (Input.GetKeyDown(Keys.PauseCode))
+            if (Controller.Controller.ControlDevice.GetKeyTap(Keys.PauseCode, out float _))
             {
                 GameProgressManager.Instance.GameState = new Pause();
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
@@ -38,6 +39,7 @@ namespace Windy.Game
 
     public sealed class Continue : InGame
     {
+
         protected override void OnStateChange()
         {
             GameEvents.OnContinue?.Invoke();

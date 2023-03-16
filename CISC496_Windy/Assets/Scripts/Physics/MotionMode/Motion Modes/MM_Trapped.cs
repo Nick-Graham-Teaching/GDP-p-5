@@ -20,7 +20,7 @@ namespace Windy.MotionMode
 
         public sealed override void Update()
         {
-            if (KIH.GetKeyPress(Keys.JumpCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.JumpCode, out float _))
             {
                 MM_Executor.Instance.B_S_Trapped.SetIsTrapped(false);
             }

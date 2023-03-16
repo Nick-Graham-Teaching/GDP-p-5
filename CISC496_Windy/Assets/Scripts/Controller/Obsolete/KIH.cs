@@ -22,7 +22,7 @@ namespace Windy
             keyDic = new Dictionary<KeyCode, Key>();
             pressingKeys = new Dictionary<KeyCode, float>();
 
-            foreach (KeyCode keyCode in Keys.KeyboardKeys)
+            foreach (KeyCode keyCode in Keys.keys)
             {
                 keyDic.Add(keyCode, new Key());
                 StartCoroutine(KeyboardControl(keyCode));
