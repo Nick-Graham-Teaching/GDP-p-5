@@ -8,7 +8,7 @@ namespace Windy.MotionModeSwitcher
     {
         public sealed override void Update()
         {
-            if (Input.GetKeyDown(Keys.ModeSwitchCode))
+            if (Controller.Controller.ControlDevice.GetKeyDown(Keys.ModeSwitchCode, out float _))
             {
                 if (MM_Executor.Instance.MotionMode.IsGlide())
                 {

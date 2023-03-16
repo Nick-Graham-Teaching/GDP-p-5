@@ -164,6 +164,7 @@ namespace Windy.Obsolete.Physics
                 Quaternion.LookRotation(forD, upD),
                 rotateRate * Time.deltaTime
             );
+
         }
 
         void LandRotationUpdate()
@@ -200,47 +201,53 @@ namespace Windy.Obsolete.Physics
 
         private void Update()
         {
-            switch (PlayerMotionModeManager.Instance.MotionMode)
+            if (Game.GameProgressManager.Instance.GameState.IsInGame())
             {
-                case PlayerMotionMode.GLIDE:
-                    FlyDirectionUpdate(PlayerMotionMode.GLIDE);
-                    RotationUpdate();
-                    break;
-                case PlayerMotionMode.DIVE:
-                    FlyDirectionUpdate(PlayerMotionMode.DIVE);
-                    RotationUpdate();
-                    break;
-                case PlayerMotionMode.TAKEOFF:
-                    rb.drag = flyDrag;
-                    break;
-                case PlayerMotionMode.LAND:
-                    LandRotationUpdate();
-                    break;
+                switch (PlayerMotionModeManager.Instance.MotionMode)
+                {
+                    case PlayerMotionMode.GLIDE:
+                        FlyDirectionUpdate(PlayerMotionMode.GLIDE);
+                        RotationUpdate();
+                        break;
+                    case PlayerMotionMode.DIVE:
+                        FlyDirectionUpdate(PlayerMotionMode.DIVE);
+                        RotationUpdate();
+                        break;
+                    case PlayerMotionMode.TAKEOFF:
+                        rb.drag = flyDrag;
+                        break;
+                    case PlayerMotionMode.LAND:
+                        LandRotationUpdate();
+                        break;
+                }
             }
         }
 
         private void FixedUpdate()
         {
-            switch (PlayerMotionModeManager.Instance.MotionMode)
+            if (Game.GameProgressManager.Instance.GameState.IsInGame())
             {
-                case PlayerMotionMode.GLIDE:
-                    RestrictVelocity();
-                    // Continuously apply a floating force
-                    rb.AddForce(Buoyancy.Buoyancy.Instance.Force * Vector3.up, ForceMode.Acceleration);
-                    // Continuously apply a forward force unless direction keys change its direction
-                    rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
-                    break;
-                case PlayerMotionMode.DIVE:
-                    RestrictVelocity();
-                    rb.AddForce(Buoyancy.Buoyancy.Instance.Force * Vector3.up, ForceMode.Acceleration);
-                    // Only when pressing direction keys, a force will be applied in certain directions.
-                    rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
-                    break;
-            }
-            if (flyInertia != Vector3.zero)
-            {
-                rb.AddForce(flyInertia, ForceMode.VelocityChange);
-                flyInertia = Vector3.zero;
+                switch (PlayerMotionModeManager.Instance.MotionMode)
+                {
+                    case PlayerMotionMode.GLIDE:
+                        RestrictVelocity();
+                        // Continuously apply a floating force
+                        rb.AddForce(Buoyancy.Buoyancy.Instance.Force * Vector3.up, ForceMode.Acceleration);
+                        // Continuously apply a forward force unless direction keys change its direction
+                        rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
+                        break;
+                    case PlayerMotionMode.DIVE:
+                        RestrictVelocity();
+                        rb.AddForce(Buoyancy.Buoyancy.Instance.Force * Vector3.up, ForceMode.Acceleration);
+                        // Only when pressing direction keys, a force will be applied in certain directions.
+                        rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
+                        break;
+                }
+                if (flyInertia != Vector3.zero)
+                {
+                    rb.AddForce(flyInertia, ForceMode.VelocityChange);
+                    flyInertia = Vector3.zero;
+                }
             }
         }
 

@@ -415,7 +415,7 @@ namespace Windy
         }
         void OnContinueStatus()
         {
-            rb.velocity = velocityBeforePause;
+            rb.AddForce(velocityBeforePause, ForceMode.VelocityChange);
             rb.useGravity = true;
         }
         #endregion

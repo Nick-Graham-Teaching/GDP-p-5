@@ -24,7 +24,7 @@ namespace Windy.Game
         public override void Update()
         {
             //if (Input.GetKeyDown(Keys.PauseCode))
-            if (Controller.Controller.ControlDevice.GetKeyTap(Keys.PauseCode, out float _))
+            if (Input.GetKeyDown(Keys.PauseCode) || Controller.Controller.ControlDevice.GetKeyDown(Keys.PauseCode, out float _))
             {
                 GameProgressManager.Instance.GameState = new Pause();
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
@@ -66,6 +66,16 @@ namespace Windy.Game
 
     public sealed class Pause : OutOfGame
     {
+        public override void Update()
+        {            
+            //if (Input.GetKeyDown(Keys.PauseCode))
+            if (Input.GetKeyDown(Keys.ContinueCode) || Controller.Controller.ControlDevice.GetKeyDown(Keys.ContinueCode, out float _))
+            {
+                GameProgressManager.Instance.GameState = new Continue();
+                UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
+                UI.UIEventsHandler.Instance.PausePage.SetActive(false);
+            }
+        }
         protected override void OnStateChange()
         {
             GameEvents.OnPause?.Invoke();

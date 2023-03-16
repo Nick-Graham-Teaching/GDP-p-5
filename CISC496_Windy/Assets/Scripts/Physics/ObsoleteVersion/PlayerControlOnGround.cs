@@ -248,7 +248,7 @@ namespace Windy.Obsolete.Physics
         #region Unity Functions
         void Update()
         {
-            if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
+            if (Game.GameProgressManager.Instance.GameState.IsInGame() && PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
             {
                 AccelerationUpdate();
                 GravityOnVericalMovement();
@@ -258,7 +258,7 @@ namespace Windy.Obsolete.Physics
         }
         private void FixedUpdate()
         {
-            if (PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
+            if (Game.GameProgressManager.Instance.GameState.IsInGame() && PlayerMotionModeManager.Instance.MotionMode == PlayerMotionMode.WALK)
             {
                 SpeedRestriction();
                 rb.AddForce(walkAcceleration, ForceMode.Acceleration);
@@ -315,7 +315,7 @@ namespace Windy.Obsolete.Physics
         }
         void OnContinueStatus()
         {
-            rb.velocity = velocityBeforePause;
+            rb.AddForce(velocityBeforePause, ForceMode.VelocityChange);
             rb.useGravity = true;
         }
     }

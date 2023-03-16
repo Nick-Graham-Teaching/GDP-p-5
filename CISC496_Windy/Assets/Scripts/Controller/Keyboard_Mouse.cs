@@ -31,12 +31,16 @@ namespace Windy.Controller
                 if (Input.GetKeyDown(key))
                 {
                     pressingKeys.Add(key, 0.0f);
+                    keyDic[key].Value = KEYSTAT.DOWN;
                     Controller.Instance.StartCoroutine(KeyColdDownTimer(key));
                 }
             }
         }
         IEnumerator KeyColdDownTimer(KeyCode key)
         {
+            yield return null;
+            keyDic[key].Value = KEYSTAT.WAIT;
+
             yield return new WaitUntil(() => {
 
                 pressingKeys[key] += Time.deltaTime;
@@ -90,6 +94,35 @@ namespace Windy.Controller
             degree = keyDic[key].degree;
             return keyDic[key].Value == KEYSTAT.TAP;
         }
+
+        public bool GetKeyDown(KeyCode key, out float degree)
+        {
+            if (!keyDic.ContainsKey(key)) throw new UnknownKeyException("The key - " + key + " - is not available!");
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.DOWN;
+        }
+
+        public bool GetKeyWait(KeyCode key, out float degree)
+        {
+            if (!keyDic.ContainsKey(key)) throw new UnknownKeyException("The key - " + key + " - is not available!");
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.WAIT;
+        }
+
+        public bool GetKeyUp(KeyCode key, out float degree)
+        {
+            if (!keyDic.ContainsKey(key)) throw new UnknownKeyException("The key - " + key + " - is not available!");
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.UP;
+        }
+
+        public bool GetKeyIdle(KeyCode key, out float degree)
+        {
+            if (!keyDic.ContainsKey(key)) throw new UnknownKeyException("The key - " + key + " - is not available!");
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.IDLE;
+        }
+
 
         public void Start() { }
 

@@ -138,6 +138,23 @@ namespace Windy.Controller
             SendMessageToServer(Message.CreateJumpMessage(KEYSTAT.IDLE));
         }
 
+        public void OnSwitchModePointerDown()
+        {
+            SendMessageToServer(Message.CreateSwitchModeMessage(KEYSTAT.DOWN));
+        }
+        public void OnSwitchModeClick()
+        {
+            SendMessageToServer(Message.CreateSwitchModeMessage(KEYSTAT.TAP));
+        }
+        public void OnSwitchModeClickEnd()
+        {
+            SendMessageToServer(Message.CreateSwitchModeMessage(KEYSTAT.IDLE));
+        }
+
+        public void OnPausePointerDown()
+        {
+            SendMessageToServer(Message.CreatePauseMessage(KEYSTAT.DOWN));
+        }
         public void OnPauseClick()
         {
             SendMessageToServer(Message.CreatePauseMessage(KEYSTAT.TAP));

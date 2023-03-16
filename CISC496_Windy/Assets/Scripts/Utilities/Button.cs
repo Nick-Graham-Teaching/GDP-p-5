@@ -10,6 +10,18 @@ namespace Windy
     public class Button : UnityEngine.UI.Selectable
     {
         [Serializable]
+        public class ButtonStartEvent : UnityEvent { }
+
+        [FormerlySerializedAs("onStart")]
+        [SerializeField]
+        private ButtonStartEvent _onStart;
+        public ButtonStartEvent OnStart
+        {
+            get => _onStart;
+            set => _onStart = value;
+        }
+
+        [Serializable]
         public class ButtonPressEvent : UnityEvent { }
 
         [FormerlySerializedAs("onPress")]
@@ -73,6 +85,7 @@ namespace Windy
             _prePointerDownTime = float.NegativeInfinity;
             PressCD = 0.3f;
 
+            OnStart = new ButtonStartEvent();
             OnPress = new ButtonPressEvent();
             OnPressEnd = new ButtonPressEndEvent();
             OnClick = new ButtonClickEvent();
@@ -115,6 +128,7 @@ namespace Windy
         public override void OnPointerDown(PointerEventData eventData)
         {
             base.OnPointerDown(eventData);
+            OnStart?.Invoke();
             _isPointerDown = true;
             _prePointerDownTime = Time.time;
         }

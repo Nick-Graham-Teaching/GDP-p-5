@@ -6,7 +6,7 @@ namespace Windy
 {
     public enum KEYSTAT
     {
-        PRESS, TAP, IDLE, UP
+        PRESS, TAP, IDLE, UP, DOWN, WAIT
     }
 
     public class Key
@@ -31,6 +31,7 @@ namespace Windy
         public static readonly KeyCode JumpCode = KeyCode.Space;             // Jump
         public static readonly KeyCode ModeSwitchCode = KeyCode.LeftShift;   // ModeSwitch
         public static readonly KeyCode PauseCode = KeyCode.P;                // Pause
+        public static readonly KeyCode ContinueCode = KeyCode.P;                // Continue
 
         public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode, ModeSwitchCode, PauseCode };
     }

@@ -75,37 +75,57 @@ namespace Windy.Controller
 
             switch (messageType)
             {
-                case 1:  // Camera Rotation In X Aixs
+                case Message.CameraRotationX:  // Camera Rotation In X Aixs
                     Message.GetCameraRotationXMessage(message, out CameraRotationX);
                     break;
-                case 2:  // Camera Rotation In Y Aixs
+                case Message.CameraRotationY:  // Camera Rotation In Y Aixs
                     Message.GetCameraRotationYMessage(message, out CameraRotationY);
                     break;
-                case 3:  // Up Key
+                case Message.Up:  // Up Key
                     Message.GetUpMessage(message, out type, out degree);
                     UpdateKeyStatus(Keys.UpCode, type,  degree);
                     break;
-                case 4:  // Down Key
+                case Message.Down:  // Down Key
                     Message.GetDownMessage(message, out type, out degree);
                     UpdateKeyStatus(Keys.DownCode, type, degree);
                     break;
-                case 5:  // Left Key
+                case Message.Left:  // Left Key
                     Message.GetLeftMessage(message, out type, out degree);
                     UpdateKeyStatus(Keys.LeftCode, type, degree);
                     break;
-                case 6:  // Right Key
+                case Message.Right:  // Right Key
                     Message.GetRightMessage(message, out type, out degree);
                     UpdateKeyStatus(Keys.RightCode, type, degree);
                     break;
-                case 7:  // Jump Key
+                case Message.SwitchMode:  // Switch Mode
+                    Message.GetSwitchModeMessage(message, out keystatus);
+                    keyDic[Keys.ModeSwitchCode].Value = keystatus;
+                    Controller.Instance.StartCoroutine(BackToIdle(Keys.ModeSwitchCode));
+                    break;
+                case Message.Jump:  // Jump Key
                     Message.GetJumpMessage(message, out keystatus);
                     keyDic[Keys.JumpCode].Value = keystatus;
+                    if (keystatus == KEYSTAT.TAP)
+                    {
+                        Controller.Instance.StartCoroutine(BackToIdle(Keys.JumpCode));
+                    }
                     break;
-                case 8:  // Pause Key
+                case Message.Pause:  // Pause Key
                     Message.GetPauseMessage(message , out keystatus);
                     keyDic[Keys.PauseCode].Value = keystatus;
+                    Controller.Instance.StartCoroutine(BackToIdle(Keys.PauseCode));
                     break;
             }
+        }
+
+        IEnumerator BackToIdle(KeyCode key)
+        {
+            yield return null;
+            keyDic[key].Value = KEYSTAT.WAIT;
+            yield return null;
+            keyDic[key].Value = KEYSTAT.UP;
+            yield return null;
+            keyDic[key].Value = KEYSTAT.IDLE;
         }
 
         public void Update()
@@ -167,6 +187,30 @@ namespace Windy.Controller
         {
             degree = keyDic[key].degree;
             return keyDic[key].Value == KEYSTAT.TAP;
+        }
+
+        public bool GetKeyDown(KeyCode key, out float degree)
+        {
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.DOWN;
+        }
+
+        public bool GetKeyWait(KeyCode key, out float degree)
+        {
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.WAIT;
+        }
+
+        public bool GetKeyUp(KeyCode key, out float degree)
+        {
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.UP;
+        }
+
+        public bool GetKeyIdle(KeyCode key, out float degree)
+        {
+            degree = keyDic[key].degree;
+            return keyDic[key].Value == KEYSTAT.IDLE;
         }
     }
 }

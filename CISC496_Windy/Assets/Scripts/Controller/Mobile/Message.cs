@@ -7,17 +7,18 @@ namespace Windy.Controller
 {
     public static class Message
     {
-        public static readonly byte CAMERA_ROTATION_X = (byte)1;
-        public static readonly byte CAMERA_ROTATION_Y = (byte)2;
+        public const byte CameraRotationX = (byte)1;
+        public const byte CameraRotationY = (byte)2;
 
-        public static readonly byte UP    = (byte)3;
-        public static readonly byte DOWN  = (byte)4;
-        public static readonly byte LEFT  = (byte)5;
-        public static readonly byte RIGHT = (byte)6;
+        public const byte Up    = (byte)3;
+        public const byte Down  = (byte)4;
+        public const byte Left  = (byte)5;
+        public const byte Right = (byte)6;
 
-        public static readonly byte JUMP = (byte)7;
+		public const byte SwitchMode = (byte)7;
+		public const byte Jump = (byte)8;
 
-        public static readonly byte Pause = (byte)8;
+        public const byte Pause = (byte)9;
 
         public static int maxMessageSize = 128; // maximum size of a message in bytes
 
@@ -29,7 +30,7 @@ namespace Windy.Controller
 			//   - byte 1-4: value
 
 			byte[] m = new byte[5];
-			m[0] = CAMERA_ROTATION_X;
+			m[0] = CameraRotationX;
 			int count = 1;
 			AddFloatToByteArray(value, ref m, ref count);
 
@@ -49,7 +50,7 @@ namespace Windy.Controller
 			//   - byte 1-4: value
 
 			byte[] m = new byte[5];
-			m[0] = CAMERA_ROTATION_Y;
+			m[0] = CameraRotationY;
 			int count = 1;
 			AddFloatToByteArray(value, ref m, ref count);
 
@@ -70,7 +71,7 @@ namespace Windy.Controller
 			//   - byte 5-8: degree
 
 			byte[] m = new byte[9];
-			m[0] = UP;
+			m[0] = Up;
 			int count = 1;
 			AddFloatToByteArray((float)type, ref m, ref count);
 			AddFloatToByteArray(degree, ref m, ref count);
@@ -93,7 +94,7 @@ namespace Windy.Controller
 			//   - byte 5-8: degree
 
 			byte[] m = new byte[9];
-			m[0] = DOWN;
+			m[0] = Down;
 			int count = 1;
 			AddFloatToByteArray((float)type, ref m, ref count);
 			AddFloatToByteArray(degree, ref m, ref count);
@@ -116,7 +117,7 @@ namespace Windy.Controller
 			//   - byte 5-8: degree
 
 			byte[] m = new byte[9];
-			m[0] = LEFT;
+			m[0] = Left;
 			int count = 1;
 			AddFloatToByteArray((float)type, ref m, ref count);
 			AddFloatToByteArray(degree, ref m, ref count);
@@ -139,7 +140,7 @@ namespace Windy.Controller
 			//   - byte 5-8: degree
 
 			byte[] m = new byte[9];
-			m[0] = RIGHT;
+			m[0] = Right;
 			int count = 1;
 			AddFloatToByteArray((float)type, ref m, ref count);
 			AddFloatToByteArray(degree, ref m, ref count);
@@ -161,7 +162,7 @@ namespace Windy.Controller
 			//   - byte 1-4: Key Status
 
 			byte[] m = new byte[5];
-			m[0] = JUMP;
+			m[0] = Jump;
 			int count = 1;
 			AddFloatToByteArray((float)keyStatus, ref m, ref count);
 
@@ -171,10 +172,10 @@ namespace Windy.Controller
 		{
 			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
 		}
-		#endregion
+        #endregion
 
-		#region Pause Key    
-		public static byte[] CreatePauseMessage(KEYSTAT keyStatus)
+        #region Pause Key    
+        public static byte[] CreatePauseMessage(KEYSTAT keyStatus)
 		{
 			// Format is:
 			//	 - byte 0: message type
@@ -188,6 +189,26 @@ namespace Windy.Controller
 			return m;
 		}
 		public static void GetPauseMessage(byte[] message, out KEYSTAT keyStatus)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+		}
+		#endregion
+
+		#region ModeSwitch Key    
+		public static byte[] CreateSwitchModeMessage(KEYSTAT keyStatus)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+
+			byte[] m = new byte[5];
+			m[0] = SwitchMode;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+
+			return m;
+		}
+		public static void GetSwitchModeMessage(byte[] message, out KEYSTAT keyStatus)
 		{
 			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
 		}

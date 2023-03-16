@@ -44,7 +44,7 @@ namespace Windy.Controller
             }
         }
 
-        private void LateUpdate()
+        private void Update()
         {
             ControlDevice.Update();
         }
