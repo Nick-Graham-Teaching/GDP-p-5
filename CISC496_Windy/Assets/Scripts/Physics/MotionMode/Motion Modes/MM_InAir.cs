@@ -32,10 +32,10 @@ namespace Windy.MotionMode
         protected Vector3 FlightAttitude_Down => Vector3.down;
 
         // Flying Directions
-        protected Vector3 ForwardD => FlightAttitude_Forward;
-        protected Vector3 LeftD => turnLeftRotation * ForwardD;
-        protected Vector3 RightD => turnRightRotation * ForwardD;
-        protected Vector3 BackD => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
+        public override Vector3 ForwardD => FlightAttitude_Forward;
+        public override Vector3 LeftD => turnLeftRotation * ForwardD;
+        public override Vector3 RightD => turnRightRotation * ForwardD;
+        public override Vector3 BackD => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
 
         public override void FixedUpdate()
         {

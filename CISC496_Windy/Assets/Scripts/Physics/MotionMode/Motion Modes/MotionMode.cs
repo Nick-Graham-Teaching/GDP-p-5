@@ -9,6 +9,11 @@ namespace Windy.MotionMode
         protected internal Rigidbody rb;
         protected internal Transform transform;
 
+        public virtual Vector3 ForwardD { get; }
+        public virtual Vector3 BackD    { get; }
+        public virtual Vector3 LeftD    { get; }
+        public virtual Vector3 RightD   { get; }
+
         public virtual void Start() { }
         public abstract void Update();
         public abstract void FixedUpdate();

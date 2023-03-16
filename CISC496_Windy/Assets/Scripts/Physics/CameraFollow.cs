@@ -86,14 +86,22 @@ namespace Windy
 
         void UpdateViewDirection()
         {
+            //// Rotation by Y Axis
+            //viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * xRotateRate, Vector3.up) * viewDirection;
+            //// Rotation by X Axis
+            //Vector3 oldV = viewDirection;
+            //if (transform.rotation.eulerAngles.y > 90.0f && transform.rotation.eulerAngles.y < 270.0f)
+            //    viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.right) * viewDirection;
+            //else
+            //    viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.left) * viewDirection;
             // Rotation by Y Axis
-            viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * xRotateRate, Vector3.up) * viewDirection;
+            viewDirection = Quaternion.AngleAxis(Controller.Controller.ControlDevice.GetCameraMoveAxisX() * xRotateRate, Vector3.up) * viewDirection;
             // Rotation by X Axis
             Vector3 oldV = viewDirection;
             if (transform.rotation.eulerAngles.y > 90.0f && transform.rotation.eulerAngles.y < 270.0f)
-                viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.right) * viewDirection;
+                viewDirection = Quaternion.AngleAxis(Controller.Controller.ControlDevice.GetCameraMoveAxisY() * yRotateRate, Vector3.right) * viewDirection;
             else
-                viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.left) * viewDirection;
+                viewDirection = Quaternion.AngleAxis(Controller.Controller.ControlDevice.GetCameraMoveAxisY() * yRotateRate, Vector3.left) * viewDirection;
             // raycast detection
             float length = viewDirection.magnitude;
             if (Physics.Raycast(target.position, viewDirection.normalized, out RaycastHit hitInfo, MaxLength, numLayer))

@@ -4,21 +4,17 @@ using UnityEngine;
 
 namespace Windy.Game
 {
-    public class GameSettings : Singleton<GameSettings>
+    public static class GameSettings 
     {
-        [SerializeField]
-        private int _inputDevice = 0;  // 0 == Keyboard; 1 == Mobile
+        private static int _inputDevice = 1;  // 0 == Keyboard; 1 == Mobile
 
-        [SerializeField]
-        private int _frameRate = 1;    // 0 == 30; 1 == 60; 2 == 120
+        private static int _frameRate = 1;    // 0 == 30; 1 == 60; 2 == 120
 
-        [SerializeField]
-        private float _sensitivityX = 0; // 0 -> 1
-        [SerializeField]
-        private float _sensitivityY = 0; // 0 -> 1
+        private static float _sensitivityX = 0; // 0 -> 1
+        private static float _sensitivityY = 0; // 0 -> 1
 
 
-        public int InputDevice
+        public static int InputDevice
         {
             get => _inputDevice;
             set
@@ -27,7 +23,7 @@ namespace Windy.Game
                 GameEvents.OnInputDeviceChange?.Invoke(value);
             }
         }
-        public int FrameRate
+        public static int FrameRate
         {
             get => _frameRate;
             set
@@ -36,7 +32,7 @@ namespace Windy.Game
                 GameEvents.OnFrameRateChange?.Invoke(30 * Mathf.RoundToInt(Mathf.Pow(2, value)));
             }
         }
-        public float SensitivityX
+        public static float SensitivityX
         {
             get => _sensitivityX;
             set
@@ -45,7 +41,7 @@ namespace Windy.Game
                 GameEvents.OnSentivityXChange?.Invoke(value);
             }
         }
-        public float SensitivityY
+        public static float SensitivityY
         {
             get => _sensitivityY;
             set

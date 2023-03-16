@@ -4,35 +4,7 @@ using UnityEngine;
 
 namespace Windy
 {
-    public enum KEYSTAT
-    {
-        PRESS, TAP, IDLE, UP
-    }
-
-    public class Key
-    {
-        public KEYSTAT Value { get; set; }
-        public Key()
-        {
-            Value = KEYSTAT.IDLE;
-        }
-    }
-
-    public static class Keys
-    {
-        public static readonly KeyCode UpCode = KeyCode.W;   // Going forward
-        public static readonly KeyCode LeftCode = KeyCode.A;   // Going left
-        public static readonly KeyCode DownCode = KeyCode.S;   // Going backword
-        public static readonly KeyCode RightCode = KeyCode.D;   // Going right
-        public static readonly KeyCode JumpCode = KeyCode.Space;   // Jump
-        public static readonly KeyCode ModeSwitchCode = KeyCode.LeftShift;   // ModeSwithc
-        public static readonly KeyCode PauseCode = KeyCode.P;
-
-
-        public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode, ModeSwitchCode, PauseCode };
-    }
-
-    // Stand for KeyInputHandler
+    // KeyboardInputHandler
     public class KIH : MonoBehaviour
     {
 
@@ -50,7 +22,7 @@ namespace Windy
             keyDic = new Dictionary<KeyCode, Key>();
             pressingKeys = new Dictionary<KeyCode, float>();
 
-            foreach (KeyCode keyCode in Keys.keys)
+            foreach (KeyCode keyCode in Keys.KeyboardKeys)
             {
                 keyDic.Add(keyCode, new Key());
                 StartCoroutine(KeyboardControl(keyCode));
@@ -101,11 +73,6 @@ namespace Windy
             keyDic[key].Value = KEYSTAT.IDLE;
         }
 
-
-        public static bool GetKeyUp(KeyCode kc)
-        {
-            return keyDic[kc].Value == KEYSTAT.UP;
-        }
         public static bool GetKeyTap(KeyCode kc)
         {
             return keyDic[kc].Value == KEYSTAT.TAP;

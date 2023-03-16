@@ -166,7 +166,7 @@ namespace Windy.Game
             };
 
 
-            GameEvents.OnInputDeviceChange += (a) => { };
+            //GameEvents.OnInputDeviceChange += () => {  Controller.Controller.SwitchController();  };
             GameEvents.OnFrameRateChange += (a) => ScreenFrameRate.Instance.FrameRate = a;
             GameEvents.OnSentivityXChange += cameraFollow.XRotateRateChange;
             GameEvents.OnSentivityYChange += cameraFollow.YRotateRateChange;

@@ -140,7 +140,7 @@ namespace Windy.UI
 
         public void PresetSettingPage()
         {
-            switch (GameSettings.Instance.InputDevice)
+            switch (GameSettings.InputDevice)
             {
                 case 0:
                     Keyboard.GetComponentInChildren<Button>().onClick?.Invoke();
@@ -149,7 +149,7 @@ namespace Windy.UI
                     Mobile.GetComponentInChildren<Button>().onClick?.Invoke();
                     break;
             }
-            switch (GameSettings.Instance.FrameRate)
+            switch (GameSettings.FrameRate)
             {
                 case 0:
                     FPS30.GetComponentInChildren<Button>().onClick?.Invoke();
@@ -161,8 +161,8 @@ namespace Windy.UI
                     FPS120.GetComponentInChildren<Button>().onClick?.Invoke();
                     break;
             }
-            SensitivityX.value = GameSettings.Instance.SensitivityX;
-            SensitivityY.value = GameSettings.Instance.SensitivityY;
+            SensitivityX.value = GameSettings.SensitivityX;
+            SensitivityY.value = GameSettings.SensitivityY;
         }
 
 

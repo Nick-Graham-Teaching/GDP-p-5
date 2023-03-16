@@ -61,4 +61,9 @@ namespace Windy
     {
         public TakeOffException(string message) : base(message) { }
     }
+
+    public class UnknownKeyException : Exception
+    {
+        public UnknownKeyException(string message) : base(message) { }
+    }
 }

@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Net;
+using System.Net.Sockets;
 
 public class ClientNetwork : MonoBehaviour
 {
@@ -15,7 +17,7 @@ public class ClientNetwork : MonoBehaviour
     string _serverHostIP = "192.168.43.193";  // hotspot
     //string _serverHostIP = "192.168.2.15";  // LAN
 
-    bool _isConnected = true;
+    bool _isConnected = false;
 
     int _hostId;
     int _connectionId;
@@ -41,13 +43,13 @@ public class ClientNetwork : MonoBehaviour
         // Establish connection to server
         byte error;
         _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out error);
-        if (error != (byte)NetworkError.Ok)
-        {
-            Logger.LogFormat("Network error: {0}", Messages.NetworkErrorToString(error));
-        }
+        //if (error != (byte)NetworkError.Ok)
+        //{
+        //    Logger.LogFormat("Network error: {0}", Messages.NetworkErrorToString(error));
+        //}
 
-        Logger.LogFormat("Establishing network connection with hostId {0}; connectionId {1}",
-            _hostId, _connectionId);
+        //Logger.LogFormat("Establishing network connection with hostId {0}; connectionId {1}",
+        //    _hostId, _connectionId);
 
     }
     void ProcessIncomingMessages()
@@ -63,35 +65,38 @@ public class ClientNetwork : MonoBehaviour
         bool messagesAvailable;
 
 
-        if (_isConnected)
+        messagesAvailable = true;
+
+        while (messagesAvailable)
         {
+            NetworkEventType recData = NetworkTransport.Receive(
+                out recHostId, out connectionId, out channelId,
+                recBuffer, bufferSize, out dataSize, out error);
+            //Messages.LogNetworkError(error);
 
-            messagesAvailable = true;
-
-            while (messagesAvailable)
+            switch (recData)
             {
-                NetworkEventType recData = NetworkTransport.Receive(
-                    out recHostId, out connectionId, out channelId,
-                    recBuffer, bufferSize, out dataSize, out error);
-                Messages.LogNetworkError(error);
+                case NetworkEventType.Nothing:
+                    messagesAvailable = false;
+                    break;
+                case NetworkEventType.ConnectEvent:
+                    //Logger.LogFormat("Connection received from host {0}, connectionId {1}, channel {2}",
+                    //    recHostId, connectionId, channelId);
+                    //Messages.LogConnectionInfo(_hostId, connectionId);
+                    _isConnected = true;
+                    break;
+                case NetworkEventType.DisconnectEvent:
+                    //Logger.LogFormat("Disconnection received from host {0}, connectionId {1}, channel {2}",
+                    //    recHostId, connectionId, channelId);
 
-                switch (recData)
-                {
-                    case NetworkEventType.Nothing:
-                        // We have processed the last pending message
-                        messagesAvailable = false;
-                        break;
-                    case NetworkEventType.ConnectEvent:
-                        Logger.LogFormat("Connection received from host {0}, connectionId {1}, channel {2}",
-                            recHostId, connectionId, channelId);
-                        Messages.LogConnectionInfo(_hostId, connectionId);
-                        break;
-                    case NetworkEventType.DisconnectEvent:
-                        Logger.LogFormat("Disconnection received from host {0}, connectionId {1}, channel {2}",
-                            recHostId, connectionId, channelId);
-                        _isConnected = false;
-                        break;
-                }
+                    _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out error);
+
+                    //if (error != (byte)NetworkError.Ok)
+                    //    Logger.LogFormat("Network error: {0}", Messages.NetworkErrorToString(error));
+                    //else 
+                    //    Logger.LogFormat("Establishing network connection with hostId {0}; connectionId {1}", _hostId, _connectionId);
+
+                    break;
             }
         }
     }
@@ -147,7 +152,7 @@ public class ClientNetwork : MonoBehaviour
         Application.runInBackground = true;
 
         InitNetwork();
-        StartCoroutine("SendGyroRotation");
+        StartCoroutine(SendGyroRotation());
     }
 
     // Update is called once per frame

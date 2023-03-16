@@ -35,7 +35,7 @@ namespace Windy.MotionMode
 
 
 
-        Vector3 ForwardD
+        public override Vector3 ForwardD
         {
             get
             {
@@ -47,8 +47,8 @@ namespace Windy.MotionMode
                 return Vector3.forward;
             }
         }
-        Vector3 BackD => -ForwardD;
-        Vector3 LeftD
+        public override Vector3 BackD => -ForwardD;
+        public override Vector3 LeftD
         {
             get
             {
@@ -56,7 +56,7 @@ namespace Windy.MotionMode
                 return new Vector3(-forward.z, 0.0f, forward.x);
             }
         }
-        Vector3 RightD => -LeftD;
+        public override Vector3 RightD => -LeftD;
 
 
 
@@ -71,22 +71,42 @@ namespace Windy.MotionMode
         {
             Vector3 direction = Vector3.zero;
 
-            if (KIH.GetKeyPress(Keys.UpCode))
+            //if (KIH.GetKeyPress(Keys.UpCode))
+            //{
+            //    direction += ForwardD;
+            //}
+            //if (KIH.GetKeyPress(Keys.DownCode))
+            //{
+            //    direction += BackD;
+            //}
+            //if (KIH.GetKeyPress(Keys.LeftCode))
+            //{
+            //    direction += LeftD;
+            //}
+            //if (KIH.GetKeyPress(Keys.RightCode))
+            //{
+            //    direction += RightD;
+            //}
+            float degree;
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out degree))
             {
-                direction += ForwardD;
+                direction += degree * ForwardD;
             }
-            if (KIH.GetKeyPress(Keys.DownCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.DownCode, out degree))
             {
-                direction += BackD;
+                direction += degree * BackD;
             }
-            if (KIH.GetKeyPress(Keys.LeftCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.LeftCode, out degree))
             {
-                direction += LeftD;
+                direction += degree * LeftD;
             }
-            if (KIH.GetKeyPress(Keys.RightCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.RightCode, out degree))
             {
-                direction += RightD;
+                direction += degree * RightD;
             }
+
+            float length = direction.magnitude;
+
 
             if (MM_Executor.Instance.OnGround && direction != Vector3.zero &&
                 // Collect slope of the ground
@@ -96,10 +116,10 @@ namespace Windy.MotionMode
                 float angle = Vector3.Angle(Vector3.up, surfaceNormal);
                 if (angle < MaxSlopeAngle)
                 {
-                    return Vector3.ProjectOnPlane(direction, surfaceNormal).normalized;
+                    return length * Vector3.ProjectOnPlane(direction, surfaceNormal).normalized;
                 }
             }
-            return direction.normalized;
+            return length * direction.normalized;
         }
 
         void RotationUpdate()
