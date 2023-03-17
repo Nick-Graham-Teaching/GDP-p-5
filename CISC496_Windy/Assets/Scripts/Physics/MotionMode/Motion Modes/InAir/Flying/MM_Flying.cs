@@ -17,7 +17,29 @@ namespace Windy.MotionMode
 
         protected internal float rotationAngle_turnAround;
 
-        protected abstract void FlyDirectionUpdate();
+        protected virtual void FlyDirectionUpdate()
+        {
+            flyDirection = Vector3.zero;
+
+            if (KIH.GetKeyPress(Keys.UpCode))
+            {
+                flyDirection += ForwardD;
+            }
+            if (KIH.GetKeyPress(Keys.DownCode))
+            {
+                flyDirection += BackD;
+            }
+            if (KIH.GetKeyPress(Keys.LeftCode))
+            {
+                flyDirection += LeftD;
+            }
+            if (KIH.GetKeyPress(Keys.RightCode))
+            {
+                flyDirection += RightD;
+            }
+
+             flyDirection = flyDirection.normalized;
+        }
 
         protected void RotationUpdate()
         {
@@ -69,7 +91,7 @@ namespace Windy.MotionMode
             }
         }
 
-        public sealed override void Update()
+        public override void Update()
         {
             buoyancy.Update();
             FlyDirectionUpdate();
@@ -80,6 +102,8 @@ namespace Windy.MotionMode
         {
             base.FixedUpdate();
             RestrictVelocity();
+            rb.AddForce(buoyancy.Force * Vector3.up, ForceMode.Acceleration);
+            rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
         }
     }
 }

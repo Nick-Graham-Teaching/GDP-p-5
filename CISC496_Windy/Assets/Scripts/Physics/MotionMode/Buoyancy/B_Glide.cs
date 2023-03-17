@@ -28,12 +28,12 @@ namespace Windy.Buoyancy
                     () => {
                         if (Game.GameProgressManager.Instance.GameState.IsInGame())
                         {
-                            upForceDeltaTime += Time.deltaTime;
-                            glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
                             if (!Input.GetKey(Keys.UpCode))
                             {
                                 return true;
                             }
+                            upForceDeltaTime += Time.deltaTime;
+                            glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
                         }
                         return upForceDeltaTime >= UpForceMaxUtilityTime;
                     }

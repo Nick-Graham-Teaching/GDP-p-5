@@ -115,6 +115,11 @@ namespace Windy.Controller
                     keyDic[Keys.PauseCode].Value = keystatus;
                     Controller.Instance.StartCoroutine(BackToIdle(Keys.PauseCode));
                     break;
+                case Message.Continue:
+                    Message.GetContinueMessage(message, out keystatus);
+                    keyDic[Keys.ContinueCode].Value = keystatus;
+                    Controller.Instance.StartCoroutine(BackToIdle(Keys.ContinueCode));
+                    break;
             }
         }
 

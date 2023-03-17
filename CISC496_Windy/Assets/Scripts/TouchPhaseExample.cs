@@ -10,6 +10,6 @@ public class TouchPhaseExample : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(Time.frameCount + " " + gameObject.name);
+        Debug.Log(Vector3.zero.normalized);
     }
 }

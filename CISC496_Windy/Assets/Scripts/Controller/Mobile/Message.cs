@@ -19,6 +19,7 @@ namespace Windy.Controller
 		public const byte Jump = (byte)8;
 
         public const byte Pause = (byte)9;
+        public const byte Continue = (byte)10;
 
         public static int maxMessageSize = 128; // maximum size of a message in bytes
 
@@ -174,8 +175,28 @@ namespace Windy.Controller
 		}
         #endregion
 
-        #region Pause Key    
-        public static byte[] CreatePauseMessage(KEYSTAT keyStatus)
+		#region ModeSwitch Key    
+		public static byte[] CreateSwitchModeMessage(KEYSTAT keyStatus)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+
+			byte[] m = new byte[5];
+			m[0] = SwitchMode;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+
+			return m;
+		}
+		public static void GetSwitchModeMessage(byte[] message, out KEYSTAT keyStatus)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+		}
+		#endregion
+
+		#region Pause Key    
+		public static byte[] CreatePauseMessage(KEYSTAT keyStatus)
 		{
 			// Format is:
 			//	 - byte 0: message type
@@ -194,21 +215,21 @@ namespace Windy.Controller
 		}
 		#endregion
 
-		#region ModeSwitch Key    
-		public static byte[] CreateSwitchModeMessage(KEYSTAT keyStatus)
+		#region Continue Key    
+		public static byte[] CreateContinueMessage(KEYSTAT keyStatus)
 		{
 			// Format is:
 			//	 - byte 0: message type
 			//   - byte 1-4: Key Status
 
 			byte[] m = new byte[5];
-			m[0] = SwitchMode;
+			m[0] = Continue;
 			int count = 1;
 			AddFloatToByteArray((float)keyStatus, ref m, ref count);
 
 			return m;
 		}
-		public static void GetSwitchModeMessage(byte[] message, out KEYSTAT keyStatus)
+		public static void GetContinueMessage(byte[] message, out KEYSTAT keyStatus)
 		{
 			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
 		}

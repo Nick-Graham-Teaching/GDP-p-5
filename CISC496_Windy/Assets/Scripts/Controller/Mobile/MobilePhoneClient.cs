@@ -163,5 +163,10 @@ namespace Windy.Controller
         {
             SendMessageToServer(Message.CreatePauseMessage(KEYSTAT.IDLE));
         }
+
+        public void OnContinuePointerDown()
+        {
+            SendMessageToServer(Message.CreateContinueMessage(KEYSTAT.DOWN));
+        }
     }
 }
