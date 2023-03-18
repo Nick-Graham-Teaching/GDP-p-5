@@ -24,6 +24,18 @@ namespace Windy.Controller
         int _controlChannelId;
         int _dataChannelId;
 
+        void ProcessIncomingData(byte[] message)
+        {
+            byte messageType = Message.GetMessageType(message);
+
+            switch (messageType)
+            {
+                case Message.ResetGyroAxes:
+                    GyroAttitudeHandler.Instance.ResetGyroAxes();
+                    break;
+            }
+        }
+
         void ProcessIncomingMessages()
         {
 
@@ -53,6 +65,9 @@ namespace Windy.Controller
                     case NetworkEventType.ConnectEvent:
                         _isConnected = true;
                         break;
+                    case NetworkEventType.DataEvent:
+                        ProcessIncomingData(recBuffer);
+                        break;
                     case NetworkEventType.DisconnectEvent:
                         _isConnected = false;
                         _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out error);
@@ -75,27 +90,50 @@ namespace Windy.Controller
 
         void SendMessages()
         {
-            float temp;
+            float degree;
             if (TouchHandler.CameraFinger.Type != FingerType.Available)
             {
                 SendMessageToServer(Message.CreateCameraRotationXMessage(TouchHandler.GetCameraAxisX()));
                 SendMessageToServer(Message.CreateCameraRotationYMessage(TouchHandler.GetCameraAxisY()));
             }
-            if (TouchHandler.GetUpKey(out temp))
+            if (TouchHandler.GetUpKey(out degree))
             {
-                SendMessageToServer(Message.CreateUpMessage(TouchHandler.PlayerFinger.Type, temp));
+                SendMessageToServer(Message.CreateUpMessage(TouchHandler.PlayerFinger.Type, degree));
             }
-            if (TouchHandler.GetDownKey(out temp))
+            if (TouchHandler.GetDownKey(out degree))
             {
-                SendMessageToServer(Message.CreateDownMessage(TouchHandler.PlayerFinger.Type, temp));
+                SendMessageToServer(Message.CreateDownMessage(TouchHandler.PlayerFinger.Type, degree));
             }
-            if (TouchHandler.GetLeftKey(out temp))
+            if (TouchHandler.GetLeftKey(out degree))
             {
-                SendMessageToServer(Message.CreateLeftMessage(TouchHandler.PlayerFinger.Type, temp));
+                SendMessageToServer(Message.CreateLeftMessage(TouchHandler.PlayerFinger.Type, degree));
             }
-            if (TouchHandler.GetRightKey(out temp))
+            if (TouchHandler.GetRightKey(out degree))
             {
-                SendMessageToServer(Message.CreateRightMessage(TouchHandler.PlayerFinger.Type, temp));
+                SendMessageToServer(Message.CreateRightMessage(TouchHandler.PlayerFinger.Type, degree));
+            }
+
+            // Fly -- Up And Down
+            if (GyroAttitudeHandler.LastCosX > 0.0f)
+            {
+                SendMessageToServer(Message.CreateFlyUpMessage(KEYSTAT.PRESS, GyroAttitudeHandler.LastCosX));
+                SendMessageToServer(Message.CreateFlyDownMessage(KEYSTAT.IDLE, 0.0f));
+            }
+            else
+            {
+                SendMessageToServer(Message.CreateFlyUpMessage(KEYSTAT.IDLE, 0.0f));
+                SendMessageToServer(Message.CreateFlyDownMessage(KEYSTAT.PRESS, Mathf.Abs(GyroAttitudeHandler.LastCosX)));
+            }
+            // Fly -- Left And Right
+            if (GyroAttitudeHandler.LastCosZ > 0.0f)
+            {
+                SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.PRESS, GyroAttitudeHandler.LastCosZ));
+                SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.IDLE, 0.0f));
+            }
+            else
+            {
+                SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.IDLE, 0.0f));
+                SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.PRESS, Mathf.Abs(GyroAttitudeHandler.LastCosZ)));
             }
         }
 

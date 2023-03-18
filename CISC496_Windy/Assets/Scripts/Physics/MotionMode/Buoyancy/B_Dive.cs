@@ -15,7 +15,12 @@ namespace Windy.Buoyancy
         public sealed override void Update()
         {
             base.Update();
-            diveUpwardAccel = KIH.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out float degree))
+            {
+                diveUpwardAccel = MinDiveUpwardAccel + degree * (MaxDiveUpwardAccel - MinDiveUpwardAccel);
+            }
+            else diveUpwardAccel = MinDiveUpwardAccel;
+            //diveUpwardAccel = KIH.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
         }
 
         public override string ToString() => "Buoyancy -- Dive";

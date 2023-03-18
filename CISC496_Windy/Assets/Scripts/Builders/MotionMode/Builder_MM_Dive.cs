@@ -22,13 +22,6 @@ namespace Windy.Builder
             return this;
         }
 
-        public Builder_MM_Dive SetRotationQuaternions(Quaternion left, Quaternion right)
-        {
-            _mode.turnLeftRotation = left;
-            _mode.turnRightRotation = right;
-            return this;
-        }
-
         public Builder_MM_Dive SetFloatValues(Action<MotionMode.MM_Dive> FloatDelegate)
         {
             FloatDelegate?.Invoke(_mode);

@@ -34,6 +34,12 @@ namespace Windy.Controller
             }
         }
 
+        public virtual void ResetGyroAxes()
+        {
+            byte error;
+            NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreateResetGyroAxesMessage(), 1, out error);
+        }
+
         public virtual void InitNetwork()
         {
             NetworkTransport.Init();
@@ -46,24 +52,6 @@ namespace Windy.Controller
             hostId = NetworkTransport.AddHost(topology, serverPort);
         }
         
-        void UpdateKeyStatus(KeyCode key, FingerType type, float degree)
-        {
-            if (type == FingerType.Press)
-            {
-                keyDic[key].Value = KEYSTAT.PRESS;
-                keyDic[key].degree = degree;
-            }
-            else if (type == FingerType.Tap)
-            {
-                keyDic[key].Value = KEYSTAT.TAP;
-                keyDic[key].degree = degree;
-            }
-            else
-            {
-                keyDic[key].Value = KEYSTAT.IDLE;
-                keyDic[key].degree = degree;
-            }
-        }
 
         void ProcessMessage(byte[] message)
         {
@@ -120,9 +108,47 @@ namespace Windy.Controller
                     keyDic[Keys.ContinueCode].Value = keystatus;
                     Controller.Instance.StartCoroutine(BackToIdle(Keys.ContinueCode));
                     break;
+                case Message.Fly_Up:
+                    Message.GetFlyUpMessage(message, out keystatus, out degree);
+                    keyDic[Keys.UpCode].Value = keystatus;
+                    keyDic[Keys.UpCode].degree = degree;
+                    break;
+                case Message.Fly_Down:
+                    Message.GetFlyDownMessage(message, out keystatus, out degree);
+                    keyDic[Keys.DownCode].Value = keystatus;
+                    keyDic[Keys.DownCode].degree = degree;
+                    break;
+                case Message.Fly_Left:
+                    Message.GetFlyLeftMessage(message, out keystatus, out degree);
+                    keyDic[Keys.LeftCode].Value = keystatus;
+                    keyDic[Keys.LeftCode].degree = degree;
+                    break;
+                case Message.Fly_Right:
+                    Message.GetFlyRightMessage(message, out keystatus, out degree);
+                    keyDic[Keys.RightCode].Value = keystatus;
+                    keyDic[Keys.RightCode].degree = degree;
+                    break;
             }
         }
 
+        void UpdateKeyStatus(KeyCode key, FingerType type, float degree)
+        {
+            if (type == FingerType.Press)
+            {
+                keyDic[key].Value = KEYSTAT.PRESS;
+                keyDic[key].degree = degree;
+            }
+            else if (type == FingerType.Tap)
+            {
+                keyDic[key].Value = KEYSTAT.TAP;
+                keyDic[key].degree = degree;
+            }
+            else
+            {
+                keyDic[key].Value = KEYSTAT.IDLE;
+                keyDic[key].degree = degree;
+            }
+        }
         IEnumerator BackToIdle(KeyCode key)
         {
             yield return null;

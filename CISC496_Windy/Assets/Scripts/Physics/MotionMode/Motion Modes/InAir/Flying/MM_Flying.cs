@@ -20,44 +20,48 @@ namespace Windy.MotionMode
         protected virtual void FlyDirectionUpdate()
         {
             flyDirection = Vector3.zero;
+            float degree;
 
-            if (KIH.GetKeyPress(Keys.UpCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out _))
             {
                 flyDirection += ForwardD;
             }
-            if (KIH.GetKeyPress(Keys.DownCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.DownCode, out degree))
             {
+                diveAngleDelta = degree * diveAngle;
                 flyDirection += BackD;
             }
-            if (KIH.GetKeyPress(Keys.LeftCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.LeftCode, out degree))
             {
+                turnAroundAngleDelta = degree * turnAroundAngle;
                 flyDirection += LeftD;
             }
-            if (KIH.GetKeyPress(Keys.RightCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.RightCode, out degree))
             {
+                turnAroundAngleDelta = degree * turnAroundAngle;
                 flyDirection += RightD;
             }
 
-             flyDirection = flyDirection.normalized;
+            flyDirection = flyDirection.normalized;
         }
 
         protected void RotationUpdate()
         {
-
+            float degree;
             Vector3 forward = FlightAttitude_Forward;
             Vector3 down = FlightAttitude_Down;
 
-            if (KIH.GetKeyPress(Keys.LeftCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.LeftCode, out degree))
             {
-                Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, forward);
+                Quaternion turnAroundRotation = Quaternion.AngleAxis(degree * rotationAngle_turnAround, forward);
                 transform.rotation = Quaternion.Slerp(
                     transform.rotation,
                     Quaternion.LookRotation(turnAroundRotation * down, turnAroundRotation * forward),
                     rotateRate * Time.deltaTime);
             }
-            if (KIH.GetKeyPress(Keys.RightCode))
+            if (Controller.Controller.ControlDevice.GetKeyPress(Keys.RightCode, out degree))
             {
-                Quaternion turnAroundRotation = Quaternion.AngleAxis(rotationAngle_turnAround, FlightAttitude_Back);
+                Quaternion turnAroundRotation = Quaternion.AngleAxis(degree * rotationAngle_turnAround, FlightAttitude_Back);
                 transform.rotation = Quaternion.Slerp(
                     transform.rotation,
                     Quaternion.LookRotation(turnAroundRotation * down, turnAroundRotation * forward),
@@ -65,6 +69,7 @@ namespace Windy.MotionMode
             }
 
             Vector3 upD = rb.velocity.normalized;
+            if (upD.magnitude < Mathf.Epsilon) return;
             Vector3 forD;
 
             if (flyDirection == Vector3.zero)

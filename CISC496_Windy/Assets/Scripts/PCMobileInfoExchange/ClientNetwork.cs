@@ -131,20 +131,20 @@ public class ClientNetwork : MonoBehaviour
         SendMessageToServer(Messages.CreateMovementMessage(Vector3.right.x, Vector3.right.y, Vector3.right.z));
     }
 
-    IEnumerator SendGyroRotation() { 
-        while (true)
-        {
-            if (_isConnected && GyroRotationDetector.isRotateX())
-            {
-                SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONX, GyroRotationDetector.rotationX()));
-            }
-            if (_isConnected && GyroRotationDetector.isRotateY())
-            {
-                SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONY, GyroRotationDetector.rotationY()));
-            }
-            yield return new WaitForSeconds(0f);
-        }
-    }
+    //IEnumerator SendGyroRotation() { 
+    //    while (true)
+    //    {
+    //        if (_isConnected && GyroRotationDetector.isRotateX())
+    //        {
+    //            SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONX, GyroRotationDetector.rotationX()));
+    //        }
+    //        if (_isConnected && GyroRotationDetector.isRotateY())
+    //        {
+    //            SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONY, GyroRotationDetector.rotationY()));
+    //        }
+    //        yield return new WaitForSeconds(0f);
+    //    }
+    //}
 
     // Start is called before the first frame update
     void Start()
@@ -152,7 +152,7 @@ public class ClientNetwork : MonoBehaviour
         Application.runInBackground = true;
 
         InitNetwork();
-        StartCoroutine(SendGyroRotation());
+        //StartCoroutine(SendGyroRotation());
     }
 
     // Update is called once per frame

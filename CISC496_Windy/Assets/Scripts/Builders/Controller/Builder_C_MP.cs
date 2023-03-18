@@ -18,6 +18,11 @@ namespace Windy.Builder
             _controller.InitNetwork();
         }
 
+        public new void ResetGyroAxes()
+        {
+            _controller.ResetGyroAxes();
+        }
+
         public Controller.IController Build() => _controller;
     }
 }

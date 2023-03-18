@@ -67,5 +67,7 @@ namespace Windy.Controller
 
         }
 
+        public void ResetGyroAxes() => B_C_MobilePhone.ResetGyroAxes();
+
     }
 }

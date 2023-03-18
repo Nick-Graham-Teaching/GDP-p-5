@@ -45045,8 +45045,8 @@ MonoBehaviour:
   flipWingCD: 1
   LandAngle: 50
   diveAngle: 60
-  turnAroundAngle: 30
-  rotationAngle_turnAround: 80
+  turnAroundAngle: 60
+  rotationAngle_turnAround: 100
   LandStopAngle: 95
   LandStopRatio: 0.8
   MinDiveUpwardAccel: 3

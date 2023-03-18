@@ -128,8 +128,6 @@ namespace Windy
         float diveAngle;
         [SerializeField]
         float turnAroundAngle;
-        Quaternion turnLeftRotation;
-        Quaternion turnRightRotation;
         [SerializeField]
         float rotationAngle_turnAround;
 
@@ -235,8 +233,6 @@ namespace Windy
             rotateDirection = transform.forward;
 
             canFlipWings = true;
-            turnLeftRotation = Quaternion.AngleAxis(turnAroundAngle, Vector3.down);
-            turnRightRotation = Quaternion.AngleAxis(turnAroundAngle, Vector3.up);
 
 
             B_S_Walk
@@ -326,7 +322,6 @@ namespace Windy
                 .SetRotationRate(rotateRate);
             B_M_Glide
                 .SetBodyAndTransform(rb, transform)
-                .SetRotationQuaternions(turnLeftRotation, turnRightRotation)
                 .SetFloatValues(
                     mode =>
                     {
@@ -335,12 +330,12 @@ namespace Windy
                         mode.MaxFlySpeed = MaxFlySpeed;
                         mode.rotationAngle_turnAround = rotationAngle_turnAround;
                         mode.diveAngle = diveAngle;
+                        mode.turnAroundAngle = turnAroundAngle;
                     }
                 )
                 .SetBuoyancy(B_B_Glide.Build());
             B_M_Dive
                 .SetBodyAndTransform(rb, transform)
-                .SetRotationQuaternions(turnLeftRotation, turnRightRotation)
                 .SetFloatValues(
                     mode =>
                     {
@@ -349,6 +344,7 @@ namespace Windy
                         mode.MaxFlySpeed = MaxFlySpeed;
                         mode.rotationAngle_turnAround = rotationAngle_turnAround;
                         mode.diveAngle = diveAngle;
+                        mode.turnAroundAngle = turnAroundAngle;
                     }
                 )
                 .SetBuoyancy(B_B_Dive.Build());

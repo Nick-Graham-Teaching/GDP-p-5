@@ -6,9 +6,11 @@ namespace Windy.MotionMode
 {
     public abstract class MM_InAir : MotionMode
     {
+        protected float diveAngleDelta;
         protected internal float diveAngle;
-        protected internal Quaternion turnLeftRotation;
-        protected internal Quaternion turnRightRotation;
+
+        protected float turnAroundAngleDelta;
+        protected internal float turnAroundAngle;
 
         public Vector3 FlyInertia { get; set; }
 
@@ -33,9 +35,9 @@ namespace Windy.MotionMode
 
         // Flying Directions
         public override Vector3 ForwardD => FlightAttitude_Forward;
-        public override Vector3 LeftD => turnLeftRotation * ForwardD;
-        public override Vector3 RightD => turnRightRotation * ForwardD;
-        public override Vector3 BackD => Quaternion.AngleAxis(diveAngle, FlightAttitude_Right) * ForwardD;
+        public override Vector3 LeftD => Quaternion.AngleAxis(turnAroundAngleDelta, Vector3.down) * ForwardD;
+        public override Vector3 RightD => Quaternion.AngleAxis(turnAroundAngleDelta, Vector3.up) * ForwardD;
+        public override Vector3 BackD => Quaternion.AngleAxis(diveAngleDelta, FlightAttitude_Right) * ForwardD;
 
         public override void FixedUpdate()
         {

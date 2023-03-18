@@ -28,12 +28,14 @@ namespace Windy.Buoyancy
                     () => {
                         if (Game.GameProgressManager.Instance.GameState.IsInGame())
                         {
-                            if (!Input.GetKey(Keys.UpCode))
+                            float degree;
+                            if (!Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out degree))
                             {
                                 return true;
                             }
-                            upForceDeltaTime += Time.deltaTime;
-                            glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, UpwardAccelSpeedUpRate * Time.deltaTime);
+                            if (degree < Mathf.Epsilon) return true;
+                            upForceDeltaTime += (degree * Time.deltaTime);
+                            glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, degree * UpwardAccelSpeedUpRate * Time.deltaTime);
                         }
                         return upForceDeltaTime >= UpForceMaxUtilityTime;
                     }
@@ -52,7 +54,7 @@ namespace Windy.Buoyancy
                 yield return new WaitUntil(
                     () => {
                         upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
-                        return Input.GetKeyDown(Keys.UpCode) || upForceDeltaTime < Mathf.Epsilon;
+                        return Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out float _) || upForceDeltaTime < Mathf.Epsilon;
                     }
                 );
             }
@@ -64,7 +66,8 @@ namespace Windy.Buoyancy
         public sealed override void Update()
         {
             base.Update();
-            if (!glideFloatSupervisorOn && KIH.GetKeyPress(Keys.UpCode) && upForceDeltaTime < UpForceMaxUtilityTime)
+            Debug.Log(upForceDeltaTime);
+            if (!glideFloatSupervisorOn && Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out float _) && upForceDeltaTime < UpForceMaxUtilityTime)
             {
                 MM_Executor.Instance.StartCoroutine(GlideUpForceTimer());
                 glideFloatSupervisorOn = true;

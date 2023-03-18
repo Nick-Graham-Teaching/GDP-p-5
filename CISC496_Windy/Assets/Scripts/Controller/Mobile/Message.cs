@@ -10,17 +10,24 @@ namespace Windy.Controller
         public const byte CameraRotationX = (byte)1;
         public const byte CameraRotationY = (byte)2;
 
-        public const byte Up    = (byte)3;
-        public const byte Down  = (byte)4;
-        public const byte Left  = (byte)5;
-        public const byte Right = (byte)6;
+        public const byte Up              = (byte)3;
+        public const byte Down            = (byte)4;
+        public const byte Left            = (byte)5;
+        public const byte Right           = (byte)6;
+									      
+		public const byte SwitchMode      = (byte)7;
+		public const byte Jump            = (byte)8;
+									      
+        public const byte Pause           = (byte)9;
+        public const byte Continue        = (byte)10;
+									      
+		public const byte Fly_Up          = (byte)11;
+		public const byte Fly_Down        = (byte)12;
+		public const byte Fly_Left        = (byte)13;
+		public const byte Fly_Right       = (byte)14;
 
-		public const byte SwitchMode = (byte)7;
-		public const byte Jump = (byte)8;
-
-        public const byte Pause = (byte)9;
-        public const byte Continue = (byte)10;
-
+		public const byte ResetGyroAxes   = (byte)15;   // The message from server
+									      
         public static int maxMessageSize = 128; // maximum size of a message in bytes
 
 		#region Camera Rotation X
@@ -232,6 +239,114 @@ namespace Windy.Controller
 		public static void GetContinueMessage(byte[] message, out KEYSTAT keyStatus)
 		{
 			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+		}
+		#endregion
+
+		#region Fly Up Key    
+		public static byte[] CreateFlyUpMessage(KEYSTAT keyStatus, float degree)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+			//   - byte 5-8: Degree
+
+			byte[] m = new byte[9];
+			m[0] = Fly_Up;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+			AddFloatToByteArray(degree, ref m, ref count);
+
+			return m;
+		}
+		public static void GetFlyUpMessage(byte[] message, out KEYSTAT keyStatus, out float degree)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+			degree    = ExtractFloat(message, 5);
+		}
+		#endregion
+
+		#region Fly Down Key    
+		public static byte[] CreateFlyDownMessage(KEYSTAT keyStatus, float degree)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+			//   - byte 5-8: Degree
+
+			byte[] m = new byte[9];
+			m[0] = Fly_Down;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+			AddFloatToByteArray(degree, ref m, ref count);
+
+			return m;
+		}
+		public static void GetFlyDownMessage(byte[] message, out KEYSTAT keyStatus, out float degree)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+			degree = ExtractFloat(message, 5);
+		}
+		#endregion
+
+		#region Fly Left Key    
+		public static byte[] CreateFlyLeftMessage(KEYSTAT keyStatus, float degree)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+			//   - byte 5-8: Degree
+
+			byte[] m = new byte[9];
+			m[0] = Fly_Left;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+			AddFloatToByteArray(degree, ref m, ref count);
+
+			return m;
+		}
+		public static void GetFlyLeftMessage(byte[] message, out KEYSTAT keyStatus, out float degree)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+			degree = ExtractFloat(message, 5);
+		}
+		#endregion
+
+		#region Fly Right Key    
+		public static byte[] CreateFlyRightMessage(KEYSTAT keyStatus, float degree)
+		{
+			// Format is:
+			//	 - byte 0: message type
+			//   - byte 1-4: Key Status
+			//   - byte 5-8: Degree
+
+			byte[] m = new byte[9];
+			m[0] = Fly_Right;
+			int count = 1;
+			AddFloatToByteArray((float)keyStatus, ref m, ref count);
+			AddFloatToByteArray(degree, ref m, ref count);
+
+			return m;
+		}
+		public static void GetFlyRightMessage(byte[] message, out KEYSTAT keyStatus, out float degree)
+		{
+			keyStatus = (KEYSTAT)ExtractFloat(message, 1);
+			degree = ExtractFloat(message, 5);
+		}
+		#endregion
+
+		#region Reset Gyroscope Axes
+		public static byte[] CreateResetGyroAxesMessage()
+		{
+			// Format is:
+			//	 - byte 0: message type
+
+			byte[] m = new byte[1];
+			m[0] = ResetGyroAxes;
+
+			return m;
+		}
+		public static void GetResetGyroAxesMessage(byte[] message)
+		{
 		}
 		#endregion
 
