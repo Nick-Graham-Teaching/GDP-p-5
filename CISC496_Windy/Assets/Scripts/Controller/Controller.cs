@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,8 +50,9 @@ namespace Windy.Controller
             ControlDevice.Update();
         }
 
-        private void Start()
+        private new void Awake()
         {
+            base.Awake();
             B_C_MobilePhone.InitNetwork();
 
             B_C_KeyboardMouse
@@ -68,6 +70,8 @@ namespace Windy.Controller
         }
 
         public void ResetGyroAxes() => B_C_MobilePhone.ResetGyroAxes();
+        public void SetPhoneContinueActive(bool active = true) => B_C_MobilePhone.SetPhoneContinueActive(active);
+        public void SetUseGyroActive(bool flag = false) => B_C_MobilePhone.SetUseGyroActive(flag);
 
     }
 }

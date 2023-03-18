@@ -39,6 +39,19 @@ namespace Windy.Controller
             byte error;
             NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreateResetGyroAxesMessage(), 1, out error);
         }
+        public virtual void SetPhoneContinueActive(bool isPause)
+        {
+            byte error;
+            if (isPause)
+                NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreateContinueMessage(KEYSTAT.IDLE), 5, out error);
+            else
+                NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreatePauseMessage(KEYSTAT.IDLE), 5, out error);
+        }
+        public virtual void SetUseGyroActive(bool active)
+        {
+            byte error;
+            NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreateUseGyroMessage(active), 2, out error);
+        }
 
         public virtual void InitNetwork()
         {
@@ -50,6 +63,8 @@ namespace Windy.Controller
 
             topology = new HostTopology(config, maxConnections);
             hostId = NetworkTransport.AddHost(topology, serverPort);
+
+            connectionId = int.MinValue;
         }
         
 
@@ -128,6 +143,9 @@ namespace Windy.Controller
                     keyDic[Keys.RightCode].Value = keystatus;
                     keyDic[Keys.RightCode].degree = degree;
                     break;
+                case Message.GyroForwardUp:
+                    Message.GetGyroForwardUpMessage(message, out GyroAttitudeMonitor.Forward, out GyroAttitudeMonitor.Up);
+                    break;
             }
         }
 
@@ -182,7 +200,7 @@ namespace Windy.Controller
                         break;
                     case NetworkEventType.ConnectEvent:
                         Logger.LogFormat("Connection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
-                        this.connectionId = connectionId;
+                        if(this.connectionId == int.MinValue) this.connectionId = connectionId;
                         break;
                     case NetworkEventType.DataEvent:
                         Logger.LogFormat("Message received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
@@ -190,6 +208,7 @@ namespace Windy.Controller
                         break;
                     case NetworkEventType.DisconnectEvent:
                         Logger.LogFormat("Disconnection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
+                        if (connectionId == this.connectionId) this.connectionId = int.MinValue;
                         break;
                 }
             }

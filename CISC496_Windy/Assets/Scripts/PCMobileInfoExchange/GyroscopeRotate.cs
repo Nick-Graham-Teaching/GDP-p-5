@@ -36,15 +36,8 @@ public class GyroscopeRotate : MonoBehaviour
     {
         transform.rotation = Quaternion.LookRotation(GyroAttitudeHandler.NewForward, GyroAttitudeHandler.NewUp);
 
-        if (Vector3.Dot(GyroAttitudeHandler.NewUp, Vector3.up) > Mathf.Epsilon)
-        {
-            GameObject.Find("text1").GetComponent<Text>().text = GyroAttitudeHandler.LastCosX.ToString();
-        }
-
-        if (Vector3.Dot(GyroAttitudeHandler.NewRight, Vector3.right) > Mathf.Epsilon)
-        {
-            GameObject.Find("text2").GetComponent<Text>().text = GyroAttitudeHandler.LastCosZ.ToString();
-        }
+        GameObject.Find("text1").GetComponent<Text>().text = GyroAttitudeHandler.LastCosX.ToString();
+        GameObject.Find("text2").GetComponent<Text>().text = GyroAttitudeHandler.LastCosY.ToString();
     }
 
     public void resetRotation() {

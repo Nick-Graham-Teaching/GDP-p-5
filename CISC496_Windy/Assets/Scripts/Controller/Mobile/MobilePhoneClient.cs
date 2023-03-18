@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,8 @@ namespace Windy.Controller
         int _controlChannelId;
         int _dataChannelId;
 
+        bool useGyro;
+
         void ProcessIncomingData(byte[] message)
         {
             byte messageType = Message.GetMessageType(message);
@@ -32,6 +35,20 @@ namespace Windy.Controller
             {
                 case Message.ResetGyroAxes:
                     GyroAttitudeHandler.Instance.ResetGyroAxes();
+                    break;
+                case Message.Pause:
+                    UI.MP_UIEvents.OnPauseActive?.Invoke();
+                    break;
+                case Message.Continue:
+                    UI.MP_UIEvents.OnContinueActive?.Invoke();
+                    break;
+                case Message.UseGyro:
+                    Message.GetUseGyroMessage(message, out useGyro);
+                    GameObject.Find("text3").GetComponent<Text>().text = useGyro.ToString();
+                    if (!useGyro)
+                    {
+                        SendGyroToHandPanelResetMessage();
+                    }
                     break;
             }
         }
@@ -88,14 +105,56 @@ namespace Windy.Controller
             NetworkTransport.Send(_hostId, _connectionId, _controlChannelId, message, message.Length, out error);
         }
 
-        void SendMessages()
+        private void SendGyroToHandPanelResetMessage()
+        {
+            SendMessageToServer(Message.CreateFlyUpMessage(KEYSTAT.IDLE, 0.0f));
+            SendMessageToServer(Message.CreateFlyDownMessage(KEYSTAT.IDLE, 0.0f));
+            SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.IDLE, 0.0f));
+            SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.IDLE, 0.0f));
+        }
+
+        private void SendGyroMessages()
+        {
+            // Fly X -- Up (+) And Down (-)
+            if (GyroAttitudeHandler.LastCosX > 0.0f)
+            {
+                SendMessageToServer(Message.CreateFlyUpMessage(KEYSTAT.PRESS, GyroAttitudeHandler.LastCosX));
+                SendMessageToServer(Message.CreateFlyDownMessage(KEYSTAT.IDLE, 0.0f));
+            }
+            else
+            {
+                SendMessageToServer(Message.CreateFlyUpMessage(KEYSTAT.IDLE, 0.0f));
+                SendMessageToServer(Message.CreateFlyDownMessage(KEYSTAT.PRESS, Mathf.Abs(GyroAttitudeHandler.LastCosX)));
+            }
+            // Fly Y -- Left (+) And Right (-)
+            if (GyroAttitudeHandler.LastCosY > 0.0f)
+            {
+                SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.PRESS, GyroAttitudeHandler.LastCosY));
+                SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.IDLE, 0.0f));
+            }
+            else
+            {
+                SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.IDLE, 0.0f));
+                SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.PRESS, Mathf.Abs(GyroAttitudeHandler.LastCosY)));
+            }
+
+            SendMessageToServer(Message.CreateGyroForwardUpMessage(GyroAttitudeHandler.NewForward, GyroAttitudeHandler.NewUp));
+            //// Fly Z -- Left (+) And Right (-)
+            //if (GyroAttitudeHandler.LastCosZ > 0.0f)
+            //{
+            //    SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.PRESS, GyroAttitudeHandler.LastCosZ));
+            //    SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.IDLE, 0.0f));
+            //}
+            //else
+            //{
+            //    SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.IDLE, 0.0f));
+            //    SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.PRESS, Mathf.Abs(GyroAttitudeHandler.LastCosZ)));
+            //}
+        }
+
+        private void SendControlPanelMessages()
         {
             float degree;
-            if (TouchHandler.CameraFinger.Type != FingerType.Available)
-            {
-                SendMessageToServer(Message.CreateCameraRotationXMessage(TouchHandler.GetCameraAxisX()));
-                SendMessageToServer(Message.CreateCameraRotationYMessage(TouchHandler.GetCameraAxisY()));
-            }
             if (TouchHandler.GetUpKey(out degree))
             {
                 SendMessageToServer(Message.CreateUpMessage(TouchHandler.PlayerFinger.Type, degree));
@@ -112,35 +171,27 @@ namespace Windy.Controller
             {
                 SendMessageToServer(Message.CreateRightMessage(TouchHandler.PlayerFinger.Type, degree));
             }
+        }
 
-            // Fly -- Up And Down
-            if (GyroAttitudeHandler.LastCosX > 0.0f)
+        private void SendCameraMessages()
+        {
+            if (TouchHandler.CameraFinger.Type != FingerType.Available)
             {
-                SendMessageToServer(Message.CreateFlyUpMessage(KEYSTAT.PRESS, GyroAttitudeHandler.LastCosX));
-                SendMessageToServer(Message.CreateFlyDownMessage(KEYSTAT.IDLE, 0.0f));
-            }
-            else
-            {
-                SendMessageToServer(Message.CreateFlyUpMessage(KEYSTAT.IDLE, 0.0f));
-                SendMessageToServer(Message.CreateFlyDownMessage(KEYSTAT.PRESS, Mathf.Abs(GyroAttitudeHandler.LastCosX)));
-            }
-            // Fly -- Left And Right
-            if (GyroAttitudeHandler.LastCosZ > 0.0f)
-            {
-                SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.PRESS, GyroAttitudeHandler.LastCosZ));
-                SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.IDLE, 0.0f));
-            }
-            else
-            {
-                SendMessageToServer(Message.CreateFlyLeftMessage(KEYSTAT.IDLE, 0.0f));
-                SendMessageToServer(Message.CreateFlyRightMessage(KEYSTAT.PRESS, Mathf.Abs(GyroAttitudeHandler.LastCosZ)));
+                SendMessageToServer(Message.CreateCameraRotationXMessage(TouchHandler.GetCameraAxisX()));
+                SendMessageToServer(Message.CreateCameraRotationYMessage(TouchHandler.GetCameraAxisY()));
             }
         }
 
         private void Update()
         {
             ProcessIncomingMessages();
-            if (_isConnected) SendMessages();
+            if (_isConnected)
+            {
+                SendCameraMessages();
+                if (!useGyro) SendControlPanelMessages();
+                else SendGyroMessages();
+            }
+                
         }
 
         private void Start()

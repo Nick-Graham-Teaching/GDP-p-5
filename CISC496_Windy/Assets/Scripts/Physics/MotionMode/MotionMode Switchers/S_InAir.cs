@@ -22,7 +22,9 @@ namespace Windy.MotionModeSwitcher
                 }
             }
             if (!MM_Executor.Instance.AboveMinimumFlightHeight())
+            {
                 MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Land, MM_Executor.Instance.B_S_Land);
+            }
         }
 
         public override string ToString() => "Switcher -- InAir";

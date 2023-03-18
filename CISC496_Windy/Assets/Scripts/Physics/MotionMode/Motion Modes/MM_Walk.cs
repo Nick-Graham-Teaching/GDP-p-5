@@ -219,6 +219,8 @@ namespace Windy.MotionMode
         public sealed override void Start()
         {
             MM_Executor.Instance.StopEnergySupervisor();
+
+            Game.GameEvents.EnableGyroscope?.Invoke(false);
         }
 
         public override string ToString() => "MotionMode -- Walk";

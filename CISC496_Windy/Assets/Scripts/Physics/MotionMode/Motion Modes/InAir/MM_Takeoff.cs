@@ -4,7 +4,6 @@ namespace Windy.MotionMode {
 
     public class MM_Takeoff : MM_InAir
     {
-
         protected internal int Method;
         protected internal float flipWingsSpeed;
         protected internal float flipWingCD;
@@ -19,6 +18,7 @@ namespace Windy.MotionMode {
             {
                 EnergySystem.EnergySys.Instance.OnTakeOff(Method);
                 MM_Executor.Instance.StartEnergySupervisor(flipWingCD);
+                Game.GameEvents.EnableGyroscope?.Invoke(true);
             } 
             catch (TakeOffException)
             {

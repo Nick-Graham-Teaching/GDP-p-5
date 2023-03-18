@@ -13,7 +13,9 @@ namespace Windy.MotionModeSwitcher {
         {
             if (MM_Executor.Instance.OnGround ||
                 Physics.Raycast(playerBody.gameObject.transform.position, Vector3.down, playerBody.gameObject.transform.localScale.y, GroundLayerMask))
+            {
                 MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Walk, MM_Executor.Instance.B_S_Walk);
+            }
         }
 
         public override string ToString() => "Switcher -- Land";

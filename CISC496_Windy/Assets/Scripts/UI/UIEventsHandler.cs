@@ -111,7 +111,6 @@ namespace Windy.UI
             yield return new WaitUntil(() => {
                 return Util.ImageFadeOut(TutorialImage, UIFadeOutRate);
             });
-            TutorialImage.gameObject.SetActive(false);
         }
 
         IEnumerator GameOverWarmingFadeIn()

@@ -18,6 +18,7 @@ namespace Windy.MotionMode {
         public sealed override void Start()
         {
             MM_Executor.Instance.StopEnergySupervisor();
+            Game.GameEvents.EnableGyroscope?.Invoke(false);
 
             RaycastHit hitInfo;
             Physics.Raycast(transform.position, Vector3.down, out hitInfo, float.PositiveInfinity, GroundLayerMask);

@@ -23,6 +23,16 @@ namespace Windy.Builder
             _controller.ResetGyroAxes();
         }
 
+        public new void SetPhoneContinueActive(bool active)
+        {
+            _controller.SetPhoneContinueActive(active);
+        }
+
+        public new void SetUseGyroActive(bool flag)
+        {
+            _controller.SetUseGyroActive(flag);
+        }
+
         public Controller.IController Build() => _controller;
     }
 }
