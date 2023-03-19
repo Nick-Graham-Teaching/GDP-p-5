@@ -21,7 +21,6 @@ namespace Windy.MotionMode {
             UI.UIEvents.OnToGlideMode?.Invoke();
         }
 
-        public sealed override bool IsGlide() => true;
 
         public override string ToString() => "MotionMode -- Glide";
     }

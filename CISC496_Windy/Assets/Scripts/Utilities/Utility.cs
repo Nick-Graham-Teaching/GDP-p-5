@@ -28,7 +28,7 @@ namespace Windy
         {
             foreach (Image i in images)
             {
-                i.color = c;
+                ResetImageColor(i, c);
             }
         }
         public static void ResetImageAlpha(Image i, float alpha) 

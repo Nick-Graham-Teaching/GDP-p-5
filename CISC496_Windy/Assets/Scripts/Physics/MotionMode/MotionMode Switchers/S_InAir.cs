@@ -43,7 +43,7 @@ namespace Windy.MotionModeSwitcher
 
             if (Controller.Controller.ControlDevice.GetKeyDown(Keys.ModeSwitchCode, out float _))
             {
-                if (MM_Executor.Instance.MotionMode.IsGlide())
+                if (MM_Executor.Instance.MotionMode.GetType() == MM_Executor.Instance.B_M_Glide.Build().GetType())
                 {
                     MM_Executor.Instance.B_M_Dive.FlyInertia = MM_Executor.Instance.B_M_Glide.FlyInertia;
                     MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Dive, MM_Executor.Instance.B_S_InAir);

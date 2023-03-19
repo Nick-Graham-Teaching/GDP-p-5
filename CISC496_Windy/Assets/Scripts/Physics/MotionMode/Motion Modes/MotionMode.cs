@@ -19,7 +19,6 @@ namespace Windy.MotionMode
         public abstract void FixedUpdate();
         public virtual void Quit() { }
 
-        public virtual bool IsGlide() => false;
         public virtual bool UseGyro() => false;
 
         public override string ToString() => "MotionMode Class";

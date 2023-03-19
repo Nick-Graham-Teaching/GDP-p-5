@@ -6,6 +6,7 @@ namespace Windy
     {
         // The game object to follow
         public Transform target;
+        public Vector3 Offset;
 
         // Position offset from target position
         // -viewDirection is the viewing direction from Camera to target
@@ -52,12 +53,12 @@ namespace Windy
 
         public bool StartPageTransitionAnimation()
         {
-            transform.position = Vector3.Lerp(transform.position, target.position + viewDirection, positionUpdateRate * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, (target.position + Offset)+ viewDirection, positionUpdateRate * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(transform.rotation, finalRotation, rotationUpdateRate * Time.deltaTime);
 
-            if ((transform.position - (target.position + viewDirection)).magnitude < distanceThreshold)
+            if ((transform.position - (target.position + Offset + viewDirection)).magnitude < distanceThreshold)
             {
-                transform.SetPositionAndRotation((target.position + viewDirection), finalRotation);
+                transform.SetPositionAndRotation((target.position + Offset + viewDirection), finalRotation);
                 return true;
             }
             return false;
@@ -103,7 +104,7 @@ namespace Windy
                 viewDirection = Quaternion.AngleAxis(Controller.Controller.ControlDevice.GetCameraMoveAxisY() * yRotateRate, Vector3.left) * viewDirection;
             // raycast detection
             float length = viewDirection.magnitude;
-            if (Physics.Raycast(target.position, viewDirection.normalized, out RaycastHit hitInfo, MaxLength, numLayer))
+            if (Physics.Raycast(target.position + Offset, viewDirection.normalized, out RaycastHit hitInfo, MaxLength, numLayer))
             {
                 viewDirection = hitInfo.distance / length * viewDirection;
                 float cosTheta = Vector3.Dot(viewDirection.normalized, Vector3.down);
@@ -126,7 +127,7 @@ namespace Windy
         }
         void PositionUpdate()
         {
-            transform.position = target.position + viewDirection;
+            transform.position = target.position + Offset + viewDirection;
         }
         void LookAtTarget()
         {

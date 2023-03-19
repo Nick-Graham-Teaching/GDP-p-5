@@ -13,7 +13,7 @@ namespace Windy.UI
         public float _colorChangeRate;
 
         public Image Image_MotionModeCircle;
-        public Animation Anim_MotionModeCircle;
+        public UnityEngine.Animation Anim_MotionModeCircle;
 
         public Image Image_Walk;
         public Image Image_Glide;
@@ -162,7 +162,8 @@ namespace Windy.UI
                         image.enabled = true;
                         MotionModeImages[image].enabled = true;
 
-                        Anim_MotionModeCircle.Play();
+                        Anim_MotionModeCircle.Play("Image_TrappedMode");
+                        StopAllCoroutines();
                         Util.ResetImageColor(Image_MotionModeCircle, Color.red);
                         Util.ResetImageColor(image, Color.red);
                         Util.ResetImageColor(MotionModeImages[image], Color.red);
@@ -179,10 +180,11 @@ namespace Windy.UI
             };
             UIEvents.OnOutOfTrappedMode += () =>
             {
-                Anim_MotionModeCircle.Stop();
+                Anim_MotionModeCircle.Play("Image_CircleRotation");
                 Util.ResetImagesColor(MotionModeImages.Keys, Color.red);
                 Util.ResetImagesColor(MotionModeImages.Values, Color.red);
                 Util.ResetImageColor(Image_MotionModeCircle, Color.red);
+                StopAllCoroutines();
                 StartCoroutine(OnOutOfTrappedMode(MotionModeImages.Keys));
                 StartCoroutine(OnOutOfTrappedMode(MotionModeImages.Values));
                 StartCoroutine(OnOutOfTrappedMode(Image_MotionModeCircle));

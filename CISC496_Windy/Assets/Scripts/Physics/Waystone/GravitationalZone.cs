@@ -13,6 +13,8 @@ namespace Windy.Waystone
         {
             if (other.CompareTag("Player"))
             {
+                if (MM_Executor.Instance.MotionMode.GetType() == MM_Executor.Instance.B_M_Trapped.Build().GetType()) return;
+
                 MM_Executor.Instance.B_S_Trapped.SetIsTrapped(true);
                 MM_Executor.Instance.B_M_Trapped
                     .SetWaystoneGravityScalar(GravityScalar)
