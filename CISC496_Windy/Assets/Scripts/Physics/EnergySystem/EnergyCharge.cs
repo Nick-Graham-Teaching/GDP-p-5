@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnergyCharge : MonoBehaviour
+namespace Windy.EnergySystem
 {
-    private void OnTriggerStay(Collider other)
+    public class EnergyCharge : MonoBehaviour
     {
-        if (other.gameObject.CompareTag("Player"))
+        private void OnTriggerStay(Collider other)
         {
-            EnergySys.Instance.RechargeEnergy();
+            if (other.gameObject.CompareTag("Player"))
+            {
+                EnergySys.Instance.RechargeEnergy();
+            }
         }
     }
 }
+
