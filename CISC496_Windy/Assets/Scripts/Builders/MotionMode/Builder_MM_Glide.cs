@@ -36,7 +36,6 @@ namespace Windy.Builder
 
         public MotionMode.MotionMode Build()
         {
-            UI.UIEvents.OnToGlideMode?.Invoke();
             return _mode;
         }
 

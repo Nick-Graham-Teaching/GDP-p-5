@@ -12,6 +12,7 @@ namespace Windy
 
         void Update()
         {
+            if (Forward.magnitude == 0.0f || Up.magnitude == 0.0f) return;
             transform.rotation = Quaternion.LookRotation(Forward, Up);
         }
     }

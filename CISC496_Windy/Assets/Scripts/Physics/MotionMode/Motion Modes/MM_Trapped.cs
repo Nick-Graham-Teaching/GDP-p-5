@@ -13,6 +13,7 @@ namespace Windy.MotionMode
         public sealed override void Start()
         {
             MM_Executor.Instance.StopEnergySupervisor();
+            UI.UIEvents.OnToTrappedMode?.Invoke();
 
             rb.useGravity = false;
             //rb.velocity = Vector3.zero;
@@ -35,6 +36,8 @@ namespace Windy.MotionMode
             MM_Executor.Instance.StartEnergySupervisor();
 
             rb.useGravity = true;
+
+            UI.UIEvents.OnOutOfTrappedMode?.Invoke();
         }
 
         public override string ToString() => "MotionMode -- Trapped";

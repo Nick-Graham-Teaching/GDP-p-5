@@ -22,9 +22,7 @@ namespace Windy.MotionModeSwitcher
             }
             else if (!MM_Executor.Instance.OnGround && playerSpeed > takeOffSpeed && MM_Executor.Instance.AboveMinimumFlightHeight())
             {
-                MM_Executor.Instance.B_S_Takeoff.SetTargetMode(MM_Executor.Instance.B_M_Dive);
-                MM_Executor.Instance.B_M_Takeoff.SetMethod(0b010);
-                MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Takeoff, MM_Executor.Instance.B_S_Takeoff);
+                MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Dive, MM_Executor.Instance.B_S_InAir);
             }
             else if (MM_Executor.Instance.OnGround && Controller.Controller.ControlDevice.GetKeyTap(Keys.JumpCode, out float _) && playerSpeed > takeOffSpeed)
             {

@@ -27,7 +27,7 @@ namespace Windy.Builder
         {
             _controller.SetPhoneContinueActive(active);
         }
-
+        [System.Obsolete]
         public new void SetUseGyroActive(bool flag)
         {
             _controller.SetUseGyroActive(flag);

@@ -12,6 +12,8 @@ namespace Windy.MotionMode
         protected float turnAroundAngleDelta;
         protected internal float turnAroundAngle;
 
+        protected internal float flyDrag;
+
         public Vector3 FlyInertia { get; set; }
 
         // Axes of the transform in world space, but won't be influenced by rotation when rotation around y axis is not larger than 90 degrees

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Windy.UI
 {
-    public class EnergySysUI : MonoBehaviour
+    public class UI_EnergySys : MonoBehaviour
     {
 
         Image _imageToControl;

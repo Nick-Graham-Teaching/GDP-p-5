@@ -30,6 +30,9 @@ namespace Windy.UI
         public static Action OnToWalkMode;
         public static Action OnToGlideMode;
         public static Action OnToDiveMode;
+        public static Action OnToTakeoffMode;
+        public static Action OnToTrappedMode;
+        public static Action OnOutOfTrappedMode;
 
         public static Action OnOutOfBoundary;
         public static Action OnBackToBoundary;
@@ -46,6 +49,9 @@ namespace Windy.UI
 
         public GameObject InGameUI;
         Image[] InGameUIImages;
+        public GameObject InGameUI_Characters;
+
+        public GameObject PuzzleLetters;
 
         public GameObject SettingsPage;
         public GameObject PausePage;
@@ -61,10 +67,6 @@ namespace Windy.UI
 
         public Image TutorialImage;
         public float tutorialStayTime;
-
-        public GameObject WalkMode;
-        public GameObject GlideMode;
-        public GameObject DiveMode;
 
         public GameObject Keyboard;
         public GameObject Mobile;
@@ -118,6 +120,11 @@ namespace Windy.UI
             Image countdownImage = CountdownPage.GetComponent<Image>();
             yield return new WaitUntil(() =>
             {
+                if (!GameProgressManager.Instance.GameState.IsInGame())
+                {
+                    return false;
+                }
+
                 return Util.ImageFadeIn(countdownImage, WarningUIFadeInRate, WarningUIFadeInAlpha, WarningUIFadeInThreshold)
                 || !GameProgressManager.Instance.OutOfBoundary;
             });
@@ -131,6 +138,11 @@ namespace Windy.UI
             Image countdownImage = CountdownPage.GetComponent<Image>();
             yield return new WaitUntil(() =>
             {
+                if (!GameProgressManager.Instance.GameState.IsInGame())
+                {
+                    return false;
+                }
+
                 return Util.ImageFadeOut(countdownImage, UIFadeOutRate)
                 || GameProgressManager.Instance.OutOfBoundary;
             });
@@ -141,10 +153,10 @@ namespace Windy.UI
         {
             switch (GameSettings.InputDevice)
             {
-                case 0:
+                case InputDevice.Keyboard:
                     Keyboard.GetComponentInChildren<UnityEngine.UI.Button>().onClick?.Invoke();
                     break;
-                case 1:
+                case InputDevice.MobilePhone:
                     Mobile.GetComponentInChildren<UnityEngine.UI.Button>().onClick?.Invoke();
                     break;
             }
@@ -181,26 +193,6 @@ namespace Windy.UI
             UIEvents.OnToStartPage += () => { Util.ResetImagesAlpha(StartPageUIImages, 1.0f); };
 
             UIEvents.OnToOptionPage += () => PresetSettingPage();
-
-            UIEvents.OnToWalkMode += () =>
-            {
-                WalkMode.GetComponent<Image>().enabled = true;
-                GlideMode.GetComponent<Image>().enabled = false;
-                DiveMode.GetComponent<Image>().enabled = false;
-            };
-            UIEvents.OnToWalkMode.Invoke();
-            UIEvents.OnToGlideMode += () =>
-            {
-                GlideMode.GetComponent<Image>().enabled = true;
-                WalkMode.GetComponent<Image>().enabled = false;
-                DiveMode.GetComponent<Image>().enabled = false;
-            };
-            UIEvents.OnToDiveMode += () =>
-            {
-                DiveMode.GetComponent<Image>().enabled = true;
-                GlideMode.GetComponent<Image>().enabled = false;
-                WalkMode.GetComponent<Image>().enabled = false;
-            };
 
 
             UIEvents.OnOutOfBoundary += () =>

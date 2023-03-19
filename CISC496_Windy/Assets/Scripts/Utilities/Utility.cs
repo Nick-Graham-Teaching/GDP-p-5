@@ -14,14 +14,31 @@ namespace Windy
             action.Invoke();
         }
 
+        public static float ColorToVectorDistance(Color a, Color b)
+        {
+            return (new Vector4(a.r, a.g, a.b, a.a) - new Vector4(b.r, b.g, b.b, b.a)).magnitude;
+        }
 
+
+        public static void ResetImageColor(Image i, Color c)
+        {
+            i.color = new Color(c.r, c.g, c.b, i.color.a);
+        }
+        public static void ResetImagesColor(IEnumerable<Image> images, Color c)
+        {
+            foreach (Image i in images)
+            {
+                i.color = c;
+            }
+        }
         public static void ResetImageAlpha(Image i, float alpha) 
         { 
             i.color = new Color(i.color.r, i.color.g, i.color.b, alpha);
         }
-        public static void ResetImagesAlpha(Image[] images, float alpha) 
+        public static void ResetImagesAlpha(IEnumerable<Image> images, float alpha)
         {
-            foreach (Image i in images) {
+            foreach (Image i in images)
+            {
                 ResetImageAlpha(i, alpha);
             }
         }
@@ -36,24 +53,48 @@ namespace Windy
             i.color = Color.Lerp(i.color, new Color(i.color.r, i.color.g, i.color.b, alpha), rate * Time.deltaTime);
             return i.color.a < alpha + threshold;
         }
-        public static bool ImagesFadeIn(Image[] images, float rate, float alpha = 1.0f, float threshold = 0.005f) 
+        public static bool ImagesFadeIn(IEnumerable<Image> images, float rate, float alpha = 1.0f, float threshold = 0.005f)
         {
-            float a = 0.0f;
+            bool flag = true;
             foreach (Image i in images) {
-                ImageFadeIn(i, rate, alpha);
-                a = i.color.a;
+                if (!ImageFadeIn(i, rate, alpha, threshold))
+                {
+                    flag = false;
+                }
             }
-            return a > alpha - threshold;
+            return flag;
         }
-        public static bool ImagesFadeOut(Image[] images, float rate, float alpha = 0.0f, float threshold = 0.005f)
+        public static bool ImagesFadeOut(IEnumerable<Image> images, float rate, float alpha = 0.0f, float threshold = 0.005f)
         {
-            float a = 0.0f;
+            bool flag = true;
             foreach (Image i in images)
             {
-                ImageFadeOut(i, rate, alpha);
-                a = i.color.a;
+                if (!ImageFadeOut(i, rate, alpha, threshold))
+                {
+                    flag = false;
+                }
             }
-            return a < alpha + threshold;
+            return flag;
+        }
+
+        public static bool ImageColorLerp(Image image, float rate, Color targetColor, float threshold = 0.005f)
+        {
+            Color c = new Color(targetColor.r, targetColor.g, targetColor.b, image.color.a);
+            image.color = Color.Lerp(image.color, c, rate * Time.deltaTime);
+
+            return ColorToVectorDistance(image.color, targetColor) < threshold;
+        }
+        public static bool ImagesColorLerp(IEnumerable<Image> images, float rate, Color targetColor, float threshold = 0.005f)
+        {
+            bool flag = true;
+            foreach (Image i in images)
+            {
+                if (!ImageColorLerp(i, rate, targetColor, threshold))
+                {
+                    flag = false;
+                }
+            }
+            return flag;
         }
     }
 

@@ -7,7 +7,6 @@ namespace Windy.MotionMode {
         protected internal int Method;
         protected internal float flipWingsSpeed;
         protected internal float flipWingCD;
-        protected internal float flyDrag;
 
         public sealed override void Start()
         {
@@ -18,7 +17,7 @@ namespace Windy.MotionMode {
             {
                 EnergySystem.EnergySys.Instance.OnTakeOff(Method);
                 MM_Executor.Instance.StartEnergySupervisor(flipWingCD);
-                Game.GameEvents.EnableGyroscope?.Invoke(true);
+                UI.UIEvents.OnToTakeoffMode?.Invoke();
             } 
             catch (TakeOffException)
             {
@@ -30,7 +29,7 @@ namespace Windy.MotionMode {
         {
             rb.drag = flyDrag;
         }
-
+        
         public override string ToString() => "MotionMode -- Takeoff";
 
     }

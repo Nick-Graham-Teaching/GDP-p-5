@@ -47,10 +47,17 @@ namespace Windy.Controller
             else
                 NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreatePauseMessage(KEYSTAT.IDLE), 5, out error);
         }
+        [Obsolete]
         public virtual void SetUseGyroActive(bool active)
         {
             byte error;
             NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreateUseGyroMessage(active), 2, out error);
+        }
+        private void SendUseGyroMessage()
+        {
+            byte error;
+            NetworkTransport.Send(hostId, connectionId, dataChannelId, 
+                Message.CreateUseGyroMessage(MM_Executor.Instance.MotionMode.UseGyro()), 2, out error);
         }
 
         public virtual void InitNetwork()
@@ -179,6 +186,8 @@ namespace Windy.Controller
 
         public void Update()
         {
+            SendUseGyroMessage();
+
             byte[] recBuffer = new byte[1024];
             int bufferSize = 1024;
             int dataSize;

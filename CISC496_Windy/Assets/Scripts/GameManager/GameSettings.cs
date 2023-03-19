@@ -4,9 +4,19 @@ using UnityEngine;
 
 namespace Windy.Game
 {
+    public enum InputDevice
+    {
+        Keyboard, MobilePhone
+    }
+    public enum FrameRate
+    {
+        F30, F60, F120
+    }
+
+
     public static class GameSettings 
     {
-        private static int _inputDevice = 1;  // 0 == Keyboard; 1 == Mobile
+        private static InputDevice _inputDevice = InputDevice.Keyboard;  // 0 == Keyboard; 1 == Mobile
 
         private static int _frameRate = 1;    // 0 == 30; 1 == 60; 2 == 120
 
@@ -14,7 +24,7 @@ namespace Windy.Game
         private static float _sensitivityY = 0; // 0 -> 1
 
 
-        public static int InputDevice
+        public static InputDevice InputDevice
         {
             get => _inputDevice;
             set

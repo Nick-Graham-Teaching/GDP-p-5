@@ -30,7 +30,7 @@ namespace Windy.UI
 
         public void OnChangeInputDevice(int a)
         {
-            GameSettings.InputDevice = a;
+            GameSettings.InputDevice = (InputDevice)a;
         }
 
         public void OnChangeFrameRate(int a)

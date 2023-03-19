@@ -53,7 +53,6 @@ namespace Windy.Builder
 
         public MotionMode.MotionMode Build()
         {
-            UI.UIEvents.OnToWalkMode?.Invoke();
             return _mode;
         }
 

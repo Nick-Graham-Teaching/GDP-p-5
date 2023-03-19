@@ -20,11 +20,11 @@ namespace Windy.Controller
         private static Builder.Builder_C_KM B_C_KeyboardMouse { get; } = new();
         private static Builder.Builder_C_MP B_C_MobilePhone   { get; } = new();
 
-        public  static void SwitchController(int device)
+        static void SwitchController(Game.InputDevice device)
         {
             switch (device)
             {
-                case 0:
+                case Game.InputDevice.Keyboard:
                     
                     if (ControlDevice is not null) ControlDevice.Quit();
 
@@ -34,7 +34,7 @@ namespace Windy.Controller
 
                     break;
 
-                case 1:
+                case Game.InputDevice.MobilePhone:
 
                     if (ControlDevice is not null) ControlDevice.Quit();
 
@@ -71,6 +71,7 @@ namespace Windy.Controller
 
         public void ResetGyroAxes() => B_C_MobilePhone.ResetGyroAxes();
         public void SetPhoneContinueActive(bool active = true) => B_C_MobilePhone.SetPhoneContinueActive(active);
+        [System.Obsolete]
         public void SetUseGyroActive(bool flag = false) => B_C_MobilePhone.SetUseGyroActive(flag);
 
     }

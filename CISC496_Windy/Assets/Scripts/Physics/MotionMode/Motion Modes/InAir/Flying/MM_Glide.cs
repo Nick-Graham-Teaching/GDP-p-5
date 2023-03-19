@@ -15,6 +15,12 @@ namespace Windy.MotionMode {
             }
         }
 
+        public override void Start()
+        {
+            rb.drag = flyDrag;
+            UI.UIEvents.OnToGlideMode?.Invoke();
+        }
+
         public sealed override bool IsGlide() => true;
 
         public override string ToString() => "MotionMode -- Glide";

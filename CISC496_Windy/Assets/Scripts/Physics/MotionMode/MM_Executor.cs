@@ -110,8 +110,6 @@ namespace Windy
         float flyAccelScalar;
         [SerializeField]
         float MaxFlySpeed;
-        [SerializeField]
-        float LowestFlyHeight;
 
         [Pixeye.Unity.Foldout("Flip Wings", true)]
         [SerializeField]
@@ -136,6 +134,12 @@ namespace Windy
         float LandStopAngle;
         [SerializeField]
         float LandStopRatio;
+        [SerializeField]
+        float LowestFlyHeight;
+        [SerializeField]
+        float BelowFlightHeightTime;
+        [SerializeField]
+        float LandingHeight;
         #endregion
 
         #region Buoyancy Part
@@ -172,6 +176,10 @@ namespace Windy
         public bool AboveMinimumFlightHeight(out RaycastHit hitInfo)
         {
             return !Physics.Raycast(transform.position, Vector3.down, out hitInfo, LowestFlyHeight, groundLayerMask);
+        }
+        public bool BelowMinimumLandingHeight()
+        {
+            return Physics.Raycast(transform.position, Vector3.down, LandingHeight, groundLayerMask);
         }
 
         IEnumerator EnergyConsumptionSupervisor(float CD)
@@ -241,6 +249,12 @@ namespace Windy
             B_S_Land
                 .SetBody(rb)
                 .SetGroundLayerMask(groundLayerMask);
+            B_S_InAir
+                .SetFloatValues(
+                    switcher => {
+                        switcher.BelowFlightHeightTime = BelowFlightHeightTime;
+                    }
+                );
 
             B_B_Glide
                 .SetForceFloats(
@@ -331,6 +345,7 @@ namespace Windy
                         mode.rotationAngle_turnAround = rotationAngle_turnAround;
                         mode.diveAngle = diveAngle;
                         mode.turnAroundAngle = turnAroundAngle;
+                        mode.flyDrag = flyDrag;
                     }
                 )
                 .SetBuoyancy(B_B_Glide.Build());
@@ -345,6 +360,7 @@ namespace Windy
                         mode.rotationAngle_turnAround = rotationAngle_turnAround;
                         mode.diveAngle = diveAngle;
                         mode.turnAroundAngle = turnAroundAngle;
+                        mode.flyDrag = flyDrag;
                     }
                 )
                 .SetBuoyancy(B_B_Dive.Build());

@@ -27,8 +27,6 @@ namespace Windy.Game
             if (Input.GetKeyDown(Keys.PauseCode) || Controller.Controller.ControlDevice.GetKeyDown(Keys.PauseCode, out float _))
             {
                 GameProgressManager.Instance.GameState = new Pause();
-                UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
-                UI.UIEventsHandler.Instance.PausePage.SetActive(true);
             }
         }
         public override bool IsInGame() => true;
@@ -72,8 +70,6 @@ namespace Windy.Game
             if (Input.GetKeyDown(Keys.ContinueCode) || Controller.Controller.ControlDevice.GetKeyDown(Keys.ContinueCode, out float _))
             {
                 GameProgressManager.Instance.GameState = new Continue();
-                UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
-                UI.UIEventsHandler.Instance.PausePage.SetActive(false);
             }
         }
         protected override void OnStateChange()

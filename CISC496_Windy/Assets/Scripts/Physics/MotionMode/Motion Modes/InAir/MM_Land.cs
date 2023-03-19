@@ -18,14 +18,15 @@ namespace Windy.MotionMode {
         public sealed override void Start()
         {
             MM_Executor.Instance.StopEnergySupervisor();
-            Game.GameEvents.EnableGyroscope?.Invoke(false);
 
             RaycastHit hitInfo;
             Physics.Raycast(transform.position, Vector3.down, out hitInfo, float.PositiveInfinity, GroundLayerMask);
 
             float cosTheta = Vector3.Dot(hitInfo.normal, -rb.velocity.normalized);
+
             if (cosTheta < Mathf.Cos((90.0f - LandAngle) * Mathf.Deg2Rad))
             {
+
                 // keep momentum
                 Vector3 v = rb.velocity.magnitude * new Vector3(rb.velocity.x, 0.0f, rb.velocity.z).normalized;
                 //StartCoroutine(MomentumMaintain(rb.velocity.magnitude * new Vector3(rb.velocity.x, 0.0f, rb.velocity.z).normalized));   // May lose some velocity, but can be ignored.

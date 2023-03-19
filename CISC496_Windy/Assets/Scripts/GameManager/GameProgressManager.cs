@@ -17,14 +17,11 @@ namespace Windy.Game
 
         public static Action OnToStartPage;
 
-        public static Action<int> OnInputDeviceChange;
+        public static Action<InputDevice> OnInputDeviceChange;
         public static Action<int> OnFrameRateChange;
         public static Action<float> OnSentivityXChange;
         public static Action<float> OnSentivityYChange;
-
-        public static Action<bool> EnableGyroscope;
     }
-
 
 
     public class GameProgressManager : Singleton<GameProgressManager>
@@ -37,7 +34,7 @@ namespace Windy.Game
 
         public GameObject Clouds;
 
-        public GameObject MonitorCamera;
+        public GameObject GyroscopeAttitudeSimulator;
 
 
         public bool OutOfBoundary { get; set; }
@@ -53,6 +50,9 @@ namespace Windy.Game
         private void Update()
         {
             GameState.Update();
+
+            if(MM_Executor.Instance.MotionMode.UseGyro() && GameState.IsInGame()) GyroscopeAttitudeSimulator.SetActive(true);
+            else GyroscopeAttitudeSimulator.SetActive(false);
         }
 
 
@@ -60,12 +60,6 @@ namespace Windy.Game
         {
 
             cameraFollow = Camera.GetComponent<CameraFollow>();
-
-            GameEvents.EnableGyroscope += (flag) =>
-            {
-                MonitorCamera.SetActive(flag);
-                Controller.Controller.Instance.SetUseGyroActive(flag);
-            };
 
             GameEvents.OnToStartPage += () =>           // Invoked by new Ready();
             {
@@ -79,11 +73,14 @@ namespace Windy.Game
                 UI.UIEventsHandler.Instance.SettingsPage.SetActive(false);
                 UI.UIEventsHandler.Instance.PausePage.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
+                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
                 UI.UIEventsHandler.Instance.CountdownPage.SetActive(false);
                 UI.UIEventsHandler.Instance.GameoverPage.SetActive(false);
                 UI.UIEvents.OnToStartPage?.Invoke();
+                UI.UIEvents.OnToWalkMode?.Invoke();
 
                 Cursor.lockState = CursorLockMode.None;
+
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
             };
             // void EnergySystem.   OnResetStatus() => Energy = MaxEnergy;
@@ -108,18 +105,24 @@ namespace Windy.Game
                 Clouds.SetActive(true);
                 UI.UIEventsHandler.Instance.StartPage.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
+                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(true);
                 GameState = new InGame();
 
                 //Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
+
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
-                GameEvents.EnableGyroscope?.Invoke(false);
             };
             GameEvents.OnPause += () =>                 // Invoked by new Pause();
             {
                 cameraFollow.updateView = false;
                 Cursor.lockState = CursorLockMode.None;
+
                 Controller.Controller.Instance.SetPhoneContinueActive(true);
+
+                UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
+                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
+                UI.UIEventsHandler.Instance.PausePage.SetActive(true);
             };
             // void Player. OnPauseStatus()
             // {
@@ -131,7 +134,12 @@ namespace Windy.Game
             {
                 cameraFollow.updateView = true;
                 Cursor.lockState = CursorLockMode.Locked;
+
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
+
+                UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
+                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(true);
+                UI.UIEventsHandler.Instance.PausePage.SetActive(false);
             };
             // void PLayer. OnContinueStatus()
             // {
@@ -142,6 +150,7 @@ namespace Windy.Game
             {
                 cameraFollow.updateView = true;
                 Cursor.lockState = CursorLockMode.Locked;
+
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
             };
             // void EnergySystem.   OnResetStatus() => Energy = MaxEnergy;
@@ -174,14 +183,14 @@ namespace Windy.Game
             GameEvents.OnGameOver += () =>
             {
                 cameraFollow.updateView = false;
+
                 Cursor.lockState = CursorLockMode.None;
 
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
+                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
                 UI.UIEventsHandler.Instance.GameoverPage.SetActive(true);
 
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
-
-                GameEvents.EnableGyroscope?.Invoke(false);
             };
 
 
