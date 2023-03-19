@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Windy.UI
+namespace Windy.Puzzle
 {
     public enum PuzzleAnswerLetters
     {
-        A,E,I,N,O,Q,S,T,U,Y
+        A,E,I,N,O,Q,S,T,U,Y,Reset
     }
 
-    public class UI_Puzzle : Singleton<UI_Puzzle>
+    public class PuzzleManager : Singleton<PuzzleManager>
     {
         private string filePath = "Puzzle Letters/{0}";
 
@@ -32,6 +32,8 @@ namespace Windy.UI
         public Image Letter4;
         public Image Letter5;
         public Image Letter6;
+
+        public float WrongAnswerWarningColorChangeRate;
 
         private Image[] UI_Letters = new Image[6];
         private PuzzleAnswerLetters[] _playerAnswer = new PuzzleAnswerLetters[6];
@@ -69,6 +71,15 @@ namespace Windy.UI
             }
         }
 
+        IEnumerator WrongAnswerWarnAnimation()
+        {
+            yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.red));
+            yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.white));
+            yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.red));
+            yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.white));
+            ClearInput();
+        }
+
         public void DeleteOneInput()
         {
             UI_Letters[Pointer--].sprite = Blank;
@@ -76,6 +87,11 @@ namespace Windy.UI
 
         public void Input(PuzzleAnswerLetters letter)
         {
+            if (Pointer == 6)
+            {
+                return;
+            }
+
             switch (letter)
             {
                 case PuzzleAnswerLetters.A:
@@ -118,6 +134,9 @@ namespace Windy.UI
                     UI_Letters[Pointer].sprite = letter_Y;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.Y;
                     break;
+                case PuzzleAnswerLetters.Reset:
+                    ClearInput();
+                    break;
             }
 
             if (Pointer == 6)
@@ -132,7 +151,7 @@ namespace Windy.UI
             {
                 if (_playerAnswer[i] != CorrectAnswer[i])
                 {
-                    ClearInput();
+                    StartCoroutine(WrongAnswerWarnAnimation());
                     return;
                 }
             }
@@ -164,17 +183,6 @@ namespace Windy.UI
             UI_Letters[3] = Letter4;
             UI_Letters[4] = Letter5;
             UI_Letters[5] = Letter6;
-        }
-
-
-        private void Start()
-        {
-            //Letter1.sprite = Blank;
-            //Letter2.sprite = Blank;
-            //Letter3.sprite = Blank;
-            //Letter4.sprite = Blank;
-            //Letter5.sprite = Blank;
-            //Letter6.sprite = Blank;
         }
     }
 }

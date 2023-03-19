@@ -10,6 +10,7 @@ namespace Windy
         // Position offset from target position
         // -viewDirection is the viewing direction from Camera to target
         public Vector3 viewDirection;
+        private Vector3 viewDirectionBackUp;
 
         // When viewdirection length is smaller than maxLength and not blocked by any walls
         public float viewDirEnlargeRate;
@@ -71,8 +72,14 @@ namespace Windy
             transform.SetPositionAndRotation(StartPosition, StartRotation);
         }
 
+        public void OnRestart()
+        {
+            viewDirection = viewDirectionBackUp;
+        }
+
         private void OnEnable()
         {
+            viewDirectionBackUp = viewDirection;
             MaxLength = viewDirection.magnitude;
             xRotateRate = MinRotationRateX;
             yRotateRate = MinRotationRateY;
@@ -86,14 +93,6 @@ namespace Windy
 
         void UpdateViewDirection()
         {
-            //// Rotation by Y Axis
-            //viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse X") * xRotateRate, Vector3.up) * viewDirection;
-            //// Rotation by X Axis
-            //Vector3 oldV = viewDirection;
-            //if (transform.rotation.eulerAngles.y > 90.0f && transform.rotation.eulerAngles.y < 270.0f)
-            //    viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.right) * viewDirection;
-            //else
-            //    viewDirection = Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * yRotateRate, Vector3.left) * viewDirection;
             // Rotation by Y Axis
             viewDirection = Quaternion.AngleAxis(Controller.Controller.ControlDevice.GetCameraMoveAxisX() * xRotateRate, Vector3.up) * viewDirection;
             // Rotation by X Axis

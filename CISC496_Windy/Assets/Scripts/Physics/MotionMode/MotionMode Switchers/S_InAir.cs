@@ -40,7 +40,6 @@ namespace Windy.MotionModeSwitcher
 
         public sealed override void Update()
         {
-            Debug.Log(belowFlightHeightTimeDelta);
 
             if (Controller.Controller.ControlDevice.GetKeyDown(Keys.ModeSwitchCode, out float _))
             {

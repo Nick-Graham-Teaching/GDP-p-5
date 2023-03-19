@@ -141,7 +141,7 @@ namespace Windy.MotionMode
 
                 if (Controller.Controller.ControlDevice.GetKeyTap(Keys.JumpCode, out float degree))
                 {
-                    direction += Quaternion.AngleAxis(jumpAngle, -transform.right) * (degree * transform.forward);
+                    direction += degree * Vector3.up;
                 }
 
                 if (Controller.Controller.ControlDevice.GetKeyTap(Keys.UpCode, out degree))
