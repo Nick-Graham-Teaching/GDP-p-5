@@ -139,14 +139,14 @@ static class Messages {
 }
 static class Logger
 {
-	public static void Log(String msg)
+	public static void Log(string msg)
 	{
 		Debug.Log(msg);
 	}
 
-	public static void LogFormat(String msg, params object[] formatters)
+	public static void LogFormat(string msg, params object[] formatters)
 	{
-		String formattedMsg = String.Format(msg, formatters);
+		string formattedMsg = string.Format(msg, formatters);
 		Log(formattedMsg);
 	}
 }
@@ -171,16 +171,16 @@ public class ServerNetwork : MonoBehaviour
 		byte messageType = Messages.GetMessageType(message);
 		float rotation;
 		switch (messageType) {
-			case (byte)1:  // Messages.MOVEMENT
+			case 1:  // Messages.MOVEMENT
 				float x, y, z;
 				Messages.GetMovementMessage(message, out x, out y, out z);
 				sphe.transform.position = sphe.transform.position + 11.0f * new Vector3(x, y, z) * Time.deltaTime;
 				break;
-			case (byte)2:  // Messages.XROTATION
+			case 2:  // Messages.XROTATION
 				rotation = Messages.GetRotationMessage(message);
 				cubeRotation.transform.rotation *= Quaternion.Euler(rotation, 0, 0);
 				break;
-			case (byte)3:  // Messages.YROTATION
+			case 3:  // Messages.YROTATION
 				rotation = Messages.GetRotationMessage(message);
 				cubeRotation.transform.rotation *= Quaternion.Euler(0, rotation, 0);
 				break;
@@ -235,6 +235,7 @@ public class ServerNetwork : MonoBehaviour
 		hostId = NetworkTransport.AddHost(topology, serverPort);
 
 		Logger.Log(string.Format("Server created with hostId {0}", hostId));
+
 	}
 
 	void Start()
