@@ -69,10 +69,30 @@ namespace Windy.Controller
 
         }
 
-        public void ResetGyroAxes() => B_C_MobilePhone.ResetGyroAxes();
-        public void SetPhoneContinueActive(bool active = true) => B_C_MobilePhone.SetPhoneContinueActive(active);
-        [System.Obsolete]
-        public void SetUseGyroActive(bool flag = false) => B_C_MobilePhone.SetUseGyroActive(flag);
+        public void ResetGyroAxes()
+        {
+            if (ControlDevice.GetType() == B_C_MobilePhone.Build().GetType())
+            {
+                B_C_MobilePhone.ResetGyroAxes();
+            }
+        }
 
+        public void SetPhoneContinueActive(bool active = true)
+        {
+            if (ControlDevice.GetType() == B_C_MobilePhone.Build().GetType())
+            {
+                B_C_MobilePhone.SetPhoneContinueActive(active);
+            }
+        }
+
+        [Obsolete]
+        public void SetUseGyroActive(bool flag = false) 
+        {
+
+            if (ControlDevice.GetType() == B_C_MobilePhone.Build().GetType())
+            {
+                B_C_MobilePhone.SetUseGyroActive(flag);
+            }
+        } 
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace Windy.MotionMode {
@@ -7,6 +8,16 @@ namespace Windy.MotionMode {
         protected internal int Method;
         protected internal float flipWingsSpeed;
         protected internal float flipWingCD;
+
+        IEnumerator IsTakingOffSuccessful()
+        {
+            yield return new WaitForSeconds(3.0f);
+            if (MM_Executor.Instance.MotionMode.GetType() == MM_Executor.Instance.B_M_Takeoff.Build().GetType())
+            {
+                MM_Executor.Instance.StopEnergySupervisor();
+                MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Walk, MM_Executor.Instance.B_S_Walk);
+            }
+        }
 
         public sealed override void Start()
         {
@@ -18,6 +29,8 @@ namespace Windy.MotionMode {
                 EnergySystem.EnergySys.Instance.OnTakeOff(Method);
                 MM_Executor.Instance.StartEnergySupervisor(flipWingCD);
                 UI.UIEvents.OnToTakeoffMode?.Invoke();
+
+                MM_Executor.Instance.StartCoroutine(IsTakingOffSuccessful());
             } 
             catch (TakeOffException)
             {

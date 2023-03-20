@@ -16,6 +16,7 @@ namespace Windy
         public static Vector3 NewForward { get; private set; }
 
         bool calledOnce;
+
         public void ResetGyroAxes()
         {
             calledOnce = true;
@@ -25,6 +26,7 @@ namespace Windy
         {
             Input.gyro.enabled = true;
             calledOnce = true;
+            NewAxes = new Matrix3();
         }
 
 

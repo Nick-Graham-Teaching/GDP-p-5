@@ -31,6 +31,9 @@ namespace Windy.Controller
 		public const byte UseGyro		  = 16;   // The message from server
 
 		public const byte GyroForwardUp   = 17;
+
+		public const byte ToFlyingMode	  = 18; // The message from server
+		public const byte ToWalkMode	  = 19; // The message from server
 									      
         public static int maxMessageSize = 128; // maximum size of a message in bytes
 
@@ -374,7 +377,7 @@ namespace Windy.Controller
 		}
 		#endregion
 
-		#region Use Gyro Message
+		#region Gyro Attitude Message
 		public static byte[] CreateGyroForwardUpMessage(Vector3 forward, Vector3 up) 
 		{
 			// Format is:
@@ -402,6 +405,32 @@ namespace Windy.Controller
 		{
 			forward = new Vector3(ExtractFloat(message, 1),  ExtractFloat(message, 5),  ExtractFloat(message, 9));
 			up      = new Vector3(ExtractFloat(message, 13), ExtractFloat(message, 17), ExtractFloat(message, 21));
+		}
+		#endregion
+
+		#region To Flying Mode Message
+		public static byte[] CreateToFlyingModeMessage()
+		{
+			// Format is:
+			//	 - byte 0: message type
+
+			byte[] m = new byte[1];
+			m[0] = ToFlyingMode;
+
+			return m;
+		}
+		#endregion
+
+		#region To Walking Mode Message
+		public static byte[] CreateToWalkingModeMessage()
+		{
+			// Format is:
+			//	 - byte 0: message type
+
+			byte[] m = new byte[1];
+			m[0] = ToWalkMode;
+
+			return m;
 		}
 		#endregion
 

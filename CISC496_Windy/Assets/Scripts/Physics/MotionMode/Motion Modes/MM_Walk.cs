@@ -222,6 +222,7 @@ namespace Windy.MotionMode
             if (MM_Executor.Instance.B_M_Previous?.GetType() != MM_Executor.Instance.B_M_Takeoff?.GetType()) UI.UIEvents.OnToWalkMode?.Invoke();
         }
 
+        public override bool IsOnGround() => true;
         public override string ToString() => "MotionMode -- Walk";
     }
 }

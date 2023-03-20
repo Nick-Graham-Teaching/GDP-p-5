@@ -36,15 +36,15 @@ public class GyroscopeRotate : MonoBehaviour
     {
         transform.rotation = Quaternion.LookRotation(GyroAttitudeHandler.NewForward, GyroAttitudeHandler.NewUp);
 
-        GameObject.Find("text1").GetComponent<Text>().text = GyroAttitudeHandler.LastCosX.ToString();
-        GameObject.Find("text2").GetComponent<Text>().text = GyroAttitudeHandler.LastCosY.ToString();
+        //GameObject.Find("text1").GetComponent<Text>().text = GyroAttitudeHandler.LastCosX.ToString();
+        //GameObject.Find("text2").GetComponent<Text>().text = GyroAttitudeHandler.LastCosY.ToString();
     }
 
     public void resetRotation() {
         transform.rotation = Quaternion.identity;
-        GameObject.Find("text1").GetComponent<Text>().text = "0.0";
-        GameObject.Find("text2").GetComponent<Text>().text = "0.0";
-        GameObject.Find("text3").GetComponent<Text>().text = "0.0";
+        //GameObject.Find("text1").GetComponent<Text>().text = "0.0";
+        //GameObject.Find("text2").GetComponent<Text>().text = "0.0";
+        //GameObject.Find("text3").GetComponent<Text>().text = "0.0";
         GyroAttitudeHandler.Instance.ResetGyroAxes();
     }
 }

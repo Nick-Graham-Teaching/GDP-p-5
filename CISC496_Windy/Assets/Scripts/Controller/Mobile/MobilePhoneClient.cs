@@ -26,6 +26,7 @@ namespace Windy.Controller
         int _dataChannelId;
 
         bool useGyro;
+        bool isFlying;
 
         void ProcessIncomingData(byte[] message)
         {
@@ -44,10 +45,23 @@ namespace Windy.Controller
                     break;
                 case Message.UseGyro:
                     Message.GetUseGyroMessage(message, out useGyro);
-                    GameObject.Find("text3").GetComponent<Text>().text = useGyro.ToString();
                     if (!useGyro)
                     {
                         SendGyroToHandPanelResetMessage();
+                    }
+                    break;
+                case Message.ToFlyingMode:
+                    if (!isFlying)
+                    {
+                        isFlying = true;
+                        UI.MP_UIEvents.OnToInAirMode.Invoke();
+                    }
+                    break;
+                case Message.ToWalkMode:
+                    if (isFlying)
+                    {
+                        isFlying = false;
+                        UI.MP_UIEvents.OnBackToGroundMode?.Invoke();
                     }
                     break;
             }

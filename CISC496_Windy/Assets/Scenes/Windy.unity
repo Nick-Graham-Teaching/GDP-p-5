@@ -31472,7 +31472,6 @@ GameObject:
   - component: {fileID: 1971272161}
   - component: {fileID: 1971272160}
   - component: {fileID: 1971272162}
-  - component: {fileID: 1971272163}
   m_Layer: 5
   m_Name: Mode Circle
   m_TagString: Untagged
@@ -31555,18 +31554,6 @@ Animation:
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
---- !u!114 &1971272163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1971272158}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 34fc9bdd49435324890d78c2d5bcab65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1974733567
 GameObject:
   m_ObjectHideFlags: 0
@@ -49245,7 +49232,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.01
-  far clip plane: 1000
+  far clip plane: 3000
   field of view: 30
   orthographic: 0
   orthographic size: 5

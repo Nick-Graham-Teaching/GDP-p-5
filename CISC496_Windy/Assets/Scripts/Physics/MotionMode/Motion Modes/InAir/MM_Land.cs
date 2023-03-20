@@ -63,6 +63,8 @@ namespace Windy.MotionMode {
             }
         }
 
+        public override bool IsOnGround() => true;
+
         public override string ToString() => "MotionMode -- Land";
     }
 

@@ -5,18 +5,11 @@ using UnityEngine.UI;
 using Windy;
 
 
-public class Parent
-{
-
-}
-public class Child : Parent { }
-
 public class TouchPhaseExample : MonoBehaviour
 {
 
-    private void Start()
+    private void Update()
     {
-        Parent p = new Child();
-        Debug.Log(p.GetType());
+        Debug.Log(GetComponent<UnityEngine.UI.Button>().colors.fadeDuration);
     }
 }

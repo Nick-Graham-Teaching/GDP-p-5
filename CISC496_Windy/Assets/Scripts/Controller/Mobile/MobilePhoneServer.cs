@@ -53,28 +53,27 @@ namespace Windy.Controller
             byte error;
             NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreateUseGyroMessage(active), 2, out error);
         }
-        private void SendUseGyroMessage()
+
+
+
+        void SendUseGyroMessage()
         {
             byte error;
             NetworkTransport.Send(hostId, connectionId, dataChannelId, 
                 Message.CreateUseGyroMessage(MM_Executor.Instance.MotionMode.UseGyro()), 2, out error);
         }
-
-        public virtual void InitNetwork()
+        void SendToFlyingOrToWalkMessage()
         {
-            NetworkTransport.Init();
-
-            ConnectionConfig config = new ConnectionConfig();
-            controlChannelId = config.AddChannel(QosType.Reliable);
-            dataChannelId = config.AddChannel(QosType.Unreliable);
-
-            topology = new HostTopology(config, maxConnections);
-            hostId = NetworkTransport.AddHost(topology, serverPort);
-
-            connectionId = int.MinValue;
+            byte error;
+            if (MM_Executor.Instance.MotionMode.IsOnGround())
+            {
+                NetworkTransport.Send(hostId, connectionId, dataChannelId,
+                    Message.CreateToWalkingModeMessage(), 1, out error);
+            }
+            else
+                NetworkTransport.Send(hostId, connectionId, dataChannelId,
+                    Message.CreateToFlyingModeMessage(), 1, out error);
         }
-        
-
         void ProcessMessage(byte[] message)
         {
             byte messageType = Messages.GetMessageType(message);
@@ -187,6 +186,7 @@ namespace Windy.Controller
         public void Update()
         {
             SendUseGyroMessage();
+            SendToFlyingOrToWalkMessage();
 
             byte[] recBuffer = new byte[1024];
             int bufferSize = 1024;
@@ -221,6 +221,20 @@ namespace Windy.Controller
                         break;
                 }
             }
+        }
+
+        public virtual void InitNetwork()
+        {
+            NetworkTransport.Init();
+
+            ConnectionConfig config = new ConnectionConfig();
+            controlChannelId = config.AddChannel(QosType.Reliable);
+            dataChannelId = config.AddChannel(QosType.Unreliable);
+
+            topology = new HostTopology(config, maxConnections);
+            hostId = NetworkTransport.AddHost(topology, serverPort);
+
+            connectionId = int.MinValue;
         }
 
         public void Start()
