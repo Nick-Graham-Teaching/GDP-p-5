@@ -1,5 +1,12 @@
-public sealed class WindyLand : SpecialZone
+
+
+
+namespace Windy.SpecialZone
 {
-    public override float EffectoveDistance { get => effectiveDistance; }
-    public override float Buoyancy { get => buoyancy; }
+    public sealed class WindyLand : SpecialZone
+    {
+        public override float EffectoveDistance { get => effectiveDistance; }
+        public override float Buoyancy { get => buoyancy; }
+    }
 }
+
