@@ -167,7 +167,8 @@ namespace Windy.Controller
                 keyDic[key].Value = KEYSTAT.TAP;
                 keyDic[key].degree = degree;
             }
-            else
+            else if (type == FingerType.Up) { }
+            else if( type == FingerType.End)
             {
                 keyDic[key].Value = KEYSTAT.IDLE;
                 keyDic[key].degree = degree;

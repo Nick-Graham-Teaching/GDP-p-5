@@ -7,9 +7,8 @@ using Windy;
 
 public class TouchPhaseExample : MonoBehaviour
 {
-
     private void Update()
     {
-        Debug.Log(GetComponent<UnityEngine.UI.Button>().colors.fadeDuration);
+
     }
 }

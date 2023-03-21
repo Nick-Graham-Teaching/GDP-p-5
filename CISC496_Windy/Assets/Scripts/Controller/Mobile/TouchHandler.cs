@@ -6,7 +6,7 @@ namespace Windy.Controller
 {
     public enum FingerType
     {
-        Tap, Press, End, Available
+        Tap, Press, Up, End, Available
     }
 
     public abstract class Finger
@@ -51,9 +51,9 @@ namespace Windy.Controller
             get
             {
                 Vector2 direction = _moveToPos - StartPos;
-                if (direction.magnitude < (Screen.height / 5.0f))
+                if (direction.magnitude < TouchHandler.MoveDirectionControllerMaxRadius)
                 {
-                    return direction / (Screen.height / 5.0f);
+                    return direction / TouchHandler.MoveDirectionControllerMaxRadius;
                 }
 
                 return direction.normalized;
@@ -100,6 +100,10 @@ namespace Windy.Controller
         public static CameraFinger CameraFinger { get => _cameraFinger; }
         public static PlayerFinger PlayerFinger { get => _playerFinger; }
 
+        public RectTransform MoveDirectionIcon;
+
+        public static float MoveDirectionControllerMaxRadius = Screen.height / 6.0f;
+
         public float DirectionKeyColdDown;
         public float JumpKeyColdDown;
 
@@ -123,7 +127,7 @@ namespace Windy.Controller
                             else if (_playerFinger.Type == FingerType.Available && startPos.x <= Screen.width / 2.0f)
                             {
                                 _playerFinger.FingerID = touch.fingerId;
-                                _playerFinger.StartPos = touch.position;
+                                //_playerFinger.StartPos = touch.position;
                                 StartCoroutine(PressOrTap(DirectionKeyColdDown));
                             }
                             break;
@@ -143,15 +147,16 @@ namespace Windy.Controller
                             if (touch.fingerId == _cameraFinger.FingerID)
                             {
                                 _cameraFinger.DeltaPosition = Vector2.zero;
-                                _cameraFinger.Type = FingerType.End;
-                                StartCoroutine(ResetFinger(_cameraFinger));
+                                _cameraFinger.Type = FingerType.Available;
+                                _cameraFinger.FingerID = -1;
                             }
                             else if (touch.fingerId == _playerFinger.FingerID)
                             {
-                                _playerFinger.DeltaPosition = _playerFinger.StartPos;
-                                _playerFinger.BackUpPos = touch.position;
-                                _playerFinger.Type = FingerType.End;
-                                StartCoroutine(ResetFinger(_playerFinger));
+                                //_playerFinger.DeltaPosition = _playerFinger.StartPos;
+                                //_playerFinger.BackUpPos = touch.position;
+                                _playerFinger.Type = FingerType.Up;
+                                _playerFinger.FingerID = -1;
+                                StartCoroutine(ResetFinger());
                             }
                             break;
                     }
@@ -166,30 +171,29 @@ namespace Windy.Controller
 
                 time += Time.deltaTime;
 
-                return _playerFinger.Type == FingerType.End || time >= CD;
+                return _playerFinger.Type == FingerType.Up || time >= CD;
             });
 
-            if (_playerFinger.Type == FingerType.End)
+            if (_playerFinger.Type == FingerType.Up)
             {
-                _playerFinger.DeltaPosition = _playerFinger.BackUpPos;
+                //_playerFinger.DeltaPosition = _playerFinger.BackUpPos;
                 _playerFinger.Type = FingerType.Tap;
                 yield return null;
                 _playerFinger.DeltaPosition = _playerFinger.StartPos;
                 _playerFinger.Type = FingerType.End;
                 yield return null;
                 _playerFinger.Type = FingerType.Available;
-                _playerFinger.FingerID = -1;
             }
 
             else _playerFinger.Type = FingerType.Press;
         }
-        IEnumerator ResetFinger(Finger f)
+        IEnumerator ResetFinger()
         {
             yield return null;
-            if (f.Type == FingerType.End)
+            if (_playerFinger.Type == FingerType.Up)
             {
-                f.Type = FingerType.Available;
-                f.FingerID = -1;
+                _playerFinger.DeltaPosition = _playerFinger.StartPos;
+                _playerFinger.Type = FingerType.Available;
             }
         }
 
@@ -200,8 +204,10 @@ namespace Windy.Controller
 
         void Start()
         {
-            _playerFinger = new PlayerFinger(-1, Vector2.zero);
+            _playerFinger = new PlayerFinger(-1, MoveDirectionIcon.transform.position);
             _cameraFinger = new CameraFinger(-1, Vector2.zero);
+
+            _playerFinger.DeltaPosition = _playerFinger.StartPos;
         }
 
 

@@ -189,11 +189,8 @@ namespace Windy.Controller
 
         private void SendCameraMessages()
         {
-            if (TouchHandler.CameraFinger.Type != FingerType.Available)
-            {
-                SendMessageToServer(Message.CreateCameraRotationXMessage(TouchHandler.GetCameraAxisX()));
-                SendMessageToServer(Message.CreateCameraRotationYMessage(TouchHandler.GetCameraAxisY()));
-            }
+            SendMessageToServer(Message.CreateCameraRotationXMessage(TouchHandler.GetCameraAxisX()));
+            SendMessageToServer(Message.CreateCameraRotationYMessage(TouchHandler.GetCameraAxisY()));
         }
 
         private void Update()

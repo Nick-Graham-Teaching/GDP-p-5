@@ -709,7 +709,8 @@ PlayerSettings:
   webGLDecompressionFallback: 0
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Standalone: UNISTORM_PRESENT
+    Android: DISTANT_LANDS;COZY_WEATHER
+    Standalone: UNISTORM_PRESENT;DISTANT_LANDS;COZY_WEATHER
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}
