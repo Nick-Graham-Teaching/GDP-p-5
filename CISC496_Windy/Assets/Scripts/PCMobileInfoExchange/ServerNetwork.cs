@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using UnityEngine.UI;
-
+using System.Collections;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 static class Messages {
 
@@ -163,8 +166,14 @@ public class ServerNetwork : MonoBehaviour
 	int controlChannelId;  // reliable channel for control messages
 	int dataChannelId;  // unreliable channel for movement info
 
+	bool isConnected;
+
 	GameObject sphe;
 	GameObject cubeRotation;
+
+	UdpClient _client;
+	IPEndPoint _endPoint;
+	const int _broadcastPort = 51340;
 
 	void ProcessMessage(byte[] message)
 	{
@@ -210,13 +219,16 @@ public class ServerNetwork : MonoBehaviour
 					messagesAvailable = false;
 					break;
 				case NetworkEventType.ConnectEvent:
+					isConnected = true;
 					this.connectionId = connectionId;
+					Logger.Log(string.Format("Connection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId));
 					break;
 				case NetworkEventType.DataEvent:
 					Logger.LogFormat("Message received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
 					ProcessMessage(recBuffer);
 					break;
 				case NetworkEventType.DisconnectEvent:
+					isConnected = false;
 					Logger.Log(string.Format("Disconnection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId));
 					break;
 			}
@@ -238,17 +250,43 @@ public class ServerNetwork : MonoBehaviour
 
 	}
 
+	IPAddress FindLocalIP()
+    {
+
+		IPAddress[] ipAddresses = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+		foreach (IPAddress ip in ipAddresses)
+		{
+			if (ip.AddressFamily == AddressFamily.InterNetwork)
+			{
+				return ip;
+			}
+		}
+
+		Debug.LogError("No IP found");
+		return null;
+	}
+
+	IEnumerator BroadcastConnectionMessage(byte[] IP)
+    {
+		while (!isConnected)
+		{
+			yield return new WaitForSeconds(1.0f);
+			Debug.Log("Broadcast Message sent");
+			_client.Send(IP, IP.Length, _endPoint);
+		}
+    }
+
 	void Start()
     {
-		Application.runInBackground = true;
+		_client = new UdpClient(new IPEndPoint(IPAddress.Any, 0));
+		_endPoint = new IPEndPoint(IPAddress.Parse("255.255.255.255"), _broadcastPort);
+		StartCoroutine(BroadcastConnectionMessage(Encoding.UTF8.GetBytes(FindLocalIP().ToString())));
 
-		sphe = GameObject.Find("Sphere");
-		cubeRotation = GameObject.Find("cubeRotation");
-		InitNetwork();
-	}
+        InitNetwork();
+    }
 
     void Update()
     {
-		ReceiveMessagesFromClient();
-	}
+        ReceiveMessagesFromClient();
+    }
 }

@@ -16,7 +16,7 @@ namespace Windy.Game
 
     public static class GameSettings 
     {
-        private static InputDevice _inputDevice = InputDevice.Keyboard;  // 0 == Keyboard; 1 == Mobile
+        private static InputDevice _inputDevice = InputDevice.MobilePhone;  // 0 == Keyboard; 1 == Mobile
 
         private static int _frameRate = 1;    // 0 == 30; 1 == 60; 2 == 120
 

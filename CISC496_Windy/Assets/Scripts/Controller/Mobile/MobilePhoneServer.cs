@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -13,6 +16,7 @@ namespace Windy.Controller
         float CameraRotationX;
         float CameraRotationY;
 
+        # region Network
         const int serverPort = 51343;  // port used by server
         const int maxConnections = 5;
 
@@ -23,6 +27,14 @@ namespace Windy.Controller
 
         int controlChannelId;  // reliable channel for control messages
         int dataChannelId;  // unreliable channel for movement info
+        #endregion
+
+        #region Broadcast Network
+        UdpClient _client;
+        IPEndPoint _endPoint;
+        const int _broadcastPort = 51340;
+        #endregion
+
 
         public MobilePhoneServer()
         {
@@ -34,6 +46,7 @@ namespace Windy.Controller
             }
         }
 
+        #region send message
         public virtual void ResetGyroAxes()
         {
             byte error;
@@ -74,6 +87,9 @@ namespace Windy.Controller
                 NetworkTransport.Send(hostId, connectionId, dataChannelId,
                     Message.CreateToFlyingModeMessage(), 1, out error);
         }
+        #endregion
+
+        #region Process Message
         void ProcessMessage(byte[] message)
         {
             byte messageType = Messages.GetMessageType(message);
@@ -184,11 +200,8 @@ namespace Windy.Controller
             keyDic[key].Value = KEYSTAT.IDLE;
         }
 
-        public void Update()
+        void ProcessNetworkMessage()
         {
-            SendUseGyroMessage();
-            SendToFlyingOrToWalkMessage();
-
             byte[] recBuffer = new byte[1024];
             int bufferSize = 1024;
             int dataSize;
@@ -210,7 +223,7 @@ namespace Windy.Controller
                         break;
                     case NetworkEventType.ConnectEvent:
                         Logger.LogFormat("Connection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
-                        if(this.connectionId == int.MinValue) this.connectionId = connectionId;
+                        if (this.connectionId == int.MinValue) this.connectionId = connectionId;
                         break;
                     case NetworkEventType.DataEvent:
                         Logger.LogFormat("Message received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
@@ -218,12 +231,40 @@ namespace Windy.Controller
                         break;
                     case NetworkEventType.DisconnectEvent:
                         Logger.LogFormat("Disconnection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
-                        if (connectionId == this.connectionId) this.connectionId = int.MinValue;
+                        if (connectionId == this.connectionId) {
+                            this.connectionId = int.MinValue;
+                            Controller.Instance.StartCoroutine(BroadcastIPAddress(Encoding.UTF8.GetBytes(FindLocalIP().ToString())));
+                        } 
                         break;
                 }
             }
         }
+        #endregion
 
+
+        IPAddress FindLocalIP()
+        {
+            IPAddress[] ipAddresses = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
+
+            foreach (IPAddress ip in ipAddresses)
+                if (ip.AddressFamily == AddressFamily.InterNetwork) return ip;
+
+            Debug.LogError("No IP found");
+            return null;
+        }
+        IEnumerator BroadcastIPAddress(byte[] IP)
+        {
+            _client = new UdpClient(new IPEndPoint(IPAddress.Any, 0));
+            _endPoint = new IPEndPoint(IPAddress.Parse("255.255.255.255"), _broadcastPort);
+            while (connectionId == int.MinValue)
+            {
+                yield return new WaitForSeconds(1.0f);
+                Debug.Log("Broadcast Message sent");
+                _client.Send(IP, IP.Length, _endPoint);
+            }
+            _client.Close();
+            _endPoint = null;
+        }
         public virtual void InitNetwork()
         {
             NetworkTransport.Init();
@@ -236,6 +277,18 @@ namespace Windy.Controller
             hostId = NetworkTransport.AddHost(topology, serverPort);
 
             connectionId = int.MinValue;
+
+            Controller.Instance.StartCoroutine(BroadcastIPAddress(Encoding.UTF8.GetBytes(FindLocalIP().ToString())));
+        }
+
+        public void Update()
+        {
+            ProcessNetworkMessage();
+            if (connectionId != int.MinValue)
+            {
+                SendUseGyroMessage();
+                SendToFlyingOrToWalkMessage();
+            }
         }
 
         public void Start()

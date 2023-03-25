@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 public class ClientNetwork : MonoBehaviour
 {
@@ -13,9 +14,7 @@ public class ClientNetwork : MonoBehaviour
 
     const int _maxConnections = 5;
 
-    [SerializeField]
-    string _serverHostIP = "192.168.43.193";  // hotspot
-    //string _serverHostIP = "192.168.2.15";  // LAN
+    string _serverHostIP;
 
     bool _isConnected = false;
 
@@ -25,6 +24,16 @@ public class ClientNetwork : MonoBehaviour
     int _controlChannelId;
     int _dataChannelId;
 
+    UdpClient _client;
+    IPEndPoint _endpoint;
+    const int _broadcastPort = 51340;
+    public UnityEngine.UI.Text message;
+
+    bool initInternet = false;
+    bool startInternet = false;
+
+    ThreadStart _broadcastThreadDelegate;
+    Thread _broadcastThread;
 
     void InitNetwork()
     {
@@ -43,6 +52,10 @@ public class ClientNetwork : MonoBehaviour
         // Establish connection to server
         byte error;
         _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out error);
+
+        startInternet = true;
+        initInternet = false;
+        message.text = _serverHostIP;
         //if (error != (byte)NetworkError.Ok)
         //{
         //    Logger.LogFormat("Network error: {0}", Messages.NetworkErrorToString(error));
@@ -114,53 +127,38 @@ public class ClientNetwork : MonoBehaviour
         Messages.LogNetworkError(error);
     }
 
-    public void GoForward() 
+
+    void InitBroadcastInternet()
     {
-        SendMessageToServer(Messages.CreateMovementMessage(Vector3.forward.x, Vector3.forward.y, Vector3.forward.z));
+        _client = new UdpClient(new IPEndPoint(IPAddress.Any, _broadcastPort));
+        _endpoint = new IPEndPoint(IPAddress.Any, 0);
+
+        _broadcastThreadDelegate = new ThreadStart(RecevieBoardcastMessage);
+        _broadcastThread = new Thread(_broadcastThreadDelegate);
+
+        message.text = "StartReceviingBoardcastMessage";
+        _broadcastThread.Start();
     }
-    public void GoBackward()
+    void RecevieBoardcastMessage()
     {
-        SendMessageToServer(Messages.CreateMovementMessage(Vector3.back.x, Vector3.back.y, Vector3.back.z));
-    }
-    public void GoLeft()
-    {
-        SendMessageToServer(Messages.CreateMovementMessage(Vector3.left.x, Vector3.left.y, Vector3.left.z));
-    }
-    public void GoRight()
-    {
-        SendMessageToServer(Messages.CreateMovementMessage(Vector3.right.x, Vector3.right.y, Vector3.right.z));
+        byte[] message = _client.Receive(ref _endpoint);
+        string ip = Encoding.UTF8.GetString(message);
+
+        _serverHostIP = ip;
+        initInternet = true;
+        _client.Close();
     }
 
-    //IEnumerator SendGyroRotation() { 
-    //    while (true)
-    //    {
-    //        if (_isConnected && GyroRotationDetector.isRotateX())
-    //        {
-    //            SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONX, GyroRotationDetector.rotationX()));
-    //        }
-    //        if (_isConnected && GyroRotationDetector.isRotateY())
-    //        {
-    //            SendMessageToServer(Messages.CreateRotationMessage(Messages.ROTATIONY, GyroRotationDetector.rotationY()));
-    //        }
-    //        yield return new WaitForSeconds(0f);
-    //    }
-    //}
 
-    // Start is called before the first frame update
     void Start()
     {
-        Application.runInBackground = true;
-
-        InitNetwork();
-        //StartCoroutine(SendGyroRotation());
+        InitBroadcastInternet();
     }
-
-    // Update is called once per frame
     void Update()
     {
-        ProcessIncomingMessages();
+        if (initInternet) InitNetwork();
+        if (startInternet) ProcessIncomingMessages();
     }
-
 
 
 }

@@ -1,20 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 namespace Windy.Controller
 {
     public class MobilePhoneClient : MonoBehaviour
-    { 
+    {
+        #region Network
         const int _serverPort = 51343;
 
         const int _maxConnections = 5;
 
-        [SerializeField]
-        string _serverHostIP = "192.168.43.193";  
+        string _serverHostIP;  
+        //string _serverHostIP = "192.168.43.193";  
         //string _serverHostIP = "192.168.2.15";  
 
         bool _isConnected = false;
@@ -24,10 +28,23 @@ namespace Windy.Controller
 
         int _controlChannelId;
         int _dataChannelId;
+        #endregion
+
+        #region UDP Broadcast Network
+        UdpClient _client;
+        IPEndPoint _endpoint;
+        const int _broadcastPort = 51340;
+
+        bool startInternet = false;
+
+        ThreadStart _broadcastThreadDelegate;
+        Thread _broadcastThread;
+        #endregion
 
         bool useGyro;
         bool isFlying;
 
+        #region Process Incoming Messages
         void ProcessIncomingData(byte[] message)
         {
             byte messageType = Message.GetMessageType(message);
@@ -107,6 +124,9 @@ namespace Windy.Controller
                 }
             }
         }
+        #endregion
+
+        #region Send Messages
         void SendMessageToServer(byte[] message)
         {
             byte error;
@@ -192,20 +212,10 @@ namespace Windy.Controller
             SendMessageToServer(Message.CreateCameraRotationXMessage(TouchHandler.GetCameraAxisX()));
             SendMessageToServer(Message.CreateCameraRotationYMessage(TouchHandler.GetCameraAxisY()));
         }
+        #endregion
 
-        private void Update()
-        {
-            ProcessIncomingMessages();
-            if (_isConnected)
-            {
-                SendCameraMessages();
-                if (!useGyro) SendControlPanelMessages();
-                else SendGyroMessages();
-            }
-                
-        }
-
-        private void Start()
+        #region Initialize Network
+        void InitNetwork()
         {
             NetworkTransport.Init();
 
@@ -218,9 +228,51 @@ namespace Windy.Controller
 
             byte error;
             _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out error);
+
+            startInternet = true;
+        }
+        void InitBroadcastNetwork()
+        {
+            _client = new UdpClient(new IPEndPoint(IPAddress.Any, _broadcastPort));
+            _endpoint = new IPEndPoint(IPAddress.Any, 0);
+
+            _broadcastThreadDelegate = new ThreadStart(RecevieBoardcastMessage);
+            _broadcastThread = new Thread(_broadcastThreadDelegate);
+
+            _broadcastThread.Start();
+        }
+        void RecevieBoardcastMessage()
+        {
+            byte[] message = _client.Receive(ref _endpoint);
+            string ip = Encoding.UTF8.GetString(message);
+            _serverHostIP = ip;
+
+            _client.Close();
+
+            InitNetwork();
+        }
+        #endregion
+
+        private void Update()
+        {
+            if (startInternet)
+            {
+                ProcessIncomingMessages();
+                if (_isConnected)
+                {
+                    SendCameraMessages();
+                    if (!useGyro) SendControlPanelMessages();
+                    else SendGyroMessages();
+                }
+            }
         }
 
+        private void Start()
+        {
+            InitBroadcastNetwork();
+        }
 
+        #region callback functions
         public void OnJumpPress()
         {
             SendMessageToServer(Message.CreateJumpMessage(KEYSTAT.PRESS));
@@ -268,5 +320,6 @@ namespace Windy.Controller
         {
             SendMessageToServer(Message.CreateContinueMessage(KEYSTAT.DOWN));
         }
+        #endregion
     }
 }
