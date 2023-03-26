@@ -18,5 +18,7 @@ MonoBehaviour:
   chances: []
   FX:
   - {fileID: 11400000, guid: 6a1bf55e9d2961848b736247982e4f87, type: 2}
+  - {fileID: 11400000, guid: f984b0c2b2a1b164ab66e7aaa8244ba4, type: 2}
+  - {fileID: 11400000, guid: 3d7aa652c526b954e9460233dc3d35d1, type: 2}
   FXVolume: 1
   useVFX: 0
