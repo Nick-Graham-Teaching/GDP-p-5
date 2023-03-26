@@ -70,6 +70,8 @@ namespace Windy.Buoyancy
             {
                 MM_Executor.Instance.StartCoroutine(GlideUpForceTimer());
                 glideFloatSupervisorOn = true;
+
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Ascent);
             }
         }
         public sealed override void Start()

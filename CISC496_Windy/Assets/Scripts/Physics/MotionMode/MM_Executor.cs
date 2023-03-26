@@ -193,12 +193,19 @@ namespace Windy
                 {
                     canFlipWings = false;
                     ((MotionMode.MM_InAir)MotionMode).FlyInertia = flipWingsSpeed * Vector3.up;
+
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_FlipWings);
+
                     StartCoroutine(Util.Timer(flipWingCD, () => canFlipWings = true));
                 }
                 yield return null;
             }
         }
-        public void StartEnergySupervisor(float CD = 0.0f) => EnergyConsumptionSupervisorCoroutine = StartCoroutine(EnergyConsumptionSupervisor(CD));
+        public void StartEnergySupervisor(float CD = 0.0f) 
+        { 
+            if (EnergyConsumptionSupervisorCoroutine is null)
+                EnergyConsumptionSupervisorCoroutine = StartCoroutine(EnergyConsumptionSupervisor(CD)); 
+        }
         public bool StopEnergySupervisor()
         {
             if (EnergyConsumptionSupervisorCoroutine is not null)

@@ -1,8 +1,11 @@
 using UnityEngine;
 using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
 
 public class TouchPhaseExample : MonoBehaviour
 {
-    public AudioClip[] test;
+    private void Start()
+    {
+    }
 }

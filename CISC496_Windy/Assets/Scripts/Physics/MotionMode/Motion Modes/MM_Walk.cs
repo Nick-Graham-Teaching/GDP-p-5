@@ -88,6 +88,10 @@ namespace Windy.MotionMode
             {
                 direction += degree * RightD;
             }
+            if (direction != Vector3.zero)
+            {
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Walk);
+            }
 
             float length = direction.magnitude;
 
@@ -213,6 +217,14 @@ namespace Windy.MotionMode
             {
                 rb.AddForce(inertia, ForceMode.VelocityChange);
                 inertia = Vector3.zero;
+            }
+        }
+
+        public override sealed void Quit()
+        {
+            if (MM_Executor.Instance.B_M_Curent.GetType() == MM_Executor.Instance.B_M_Dive.GetType())
+            {
+                MM_Executor.Instance.StartEnergySupervisor();
             }
         }
 

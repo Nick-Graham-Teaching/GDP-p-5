@@ -14,6 +14,7 @@ namespace Windy.MotionMode
         {
             MM_Executor.Instance.StopEnergySupervisor();
             UI.UIEvents.OnToTrappedMode?.Invoke();
+            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Waystone_Trapped);
 
             rb.useGravity = false;
             //rb.velocity = Vector3.zero;
@@ -38,6 +39,7 @@ namespace Windy.MotionMode
             rb.useGravity = true;
 
             UI.UIEvents.OnOutOfTrappedMode?.Invoke();
+            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Waystone_GetRidOf);
         }
 
         public override string ToString() => "MotionMode -- Trapped";

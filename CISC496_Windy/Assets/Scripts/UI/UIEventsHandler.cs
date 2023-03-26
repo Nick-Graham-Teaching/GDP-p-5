@@ -45,7 +45,8 @@ namespace Windy.UI
 
         public GameObject StartPage;
         Image[] StartPageUIImages;
-        Button[] StartPageUIButtons;
+        UnityEngine.UI.Button[] StartPageUIButtons;
+        UI_AudioEvents[] StartPageUIAudioEvents;
 
         public GameObject InGameUI;
         Image[] InGameUIImages;
@@ -78,10 +79,15 @@ namespace Windy.UI
 
         IEnumerator StartPageUIFadeOut()
         {
+            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Game_Start);
             // Disable all buttons
-            foreach (Button b in StartPageUIButtons)
+            foreach (UnityEngine.UI.Button b in StartPageUIButtons)
             {
                 b.enabled = false;
+            }
+            foreach (UI_AudioEvents e in StartPageUIAudioEvents)
+            {
+                e.enabled = false;
             }
             yield return new WaitUntil(() =>
             {
@@ -96,9 +102,13 @@ namespace Windy.UI
         IEnumerator InGameUIFadeIn()
         {
             // Ensable all buttons
-            foreach (Button b in StartPageUIButtons)
+            foreach (UnityEngine.UI.Button b in StartPageUIButtons)
             {
                 b.enabled = true;
+            }
+            foreach (UI_AudioEvents e in StartPageUIAudioEvents)
+            {
+                e.enabled = true;
             }
             // Enable all player and camera control files
             GameEvents.OnStart?.Invoke();
@@ -181,7 +191,8 @@ namespace Windy.UI
         private void Start()
         {
             StartPageUIImages = StartPage.GetComponentsInChildren<Image>();
-            StartPageUIButtons = StartPage.GetComponentsInChildren<Button>();
+            StartPageUIButtons = StartPage.GetComponentsInChildren<UnityEngine.UI.Button>();
+            StartPageUIAudioEvents = StartPage.GetComponentsInChildren<UI_AudioEvents>();
             InGameUIImages = InGameUI.GetComponentsInChildren<Image>();
 
             Util.ResetImageAlpha(CountdownPage.GetComponent<Image>(), 0.0f);

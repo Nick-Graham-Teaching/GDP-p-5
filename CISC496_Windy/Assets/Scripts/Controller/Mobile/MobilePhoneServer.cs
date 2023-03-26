@@ -258,8 +258,9 @@ namespace Windy.Controller
             _endPoint = new IPEndPoint(IPAddress.Parse("255.255.255.255"), _broadcastPort);
             while (connectionId == int.MinValue)
             {
+                yield return new WaitUntil(() => Game.GameSettings.InputDevice == Game.InputDevice.MobilePhone);
                 yield return new WaitForSeconds(1.0f);
-                Debug.Log("Broadcast Message sent");
+                Debug.Log("Sending Broadcast Message");
                 _client.Send(IP, IP.Length, _endPoint);
             }
             _client.Close();

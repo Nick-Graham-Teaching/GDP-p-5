@@ -27,10 +27,12 @@ namespace Windy.MotionMode {
             try
             {
                 EnergySystem.EnergySys.Instance.OnTakeOff(Method);
+
                 MM_Executor.Instance.StartEnergySupervisor(flipWingCD);
                 UI.UIEvents.OnToTakeoffMode?.Invoke();
-
                 MM_Executor.Instance.StartCoroutine(IsTakingOffSuccessful());
+
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Takeoff);
             } 
             catch (TakeOffException)
             {

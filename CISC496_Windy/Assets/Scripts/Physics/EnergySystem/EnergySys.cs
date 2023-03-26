@@ -36,6 +36,10 @@ namespace Windy.EnergySystem
         public void RechargeEnergy(float rate = 1.0f)
         {
             Energy += rate * rechargeSpeed;
+            if (MaxEnergy - Energy > Mathf.Epsilon)
+            {
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.EnergySystem_Recharge);
+            }
         }
 
         public bool ConsumeEnergy(float consumption = 1.0f)
@@ -46,6 +50,7 @@ namespace Windy.EnergySystem
                 Energy -= consumption;
                 return true;
             }
+            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.EnergySystem_Shortage);
             return false;
         }
 

@@ -45,11 +45,15 @@ namespace Windy.MotionModeSwitcher
             {
                 if (MM_Executor.Instance.MotionMode.GetType() == MM_Executor.Instance.B_M_Glide.Build().GetType())
                 {
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Switch_GlideToDive);
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_SwitchMode);
                     MM_Executor.Instance.B_M_Dive.FlyInertia = MM_Executor.Instance.B_M_Glide.FlyInertia;
                     MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Dive, MM_Executor.Instance.B_S_InAir);
                 }
                 else
                 {
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Switch_DiveToGlide);
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_SwitchMode);
                     MM_Executor.Instance.B_M_Glide.FlyInertia = MM_Executor.Instance.B_M_Dive.FlyInertia;
                     MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Glide, MM_Executor.Instance.B_S_InAir);
                 }

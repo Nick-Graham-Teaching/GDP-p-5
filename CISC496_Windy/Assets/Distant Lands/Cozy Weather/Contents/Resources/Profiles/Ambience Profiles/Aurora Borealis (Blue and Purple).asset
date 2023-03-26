@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dccf7172616748499437c285a6d18fe, type: 3}
   m_Name: Aurora Borealis (Blue and Purple)
   m_EditorClassIdentifier: 
-  playTime: {x: 40, y: 70}
+  playTime: {x: 50, y: 60}
   likelihood: 1.5
   dontPlayDuring:
   - {fileID: 11400000, guid: 94bbf17d66f5c6b4ebcd9189ba34367d, type: 2}
@@ -168,5 +168,8 @@ MonoBehaviour:
       m_RotationOrder: 0
   FX:
   - {fileID: 11400000, guid: 1250568679d7bdf48b66142ff39a3171, type: 2}
+  - {fileID: 11400000, guid: f984b0c2b2a1b164ab66e7aaa8244ba4, type: 2}
+  - {fileID: 11400000, guid: 3d7aa652c526b954e9460233dc3d35d1, type: 2}
+  - {fileID: 11400000, guid: 2f386770b12cfad4baf0729e57c0f26c, type: 2}
   FXVolume: 1
   useVFX: 1
