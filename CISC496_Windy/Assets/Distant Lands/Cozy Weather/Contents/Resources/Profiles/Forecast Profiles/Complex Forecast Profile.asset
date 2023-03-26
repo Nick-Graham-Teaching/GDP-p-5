@@ -26,7 +26,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ae94c1a397a01e442a11e8b23ebb1cef, type: 2}
   - {fileID: 11400000, guid: 134d60bbf3db4074599790ce6df65c88, type: 2}
   - {fileID: 11400000, guid: 06463e4286524d6499365570b36216aa, type: 2}
-  - {fileID: 11400000, guid: 06463e4286524d6499365570b36216aa, type: 2}
   initialProfile: {fileID: 11400000, guid: df6d6974e6130cf4ba80f13cf41ae5f4, type: 2}
   initialForecast:
   - profile: {fileID: 11400000, guid: ae94c1a397a01e442a11e8b23ebb1cef, type: 2}
