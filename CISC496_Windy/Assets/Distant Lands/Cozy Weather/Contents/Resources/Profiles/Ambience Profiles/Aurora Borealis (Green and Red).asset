@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dccf7172616748499437c285a6d18fe, type: 3}
   m_Name: Aurora Borealis (Green and Red)
   m_EditorClassIdentifier: 
-  playTime: {x: 30, y: 90}
+  playTime: {x: 10, y: 10}
   likelihood: 1.601
   dontPlayDuring:
   - {fileID: 11400000, guid: 94bbf17d66f5c6b4ebcd9189ba34367d, type: 2}
@@ -125,7 +125,8 @@ MonoBehaviour:
       m_RotationOrder: 0
   FX:
   - {fileID: 11400000, guid: 151a7e108d46feb488574c3a17f52cdc, type: 2}
-  particleFX: {fileID: 5771442333465133999, guid: 227fb41284b8f4744b960174cfa02df4, type: 3}
-  soundFX: {fileID: 0}
+  - {fileID: 11400000, guid: 2f386770b12cfad4baf0729e57c0f26c, type: 2}
+  - {fileID: 11400000, guid: f984b0c2b2a1b164ab66e7aaa8244ba4, type: 2}
+  - {fileID: 11400000, guid: 3d7aa652c526b954e9460233dc3d35d1, type: 2}
   FXVolume: 1
   useVFX: 1

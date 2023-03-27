@@ -226,8 +226,7 @@ namespace Windy.Controller
             HostTopology topology = new HostTopology(config, _maxConnections);
             _hostId = NetworkTransport.AddHost(topology);
 
-            byte error;
-            _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out error);
+            _connectionId = NetworkTransport.Connect(_hostId, _serverHostIP, _serverPort, 0, out byte error);
 
             startInternet = true;
         }
@@ -270,6 +269,13 @@ namespace Windy.Controller
         private void Start()
         {
             InitBroadcastNetwork();
+        }
+
+        private void OnApplicationQuit()
+        {
+            NetworkTransport.Disconnect(_hostId, _connectionId, out byte error);
+            NetworkTransport.RemoveHost(_hostId);
+            NetworkTransport.Shutdown();
         }
 
         #region callback functions

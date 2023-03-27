@@ -263,4 +263,9 @@ namespace Windy
     {
         public UnknownKeyException(string message) : base(message) { }
     }
+
+    public class AudioException : Exception
+    {
+        public AudioException(string message) : base(message) { }
+    }
 }

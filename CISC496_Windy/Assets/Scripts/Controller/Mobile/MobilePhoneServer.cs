@@ -223,7 +223,11 @@ namespace Windy.Controller
                         break;
                     case NetworkEventType.ConnectEvent:
                         Logger.LogFormat("Connection received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
-                        if (this.connectionId == int.MinValue) this.connectionId = connectionId;
+                        if (this.connectionId == int.MinValue) 
+                        { 
+                            this.connectionId = connectionId;
+                            UI.UI_PopupWindow.ConnectionWindowShowUp();
+                        }
                         break;
                     case NetworkEventType.DataEvent:
                         Logger.LogFormat("Message received from host {0}, connection {1}, channel {2}", recHostId, connectionId, channelId);
@@ -234,6 +238,7 @@ namespace Windy.Controller
                         if (connectionId == this.connectionId) {
                             this.connectionId = int.MinValue;
                             Controller.Instance.StartCoroutine(BroadcastIPAddress(Encoding.UTF8.GetBytes(FindLocalIP().ToString())));
+                            UI.UI_PopupWindow.DisconnectionWindowShowUp();
                         } 
                         break;
                 }
@@ -241,7 +246,7 @@ namespace Windy.Controller
         }
         #endregion
 
-
+        #region Initialize Network
         IPAddress FindLocalIP()
         {
             IPAddress[] ipAddresses = Dns.GetHostEntry(Dns.GetHostName()).AddressList;
@@ -258,8 +263,9 @@ namespace Windy.Controller
             _endPoint = new IPEndPoint(IPAddress.Parse("255.255.255.255"), _broadcastPort);
             while (connectionId == int.MinValue)
             {
+                yield return new WaitUntil(() => Game.GameSettings.InputDevice == Game.InputDevice.MobilePhone);
                 yield return new WaitForSeconds(1.0f);
-                Debug.Log("Broadcast Message sent");
+                Debug.Log("Sending Broadcast Message");
                 _client.Send(IP, IP.Length, _endPoint);
             }
             _client.Close();
@@ -280,6 +286,7 @@ namespace Windy.Controller
 
             Controller.Instance.StartCoroutine(BroadcastIPAddress(Encoding.UTF8.GetBytes(FindLocalIP().ToString())));
         }
+        #endregion
 
         public void Update()
         {

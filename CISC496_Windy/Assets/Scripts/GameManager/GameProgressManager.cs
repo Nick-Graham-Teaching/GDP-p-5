@@ -81,6 +81,7 @@ namespace Windy.Game
                 UI.UIEvents.OnToWalkMode?.Invoke();
 
                 Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
 
                 Puzzle.PuzzleManager.Instance.ClearInput();
 
@@ -113,17 +114,23 @@ namespace Windy.Game
                 GameState = new InGame();
 
                 //Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = false;
 
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
             };
             GameEvents.OnPause += () =>                 // Invoked by new Pause();
             {
                 cameraFollow.updateView = false;
+
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.UI_Button_Pause);
+
                 Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
 
                 Controller.Controller.Instance.SetPhoneContinueActive(true);
 
+                UI.UI_GameMessage.TurnOffAllMessages();
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
                 UI.UIEventsHandler.Instance.PuzzleLetters.SetActive(false);
@@ -138,7 +145,8 @@ namespace Windy.Game
             GameEvents.OnContinue += () =>              // Invoked by new Continue();
             {
                 cameraFollow.updateView = true;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = false;
 
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
 
@@ -155,7 +163,8 @@ namespace Windy.Game
             GameEvents.OnRestart += () =>               // Invoked by new Restart();
             {
                 cameraFollow.updateView = true;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = false;
 
                 cameraFollow.OnRestart();
                 Puzzle.PuzzleManager.Instance.ClearInput();
@@ -194,6 +203,9 @@ namespace Windy.Game
                 cameraFollow.updateView = false;
 
                 Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Game_Fail);
 
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);

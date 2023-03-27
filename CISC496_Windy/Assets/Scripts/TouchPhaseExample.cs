@@ -1,47 +1,45 @@
 using UnityEngine;
 using System.Threading;
 using System.Collections;
+using System.Collections.Generic;
 
 public class TouchPhaseExample : MonoBehaviour
 {
-
-    int num;
-
-    ThreadStart threadDelegate;
-    Thread childThread;
-
-    void Increment()
+    private void OnGUI()
     {
-        while(num < 10)
+        if (GUI.Button(new Rect(100, 0, 150, 30), "Reset"))
         {
-            num++;
-            //Debug.Log("Child Thread: " + num);
-            Thread.Sleep(1000);
+            StartCoroutine(ShowWindow());
         }
     }
 
-    private void Start()
+    IEnumerator ShowWindow()
     {
-        threadDelegate = new ThreadStart(Increment);
-        childThread = new Thread(threadDelegate);
+        Windy.UI.UI_PopupWindow.ConnectionWindowShowUp();
 
-        Debug.Log("Main: Start Child Thread");
-        childThread.Start();
+        yield return new WaitForSeconds(1.0f);
 
-        //StartCoroutine(MainReportNum());
-    }
+        Windy.UI.UI_PopupWindow.DisconnectionWindowShowUp();
 
-    IEnumerator MainReportNum()
-    {
-        while (true)
-        {
-            Debug.Log("Main: " + num);
-            yield return new WaitForSeconds(0.0f);
-        }
-    }
+        yield return new WaitForSeconds(1.0f);
 
-    private void Update()
-    {
-        Debug.Log("Main: " + num);
+        Windy.UI.UI_PopupWindow.ConnectionWindowShowUp();
+
+        yield return new WaitForSeconds(1.2f);
+
+        Windy.UI.UI_PopupWindow.DisconnectionWindowShowUp();
+
+        yield return new WaitForSeconds(1.2f);
+
+        Windy.UI.UI_PopupWindow.ConnectionWindowShowUp();
+
+        yield return new WaitForSeconds(2.0f);
+
+        Windy.UI.UI_PopupWindow.DisconnectionWindowShowUp();
+
+        yield return new WaitForSeconds(2.0f);
+
+        Windy.UI.UI_PopupWindow.ConnectionWindowShowUp();
+
     }
 }

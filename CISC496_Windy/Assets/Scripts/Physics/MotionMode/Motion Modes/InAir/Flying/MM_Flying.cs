@@ -30,6 +30,8 @@ namespace Windy.MotionMode
             {
                 diveAngleDelta = degree * diveAngle;
                 flyDirection += BackD;
+
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Descent);
             }
             if (Controller.Controller.ControlDevice.GetKeyPress(Keys.LeftCode, out degree))
             {
@@ -111,13 +113,6 @@ namespace Windy.MotionMode
             rb.AddForce(flyAccelScalar * flyDirection, ForceMode.Acceleration);
         }
 
-        public override bool UseGyro()
-        {
-            if (Game.GameSettings.InputDevice == Game.InputDevice.MobilePhone)
-            {
-                return true;
-            }
-            return false;
-        }
+        public override bool UseGyro() => Game.GameSettings.InputDevice == Game.InputDevice.MobilePhone;
     }
 }

@@ -7,7 +7,7 @@ namespace Windy.Puzzle
 {
     public enum PuzzleAnswerLetters
     {
-        A,E,I,N,O,Q,S,T,U,Y,Reset
+        A,E,I,N,O,Q,S,T,U,Y,Reset,Delete
     }
 
     public class PuzzleManager : Singleton<PuzzleManager>
@@ -83,6 +83,7 @@ namespace Windy.Puzzle
         public void DeleteOneInput()
         {
             UI_Letters[Pointer--].sprite = Blank;
+            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Delete);
         }
 
         public void Input(PuzzleAnswerLetters letter)
@@ -97,45 +98,56 @@ namespace Windy.Puzzle
                 case PuzzleAnswerLetters.A:
                     UI_Letters[Pointer].sprite = letter_A;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.A;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;
                 case PuzzleAnswerLetters.E:
                     UI_Letters[Pointer].sprite = letter_E;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.E;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.I:
                     UI_Letters[Pointer].sprite = letter_I;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.I;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.N:
                     UI_Letters[Pointer].sprite = letter_N;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.N;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.O:
                     UI_Letters[Pointer].sprite = letter_O;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.O;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.Q:
                     UI_Letters[Pointer].sprite = letter_Q;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.Q;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.S:
                     UI_Letters[Pointer].sprite = letter_S;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.S;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.T:
                     UI_Letters[Pointer].sprite = letter_T;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.T;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.U:
                     UI_Letters[Pointer].sprite = letter_U;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.U;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;               
                 case PuzzleAnswerLetters.Y:
                     UI_Letters[Pointer].sprite = letter_Y;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.Y;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
                     break;
                 case PuzzleAnswerLetters.Reset:
                     ClearInput();
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Clear);
                     break;
             }
 
@@ -152,12 +164,15 @@ namespace Windy.Puzzle
                 if (_playerAnswer[i] != CorrectAnswer[i])
                 {
                     StartCoroutine(WrongAnswerWarnAnimation());
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_WrongAnswer);
                     return;
                 }
             }
 
             // Win the game;
-            Debug.Log("Congratulations! You solved the puzzle!");
+            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_CorrectAnswer);
+            ClearInput();
+            UI.UI_GameMessage.DisplayPuzzleSolvedMessage();
         }
 
         private new void Awake()
