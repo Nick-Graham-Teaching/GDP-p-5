@@ -130,6 +130,7 @@ namespace Windy.Game
 
                 Controller.Controller.Instance.SetPhoneContinueActive(true);
 
+                UI.UI_GameMessage.TurnOffAllMessages();
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
                 UI.UIEventsHandler.Instance.PuzzleLetters.SetActive(false);

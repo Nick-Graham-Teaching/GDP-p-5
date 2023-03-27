@@ -67,9 +67,6 @@ namespace Windy.UI
         public float WarningUIFadeInAlpha;
         public float WarningUIFadeInThreshold;
 
-        public Image TutorialImage;
-        public float tutorialStayTime;
-
         public GameObject Keyboard;
         public GameObject Mobile;
         public GameObject FPS30;
@@ -116,16 +113,11 @@ namespace Windy.UI
             GameEvents.OnStart?.Invoke();
 
             Util.ResetImagesAlpha(InGameUIImages, 0.0f);
+            UI_GameMessage.DisplayFlyTutorialMessage();
             yield return new WaitUntil(() =>
             {
                 return Util.ImagesFadeIn(InGameUIImages, UIFadeInRate);
             });
-
-            yield return new WaitForSeconds(tutorialStayTime);
-            yield return new WaitUntil(() => {
-                return Util.ImageFadeOut(TutorialImage, UIFadeOutRate);
-            });
-            Util.ResetImageAlpha(TutorialImage, 0.0f);
         }
 
         IEnumerator GameOverWarmingFadeIn()

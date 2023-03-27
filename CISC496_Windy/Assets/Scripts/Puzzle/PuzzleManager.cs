@@ -7,7 +7,7 @@ namespace Windy.Puzzle
 {
     public enum PuzzleAnswerLetters
     {
-        A,E,I,N,O,Q,S,T,U,Y,Reset
+        A,E,I,N,O,Q,S,T,U,Y,Reset,Delete
     }
 
     public class PuzzleManager : Singleton<PuzzleManager>
@@ -171,7 +171,8 @@ namespace Windy.Puzzle
 
             // Win the game;
             Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_CorrectAnswer);
-            Debug.Log("Congratulations! You solved the puzzle!");
+            ClearInput();
+            UI.UI_GameMessage.DisplayPuzzleSolvedMessage();
         }
 
         private new void Awake()

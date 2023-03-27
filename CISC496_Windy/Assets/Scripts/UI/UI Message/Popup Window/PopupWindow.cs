@@ -5,16 +5,10 @@ using UnityEngine;
 
 namespace Windy.UI
 {
-    public class PopupWindow
+    public class PopupWindow : UI_Message
     {
-        public UnityEngine.UI.Image Window;
         public PopupWindow() { }
-        public PopupWindow(UnityEngine.UI.Image image)
-        {
-            Window = image;
-        }
-
-        public virtual bool Available => false;
+        public PopupWindow(UnityEngine.UI.Image image) : base(image) { }
     }
     public class VoidWindow : PopupWindow
     {
