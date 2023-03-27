@@ -51,6 +51,7 @@ namespace Windy.UI
         public GameObject InGameUI;
         Image[] InGameUIImages;
         public GameObject InGameUI_Characters;
+        Coroutine InGameUIFadeInCoroutine;
 
         public GameObject PuzzleLetters;
 
@@ -96,7 +97,8 @@ namespace Windy.UI
                 // While doing the camera animation
                 return GameProgressManager.Instance.CameraAnimationTransition();
             });
-            StartCoroutine(InGameUIFadeIn());
+            if (InGameUIFadeInCoroutine is not null) StopCoroutine(InGameUIFadeInCoroutine);
+            InGameUIFadeInCoroutine =  StartCoroutine(InGameUIFadeIn());
         }
 
         IEnumerator InGameUIFadeIn()
@@ -202,7 +204,9 @@ namespace Windy.UI
                 StartCoroutine(StartPageUIFadeOut());
             };
 
-            UIEvents.OnToStartPage += () => { Util.ResetImagesAlpha(StartPageUIImages, 1.0f); };
+            UIEvents.OnToStartPage += () => { 
+                Util.ResetImagesAlpha(StartPageUIImages, 1.0f);
+            };
 
             UIEvents.OnToOptionPage += () => PresetSettingPage();
 
