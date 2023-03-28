@@ -85,6 +85,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d7aa652c526b954e9460233dc3d35d1, type: 2}
   - {fileID: 11400000, guid: 99adf9d2d219515408d77d1296d18196, type: 2}
   - {fileID: 11400000, guid: 6a1cee32258408c4488558184cb15ed3, type: 2}
-  - {fileID: 11400000, guid: 430cba2d209363849b9bcc7274e7aa3b, type: 2}
   FXVolume: 0.519
   useVFX: 1

@@ -32,8 +32,6 @@ namespace Windy.Game
         public GameObject Camera;
         CameraFollow cameraFollow;
 
-        public GameObject Clouds;
-
         public GameObject GyroscopeAttitudeSimulator;
 
 
@@ -67,8 +65,6 @@ namespace Windy.Game
                 cameraFollow.ResetTransform();
                 // Camera does not follow mouse movement
                 cameraFollow.updateView = false;
-                // Turn Off Clouds
-                Clouds.SetActive(false);
                 // UI Preparation
                 UI.UIEventsHandler.Instance.StartPage.SetActive(true);
                 UI.UIEventsHandler.Instance.SettingsPage.SetActive(false);
@@ -107,7 +103,6 @@ namespace Windy.Game
             GameEvents.OnStart += () =>                 // Invoked in UIEventsHandler, after start page transition animation
             {
                 cameraFollow.updateView = true;
-                Clouds.SetActive(true);
                 UI.UIEventsHandler.Instance.StartPage.SetActive(false);
                 UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
                 UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(true);

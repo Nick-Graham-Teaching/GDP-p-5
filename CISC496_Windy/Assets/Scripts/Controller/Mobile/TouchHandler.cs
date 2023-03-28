@@ -29,12 +29,12 @@ namespace Windy.Controller
     {
         public float GetAxisX()
         {
-            return DeltaPosition.x / Screen.width * 720.0f;
+            return DeltaPosition.x / Screen.width * 540f;
         }
 
         public float GetAxisY()
         {
-            return DeltaPosition.y / Screen.height * 240.0f;
+            return DeltaPosition.y / Screen.height * 200f;
         }
 
         public CameraFinger(int ID, Vector2 pos) : base(ID, pos) { }
@@ -102,7 +102,7 @@ namespace Windy.Controller
 
         public RectTransform MoveDirectionIcon;
 
-        public static float MoveDirectionControllerMaxRadius = Screen.height / 6.0f;
+        public static float MoveDirectionControllerMaxRadius = Screen.height / 4.0f;
 
         public float DirectionKeyColdDown;
         public float JumpKeyColdDown;
