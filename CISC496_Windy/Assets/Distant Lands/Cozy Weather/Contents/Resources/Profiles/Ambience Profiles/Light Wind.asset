@@ -12,13 +12,77 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dccf7172616748499437c285a6d18fe, type: 3}
   m_Name: Light Wind
   m_EditorClassIdentifier: 
-  playTime: {x: 10, y: 10}
+  playTime: {x: 60, y: 80}
   likelihood: 1
   dontPlayDuring: []
-  chances: []
+  chances:
+  - limitType: 3
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.4
+        value: 0.5
+        inSlope: 0.009910399
+        outSlope: 0.009910399
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.3442784
+        outWeight: 0.50895345
+      - serializedVersion: 3
+        time: 0.45
+        value: 0.7
+        inSlope: 1.1617336
+        outSlope: 1.1617336
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.822812
+        outWeight: 0.13234751
+      - serializedVersion: 3
+        time: 0.8
+        value: 1
+        inSlope: 0.9692381
+        outSlope: 0.9692381
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.12700881
+        outWeight: 1
+      - serializedVersion: 3
+        time: 0.81
+        value: 0.5
+        inSlope: -0.036843885
+        outSlope: -0.036843885
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 0.5
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
   FX:
   - {fileID: 11400000, guid: 3d7aa652c526b954e9460233dc3d35d1, type: 2}
   - {fileID: 11400000, guid: 2f386770b12cfad4baf0729e57c0f26c, type: 2}
   - {fileID: 11400000, guid: f984b0c2b2a1b164ab66e7aaa8244ba4, type: 2}
+  - {fileID: 11400000, guid: a6fbe569a080c1f4a92dab6c14491b36, type: 2}
+  - {fileID: 11400000, guid: d1f77010922631040adf14564bcd92cb, type: 2}
+  - {fileID: 11400000, guid: 0cee0175155d78e43841d0c6b4179178, type: 2}
   FXVolume: 0.519
   useVFX: 1

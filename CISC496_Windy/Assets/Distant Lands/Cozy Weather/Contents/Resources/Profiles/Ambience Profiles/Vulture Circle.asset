@@ -12,78 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dccf7172616748499437c285a6d18fe, type: 3}
   m_Name: Vulture Circle
   m_EditorClassIdentifier: 
-  playTime: {x: 6, y: 60}
+  playTime: {x: 60, y: 80}
   likelihood: 1
-  dontPlayDuring:
-  - {fileID: 11400000, guid: f2d3f1cb4e3d78a4fb7f9853c2ec899a, type: 2}
-  - {fileID: 11400000, guid: 4d539afa69e41c24592baf151ffc2e69, type: 2}
-  - {fileID: 11400000, guid: 94bbf17d66f5c6b4ebcd9189ba34367d, type: 2}
-  - {fileID: 11400000, guid: e2fbee6f21ca32740a76a387cf2a0abc, type: 2}
-  - {fileID: 11400000, guid: cc15965868141a44cb0997b3674e317a, type: 2}
-  - {fileID: 11400000, guid: f161b3af7360fc043927736dde8f5c42, type: 2}
-  - {fileID: 11400000, guid: fea1195d94f23fb49aec172623060b27, type: 2}
+  dontPlayDuring: []
   chances:
-  - limitType: 2
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: -0.00077041984
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.21140216
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.31140214
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.65855575
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.75855577
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 0.99922955
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 0
   - limitType: 3
     curve:
       serializedVersion: 2
@@ -93,60 +25,66 @@ MonoBehaviour:
         value: 0
         inSlope: 0
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.2
+        time: 0.35
         value: 0
-        inSlope: 0
-        outSlope: 0
+        inSlope: 0.07255964
+        outSlope: 0.07255964
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.11632423
       - serializedVersion: 3
-        time: 0.25
+        time: 0.36
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: 0.033215847
+        outSlope: 0.033215847
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.2451009
       - serializedVersion: 3
-        time: 0.75
+        time: 0.6
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: -0.010110167
+        outSlope: -0.010110167
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8
+        time: 0.65
         value: 0
-        inSlope: 0
-        outSlope: 0
+        inSlope: 0.01972603
+        outSlope: 0.01972603
         tangentMode: 0
         weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+        inWeight: 1
+        outWeight: 0.1419539
       - serializedVersion: 3
         time: 1
         value: 0
         inSlope: 0
         outSlope: 0
-        tangentMode: 0
+        tangentMode: 34
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.33333334
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
-      m_RotationOrder: 4
+      m_RotationOrder: 0
   FX:
   - {fileID: 11400000, guid: 5c2bbb25acce27242a9f25ea86c19bb0, type: 2}
   - {fileID: 11400000, guid: d1f77010922631040adf14564bcd92cb, type: 2}
+  - {fileID: 11400000, guid: 2f386770b12cfad4baf0729e57c0f26c, type: 2}
+  - {fileID: 11400000, guid: f984b0c2b2a1b164ab66e7aaa8244ba4, type: 2}
+  - {fileID: 11400000, guid: 3d7aa652c526b954e9460233dc3d35d1, type: 2}
+  - {fileID: 11400000, guid: 99adf9d2d219515408d77d1296d18196, type: 2}
+  - {fileID: 11400000, guid: 6a1cee32258408c4488558184cb15ed3, type: 2}
+  - {fileID: 11400000, guid: 430cba2d209363849b9bcc7274e7aa3b, type: 2}
   FXVolume: 0.519
   useVFX: 1

@@ -2347,7 +2347,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 1.01
+    floatVal: 1.3
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -2517,7 +2517,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 1.5
+    floatVal: 0
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -2803,7 +2803,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 7
+    floatVal: 8
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -2861,7 +2861,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 0.5
+    floatVal: 0.325
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -2919,7 +2919,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 30
+    floatVal: 25
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -2977,7 +2977,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 10
+    floatVal: 3.5
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -3035,7 +3035,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 17
+    floatVal: 15
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -3093,7 +3093,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 0.57
+    floatVal: 1.26
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -3151,7 +3151,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 0.5
+    floatVal: 0.46
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -3209,7 +3209,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 0.5
+    floatVal: 1.76
     curveVal:
       serializedVersion: 2
       m_Curve:
@@ -3267,7 +3267,7 @@ MonoBehaviour:
       m_Mode: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    floatVal: 0.5
+    floatVal: 1.09
     curveVal:
       serializedVersion: 2
       m_Curve:

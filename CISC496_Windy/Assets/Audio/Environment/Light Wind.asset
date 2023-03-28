@@ -17,10 +17,10 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
       value: 1
       inSlope: 0
       outSlope: 0
-      tangentMode: 0
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
@@ -37,5 +37,5 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   VFXMod: {fileID: 0}
-  clip: {fileID: 8300000, guid: 92de5a39ce0134a43a58cef8b06f0320, type: 3}
-  maximumVolume: 0.5
+  clip: {fileID: 8300000, guid: 43890c6f7be04014cb78118dd7fb81cb, type: 3}
+  maximumVolume: 0.13

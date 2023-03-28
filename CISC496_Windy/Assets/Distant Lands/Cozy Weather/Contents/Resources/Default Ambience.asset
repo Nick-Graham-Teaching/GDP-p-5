@@ -13,11 +13,10 @@ MonoBehaviour:
   m_Name: Default Ambience
   m_EditorClassIdentifier: 
   playTime: {x: 20, y: 100}
-  likelihood: 1
+  likelihood: 2
   dontPlayDuring: []
   chances: []
-  FX: []
-  particleFX: {fileID: 0}
-  soundFX: {fileID: 0}
+  FX:
+  - {fileID: 11400000, guid: b86bbfc054993324eb4d8bcc03dd47fe, type: 2}
   FXVolume: 1
   useVFX: 0
