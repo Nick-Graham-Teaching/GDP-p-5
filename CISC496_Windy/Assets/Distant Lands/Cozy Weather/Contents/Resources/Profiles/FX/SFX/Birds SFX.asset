@@ -38,4 +38,4 @@ MonoBehaviour:
     m_RotationOrder: 4
   VFXMod: {fileID: 0}
   clip: {fileID: 8300000, guid: 89fc3ce0f4f66454494a0364dfc11df9, type: 3}
-  maximumVolume: 0.1
+  maximumVolume: 0.55

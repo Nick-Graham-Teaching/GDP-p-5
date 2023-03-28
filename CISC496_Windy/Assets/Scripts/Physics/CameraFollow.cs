@@ -7,6 +7,7 @@ namespace Windy
         // The game object to follow
         public Transform target;
         public Vector3 Offset;
+        Camera _camera;
 
         // Position offset from target position
         // -viewDirection is the viewing direction from Camera to target
@@ -78,8 +79,9 @@ namespace Windy
             viewDirection = viewDirectionBackUp;
         }
 
-        private void OnEnable()
+        private void Start()
         {
+            _camera = GetComponent<Camera>();
             viewDirectionBackUp = viewDirection;
             MaxLength = viewDirection.magnitude;
             xRotateRate = MinRotationRateX;
