@@ -58,6 +58,7 @@ namespace Windy.Game
 
         private void Start()
         {
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
             cameraFollow = Camera.GetComponent<CameraFollow>();
 
