@@ -346,6 +346,14 @@ namespace Windy.Controller
             degree = keyDic[key].degree;
             return keyDic[key].Value == KEYSTAT.IDLE;
         }
+
+        public bool GetAllDirectionKeysIdle()
+        {
+            return keyDic[Keys.UpCode].Value == KEYSTAT.IDLE &&
+                   keyDic[Keys.DownCode].Value == KEYSTAT.IDLE &&
+                   keyDic[Keys.LeftCode].Value == KEYSTAT.IDLE &&
+                   keyDic[Keys.RightCode].Value == KEYSTAT.IDLE;
+        }
     }
 }
 

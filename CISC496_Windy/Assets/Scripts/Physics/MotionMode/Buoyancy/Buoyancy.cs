@@ -11,6 +11,8 @@ namespace Windy.Buoyancy
 
         protected internal int SpecialZoneLayerMask;
 
+        protected static float PunishUpwardAccel;
+
         protected float CloudUpwardAccel { get; set; }
 
         public abstract float Force { get; }

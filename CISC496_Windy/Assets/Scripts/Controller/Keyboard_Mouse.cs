@@ -123,6 +123,13 @@ namespace Windy.Controller
             return keyDic[key].Value == KEYSTAT.IDLE;
         }
 
+        public bool GetAllDirectionKeysIdle()
+        {
+            return keyDic[Keys.UpCode].Value == KEYSTAT.IDLE &&
+                   keyDic[Keys.DownCode].Value == KEYSTAT.IDLE &&
+                   keyDic[Keys.LeftCode].Value == KEYSTAT.IDLE &&
+                   keyDic[Keys.RightCode].Value == KEYSTAT.IDLE;
+        }
 
         public void Start() { }
 
@@ -133,6 +140,7 @@ namespace Windy.Controller
                 keyDic[key].Value = KEYSTAT.IDLE;
             }
         }
+
     }
 }
 

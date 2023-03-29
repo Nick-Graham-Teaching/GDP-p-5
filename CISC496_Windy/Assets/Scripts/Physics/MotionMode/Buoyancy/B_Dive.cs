@@ -10,7 +10,7 @@ namespace Windy.Buoyancy
         protected internal float MinDiveUpwardAccel;
         protected internal float MaxDiveUpwardAccel;
 
-        public sealed override float Force => diveUpwardAccel + CloudUpwardAccel;
+        public sealed override float Force => diveUpwardAccel + CloudUpwardAccel + PunishUpwardAccel;
 
         public sealed override void Update()
         {
@@ -20,7 +20,6 @@ namespace Windy.Buoyancy
                 diveUpwardAccel = MinDiveUpwardAccel + degree * (MaxDiveUpwardAccel - MinDiveUpwardAccel);
             }
             else diveUpwardAccel = MinDiveUpwardAccel;
-            //diveUpwardAccel = KIH.GetKeyPress(Keys.UpCode) ? MaxDiveUpwardAccel : MinDiveUpwardAccel;
         }
 
         public override string ToString() => "Buoyancy -- Dive";
