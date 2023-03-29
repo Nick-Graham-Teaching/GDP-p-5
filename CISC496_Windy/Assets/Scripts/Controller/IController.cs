@@ -16,6 +16,8 @@ namespace Windy.Controller
         public abstract bool GetKeyTap(KeyCode key, out float degree);
         public abstract bool GetKeyUp(KeyCode key, out float degree);
         public abstract bool GetKeyIdle(KeyCode key, out float degree);
+
+        public abstract bool GetAllDirectionKeysIdle();
     }
 }
 

@@ -88,7 +88,7 @@ namespace Windy.MotionMode
             {
                 direction += degree * RightD;
             }
-            if (direction != Vector3.zero)
+            if (direction != Vector3.zero && MM_Executor.Instance.OnGround)
             {
                 Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Walk);
             }

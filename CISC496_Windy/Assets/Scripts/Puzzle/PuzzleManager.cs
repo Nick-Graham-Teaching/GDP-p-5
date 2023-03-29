@@ -82,8 +82,8 @@ namespace Windy.Puzzle
 
         public void DeleteOneInput()
         {
-            UI_Letters[Pointer--].sprite = Blank;
-            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Delete);
+            Pointer--;
+            UI_Letters[Pointer].sprite = Blank;
         }
 
         public void Input(PuzzleAnswerLetters letter)
@@ -95,6 +95,14 @@ namespace Windy.Puzzle
 
             switch (letter)
             {
+                case PuzzleAnswerLetters.Reset:
+                    ClearInput();
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Clear);
+                    break;
+                case PuzzleAnswerLetters.Delete:
+                    DeleteOneInput();
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Delete);
+                    break;
                 case PuzzleAnswerLetters.A:
                     UI_Letters[Pointer].sprite = letter_A;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.A;
@@ -144,10 +152,6 @@ namespace Windy.Puzzle
                     UI_Letters[Pointer].sprite = letter_Y;
                     _playerAnswer[Pointer++] = PuzzleAnswerLetters.Y;
                     Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Input);
-                    break;
-                case PuzzleAnswerLetters.Reset:
-                    ClearInput();
-                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_Clear);
                     break;
             }
 

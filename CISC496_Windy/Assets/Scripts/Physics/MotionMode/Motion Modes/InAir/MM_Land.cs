@@ -65,7 +65,8 @@ namespace Windy.MotionMode {
 
         public override void Quit()
         {
-            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Landing);
+            if (MM_Executor.Instance.OnGround)
+                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Landing);
         }
 
         public override bool IsOnGround() => true;

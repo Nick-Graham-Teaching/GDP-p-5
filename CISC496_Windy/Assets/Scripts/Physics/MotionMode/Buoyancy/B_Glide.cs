@@ -19,14 +19,14 @@ namespace Windy.Buoyancy
 
         bool glideFloatSupervisorOn;
 
-        public sealed override float Force => glideUpwardAccel + CloudUpwardAccel;
+        public sealed override float Force => glideUpwardAccel + CloudUpwardAccel + PunishUpwardAccel;
 
 
         IEnumerator GlideUpForceTimer()
         {
             yield return new WaitUntil(
                     () => {
-                        if (Game.GameProgressManager.Instance.GameState.IsInGame())
+                        if (MM_Executor.Instance.MotionMode.IsGlide() && Game.GameProgressManager.Instance.GameState.IsInGame())
                         {
                             float degree;
                             if (!Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out degree))
@@ -41,16 +41,17 @@ namespace Windy.Buoyancy
                     }
                 );
 
+            glideUpwardAccel = MinGlideUpwardAccel;
+
             if (upForceDeltaTime >= UpForceMaxUtilityTime)
             {
-                glideUpwardAccel = PunishGlideUpwardAccel;
+                PunishUpwardAccel = PunishGlideUpwardAccel;
                 yield return new WaitForSeconds(PunishmentCD);
-                glideUpwardAccel = MinGlideUpwardAccel;
+                PunishUpwardAccel = 0.0f;
                 upForceDeltaTime = 0.0f;
             }
             else
             {
-                glideUpwardAccel = MinGlideUpwardAccel;
                 yield return new WaitUntil(
                     () => {
                         upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);

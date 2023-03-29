@@ -76,7 +76,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 151a7e108d46feb488574c3a17f52cdc, type: 2}
   - {fileID: 11400000, guid: 2f386770b12cfad4baf0729e57c0f26c, type: 2}
   - {fileID: 11400000, guid: f984b0c2b2a1b164ab66e7aaa8244ba4, type: 2}
-  - {fileID: 11400000, guid: 3d7aa652c526b954e9460233dc3d35d1, type: 2}
   - {fileID: 11400000, guid: bf7f46c5732d34d4e96d29c5cee44a76, type: 2}
   - {fileID: 11400000, guid: 7def3e3be949d714b9103b2351b3d736, type: 2}
   FXVolume: 1

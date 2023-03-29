@@ -22,7 +22,7 @@ namespace Windy.MotionModeSwitcher {
             landingTimeDelta += Time.deltaTime;
 
             if (landingTimeDelta > LandingTime || MM_Executor.Instance.OnGround  ||
-                Physics.Raycast(playerBody.gameObject.transform.position, Vector3.down, playerBody.gameObject.transform.localScale.y, GroundLayerMask))
+                Physics.Raycast(playerBody.gameObject.transform.position, Vector3.down, playerBody.gameObject.transform.localScale.y / 2f, GroundLayerMask))
             {
                 MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Walk, MM_Executor.Instance.B_S_Walk);
             }
