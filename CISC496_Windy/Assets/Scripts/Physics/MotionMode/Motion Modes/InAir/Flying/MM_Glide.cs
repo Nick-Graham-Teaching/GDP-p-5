@@ -19,6 +19,7 @@ namespace Windy.MotionMode {
         {
             rb.drag = flyDrag;
             UI.UIEvents.OnToGlideMode?.Invoke();
+            UI.UI_GameMessage.DisplaySwitchModeKeyTutorialMessage();
         }
 
         public override bool IsGlide() => true;

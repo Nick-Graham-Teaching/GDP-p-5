@@ -39,13 +39,19 @@ namespace Windy.Animation
                 return;
             }
 
-            float verticleSpeed = Mathf.Abs(Vector3.Dot(PlayerBody.velocity, Vector3.up));
+            float verticleSpeed = Vector3.Dot(PlayerBody.velocity, Vector3.up);
+            float absVerticleSpeed = Mathf.Abs(verticleSpeed);
 
-            if (verticleSpeed > SpeedLimitMin)
+            if (absVerticleSpeed > SpeedLimitMin)
             {
                 Emission.enabled = true;
-                float speedRatio = Mathf.Min((verticleSpeed - SpeedLimitMin) / SpeedLimitDelta, 1.0f);
+                float speedRatio = Mathf.Min((absVerticleSpeed - SpeedLimitMin) / SpeedLimitDelta, 1.0f);
                 Emission.rateOverTime = (EmissionRate.constant = EmissionRateMin + EmissionRateDelta * speedRatio);
+
+                if (verticleSpeed > 0.0f)
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Ascent);
+                else
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Descent);
             }
             else Emission.enabled = false;
         }

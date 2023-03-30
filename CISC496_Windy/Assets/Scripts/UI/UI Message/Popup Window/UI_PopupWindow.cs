@@ -12,13 +12,15 @@ namespace Windy.UI
         MCDisconnectionWindow DisconnectionWindow;
 
         [SerializeField] UnityEngine.UI.Image ConnectionWindowImage;
+        [SerializeField] float ConnectionWindowStayTime;
         [SerializeField] UnityEngine.UI.Image DisconnectionWindowImage;
+        [SerializeField] float DisconnectionWindowStayTime;
 
         private void Start()
         {
             VoidWindow = new VoidWindow();
-            ConnectionWindow = new MCConnecionWindow(ConnectionWindowImage);
-            DisconnectionWindow= new MCDisconnectionWindow(DisconnectionWindowImage);
+            ConnectionWindow = new MCConnecionWindow(ConnectionWindowImage, ConnectionWindowStayTime);
+            DisconnectionWindow= new MCDisconnectionWindow(DisconnectionWindowImage, DisconnectionWindowStayTime);
 
             ResetMessageInstance();
         }

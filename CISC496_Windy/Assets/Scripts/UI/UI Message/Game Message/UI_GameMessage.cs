@@ -8,17 +8,35 @@ namespace Windy.UI
     {
 
         VoidMessage VoidMessage;
-        FlyTutorialMessage FlyTutorialMessage;
-        PuzzleSolvedMessage PuzzleSolvedMessage;
+        FlyTutorialMessage _flyTutorialMessage;
+        GlidePunishmentTutorialMessage _glidePunishmentTutorialMessage;
+        PuzzleHintTutorialMessage _puzzleHintTutorialMessage;
+        SwitchModeKeyTutorialMessage _switchModeKeyTutorialMessage;
+        PuzzleSolvedMessage _puzzleSolvedMessage;
 
         [SerializeField] UnityEngine.UI.Image FlyTutorialImage;
+        [SerializeField] float FlyTutorialStayTime;
+        [SerializeField] UnityEngine.UI.Image GlidePunishmentTutorialImage;
+        [SerializeField] float GlidePunishmentTutorialStayTime;
+        [SerializeField] UnityEngine.UI.Image PuzzleHintTutorialImage;
+        [SerializeField] float PuzzleHintTutorialStayTime;
+        [SerializeField] UnityEngine.UI.Image SwitchModeKeyTutorialImage;
+        [SerializeField] float SwitchModeKeyTutorialStayTime;
         [SerializeField] UnityEngine.UI.Image PuzzleSolvedImage;
+        [SerializeField] float PuzzleSolvedStayTime;
+
+        static int _glidePunishmentTutorialCount = 0;
+        static int _puzzleHintTutorialCount = 0;
+        static int _switchModeKeyTutorialCount = 0;
 
         private void Start()
         {
             VoidMessage = new VoidMessage();
-            FlyTutorialMessage = new FlyTutorialMessage(FlyTutorialImage);
-            PuzzleSolvedMessage = new PuzzleSolvedMessage(PuzzleSolvedImage);
+            _flyTutorialMessage = new FlyTutorialMessage(FlyTutorialImage, FlyTutorialStayTime);
+            _glidePunishmentTutorialMessage = new GlidePunishmentTutorialMessage(GlidePunishmentTutorialImage, GlidePunishmentTutorialStayTime);
+            _puzzleHintTutorialMessage = new PuzzleHintTutorialMessage(PuzzleHintTutorialImage, PuzzleHintTutorialStayTime);
+            _switchModeKeyTutorialMessage = new SwitchModeKeyTutorialMessage(SwitchModeKeyTutorialImage, SwitchModeKeyTutorialStayTime);
+            _puzzleSolvedMessage = new PuzzleSolvedMessage(PuzzleSolvedImage, PuzzleSolvedStayTime);
 
             ResetMessageInstance();
         }
@@ -28,13 +46,36 @@ namespace Windy.UI
             MessageInstance = VoidMessage;
         }
 
+        public static void ResetTutorialCound()
+        {
+            _glidePunishmentTutorialCount = 0;
+            _puzzleHintTutorialCount = 0;
+            _switchModeKeyTutorialCount = 0;
+        }
+
         public static void DisplayFlyTutorialMessage()
         {
-            Instance.ApplyForShowup(Instance.FlyTutorialMessage);
+            Instance.ApplyForShowup(Instance._flyTutorialMessage);
         }
+        public static void DisplayGlidePunishmentTutorialMessage()
+        {
+            if (_glidePunishmentTutorialCount++ == 0)
+                Instance.ApplyForShowup(Instance._glidePunishmentTutorialMessage);
+        }
+        public static void DisplayPuzzleHintTutorialMessage()
+        {
+            if (_puzzleHintTutorialCount++ == 0)
+                Instance.ApplyForShowup(Instance._puzzleHintTutorialMessage);
+        }
+        public static void DisplaySwitchModeKeyTutorialMessage()
+        {
+            if (_switchModeKeyTutorialCount++ == 0)
+                Instance.ApplyForShowup(Instance._switchModeKeyTutorialMessage);
+        }
+        
         public static void DisplayPuzzleSolvedMessage()
         {
-            Instance.ApplyForShowup(Instance.PuzzleSolvedMessage);
+            Instance.ApplyForShowup(Instance._puzzleSolvedMessage);
         }
     }
 }

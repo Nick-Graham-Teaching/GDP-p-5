@@ -52,22 +52,29 @@ namespace Windy
                 calledOnce = false;
             }
 
-            NewRight = NewAxes * (Input.gyro.attitude * -Vector3.right);
+            //NewRight = NewAxes * (Input.gyro.attitude * -Vector3.right);
             NewUp = NewAxes * (Input.gyro.attitude * Vector3.up);
             NewForward = NewAxes * (Input.gyro.attitude * -Vector3.forward);
 
             if (Vector3.Dot(NewUp, Vector3.up) > Mathf.Epsilon)
             {
-                LastCosX = Vector3.Dot(Vector3.up, new Vector3(0.0f, NewForward.y, NewForward.z).normalized);
+                //LastCosX = Vector3.Dot(Vector3.up, new Vector3(0.0f, NewForward.y, NewForward.z).normalized);
+                LastCosX = ToTheOtherSideAngle(Vector3.Dot(Vector3.up, new Vector3(0.0f, NewForward.y, NewForward.z).normalized));
             }
             if (Vector3.Dot(NewForward, Vector3.forward) > Mathf.Epsilon)
             {
-                LastCosY = Vector3.Dot(Vector3.left, new Vector3(NewForward.x, 0.0f, NewForward.z).normalized);
+                //LastCosY = Vector3.Dot(Vector3.left, new Vector3(NewForward.x, 0.0f, NewForward.z).normalized);
+                LastCosY = ToTheOtherSideAngle(Vector3.Dot(Vector3.left, new Vector3(NewForward.x, 0.0f, NewForward.z).normalized));
             }
-            if (Vector3.Dot(NewRight, Vector3.right) > Mathf.Epsilon)
-            {
-                LastCosZ = Vector3.Dot(Vector3.up, new Vector3(NewRight.x, NewRight.y, 0.0f).normalized);
-            }
+            //if (Vector3.Dot(NewRight, Vector3.right) > Mathf.Epsilon)
+            //{
+            //    LastCosZ = Vector3.Dot(Vector3.up, new Vector3(NewRight.x, NewRight.y, 0.0f).normalized);
+            //}
+        }
+
+        float ToTheOtherSideAngle(float cosTheta)
+        {
+            return ( Mathf.PI - 2f * Mathf.Acos(cosTheta) ) / Mathf.PI;
         }
     }
 }

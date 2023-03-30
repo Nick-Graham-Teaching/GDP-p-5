@@ -11,6 +11,7 @@ namespace Windy.MotionMode
         {
             rb.drag = flyDrag;
             UI.UIEvents.OnToDiveMode?.Invoke();
+            UI.UI_GameMessage.DisplaySwitchModeKeyTutorialMessage();
         }
 
         public override string ToString() => "MotionMode -- Dive";

@@ -45,6 +45,7 @@ namespace Windy.Buoyancy
 
             if (upForceDeltaTime >= UpForceMaxUtilityTime)
             {
+                UI.UI_GameMessage.DisplayGlidePunishmentTutorialMessage();
                 PunishUpwardAccel = PunishGlideUpwardAccel;
                 yield return new WaitForSeconds(PunishmentCD);
                 PunishUpwardAccel = 0.0f;
@@ -71,8 +72,6 @@ namespace Windy.Buoyancy
             {
                 MM_Executor.Instance.StartCoroutine(GlideUpForceTimer());
                 glideFloatSupervisorOn = true;
-
-                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Ascent);
             }
         }
         public sealed override void Start()

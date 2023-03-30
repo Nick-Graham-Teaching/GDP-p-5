@@ -9,12 +9,11 @@ namespace Windy.UI
         protected T MessageInstance;
 
         [SerializeField] protected float MessageFadeOutRate;
-        [SerializeField] protected float MessageStayTime;
         Coroutine MessageFadeOutCoroutine;
 
         IEnumerator WindowFadeOut()
         {
-            yield return new WaitForSeconds(MessageStayTime);
+            yield return new WaitForSeconds(MessageInstance.DisplayTime);
             yield return new WaitUntil(() => Util.ImageFadeOut(MessageInstance.Window, MessageFadeOutRate));
             MessageInstance.Window.enabled = false;
             Util.ResetImageAlpha(MessageInstance.Window, 1.0f);

@@ -7,7 +7,7 @@ namespace Windy.UI
     public class GameMessage : UI_Message
     {
         public GameMessage() { }
-        public GameMessage(UnityEngine.UI.Image image) : base(image) { }
+        public GameMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
 
     public class VoidMessage : GameMessage
@@ -17,11 +17,26 @@ namespace Windy.UI
 
     public class FlyTutorialMessage : GameMessage
     {
-        public FlyTutorialMessage(UnityEngine.UI.Image image) : base(image) { }
+        public FlyTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
+    }
+
+    public class GlidePunishmentTutorialMessage : GameMessage
+    {
+        public GlidePunishmentTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
+    }
+
+    public class PuzzleHintTutorialMessage : GameMessage
+    {
+        public PuzzleHintTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
+    }
+
+    public class SwitchModeKeyTutorialMessage: GameMessage
+    {
+        public SwitchModeKeyTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
 
     public class PuzzleSolvedMessage : GameMessage
     {
-        public PuzzleSolvedMessage(UnityEngine.UI.Image image) : base(image) { }
+        public PuzzleSolvedMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
 }
