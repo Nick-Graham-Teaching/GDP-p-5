@@ -44,36 +44,39 @@ namespace Windy.UI
     {
 
         public GameObject StartPage;
+
         Image[] StartPageUIImages;
         UnityEngine.UI.Button[] StartPageUIButtons;
         UI_AudioEvents[] StartPageUIAudioEvents;
 
-        public GameObject InGameUI;
+        public GameObject InGamePage;
+
+        [SerializeField] GameObject InGameUI;
         Image[] InGameUIImages;
-        public GameObject InGameUI_Characters;
         Coroutine InGameUIFadeInCoroutine;
 
-        public GameObject PuzzleLetters;
+        //public GameObject InGameUI_Characters;
+        //public GameObject PuzzleLetters;
 
         public GameObject SettingsPage;
         public GameObject PausePage;
         public GameObject CountdownPage;
         public GameObject GameoverPage;
 
-        public float UIFadeOutRate;
-        public float UIFadeInRate;
+        [SerializeField] float UIFadeOutRate;
+        [SerializeField] float UIFadeInRate;
 
-        public float WarningUIFadeInRate;
-        public float WarningUIFadeInAlpha;
-        public float WarningUIFadeInThreshold;
+        [SerializeField] float WarningUIFadeInRate;
+        [SerializeField] float WarningUIFadeInAlpha;
+        [SerializeField] float WarningUIFadeInThreshold;
 
-        public GameObject Keyboard;
-        public GameObject Mobile;
-        public GameObject FPS30;
-        public GameObject FPS60;
-        public GameObject FPS120;
-        public Scrollbar SensitivityX;
-        public Scrollbar SensitivityY;
+        [SerializeField] GameObject Keyboard;
+        [SerializeField] GameObject Mobile;
+        [SerializeField] GameObject FPS30;
+        [SerializeField] GameObject FPS60;
+        [SerializeField] GameObject FPS120;
+        [SerializeField] Scrollbar SensitivityX;
+        [SerializeField] Scrollbar SensitivityY;
 
         IEnumerator StartPageUIFadeOut()
         {
