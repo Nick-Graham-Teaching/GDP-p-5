@@ -9,11 +9,14 @@ namespace Windy.UI
 
     public class UI_GlidePitchUpTimer : StaticSingleton<UI_GlidePitchUpTimer>
     {
+        [SerializeField] GameObject CDTimer;
+        [SerializeField] GameObject UseTimer;
+
         Image[] AllImages;
 
-        [SerializeField] Image FillImage;
-        [SerializeField] Color NormalImageColor;
-        [SerializeField] Color PunishmentImageColor;
+        [SerializeField] Image UseTimer_FillImage;
+        [SerializeField] Image CDTimer_UsableImage;
+        [SerializeField] Image CDTimer_DisusableImage;
         [SerializeField] float ChangeRate;
         [SerializeField] float FadeInOutRate;
 
@@ -27,13 +30,16 @@ namespace Windy.UI
             }
             if (GlidePitchUpTimer.IsExceedingTimeLimit)
             {
-                FillImage.color = PunishmentImageColor;
-                FillImage.fillAmount -= (1.0f / GlidePitchUpTimer.PunishmentCD) * Time.deltaTime;
+                UseTimer.SetActive(false);
+                CDTimer.SetActive(true);
+                CDTimer_DisusableImage.fillAmount -= (1.0f / GlidePitchUpTimer.PunishmentCD) * Time.deltaTime;
+                CDTimer_UsableImage.fillAmount = 1.0f - CDTimer_DisusableImage.fillAmount;
             }
             else
             {
-                FillImage.color = NormalImageColor;
-                FillImage.fillAmount = Mathf.Lerp(FillImage.fillAmount, GlidePitchUpTimer.UseTimeRatio, ChangeRate * Time.deltaTime);
+                UseTimer.SetActive(true);
+                CDTimer.SetActive(false);
+                UseTimer_FillImage.fillAmount = Mathf.Lerp(UseTimer_FillImage.fillAmount, GlidePitchUpTimer.UseTimeRatio, ChangeRate * Time.deltaTime);
             }
         }
 
@@ -60,7 +66,11 @@ namespace Windy.UI
             }
         }
 
-        public static void ResetImageFillAmount() => Instance.FillImage.fillAmount = 1.0f;
+        public static void ResetImageFillAmount() 
+        {
+            Instance.CDTimer_DisusableImage.fillAmount = 1.0f;
+            Instance.CDTimer_UsableImage.fillAmount = 0.0f;
+        }
     }
 }
 
