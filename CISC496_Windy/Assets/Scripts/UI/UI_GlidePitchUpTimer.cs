@@ -12,8 +12,6 @@ namespace Windy.UI
         [SerializeField] GameObject CDTimer;
         [SerializeField] GameObject UseTimer;
 
-        Image[] AllImages;
-
         [SerializeField] Image UseTimer_FillImage;
         [SerializeField] Image CDTimer_UsableImage;
         [SerializeField] Image CDTimer_DisusableImage;
@@ -30,46 +28,47 @@ namespace Windy.UI
             }
             if (GlidePitchUpTimer.IsExceedingTimeLimit)
             {
-                UseTimer.SetActive(false);
-                CDTimer.SetActive(true);
                 CDTimer_DisusableImage.fillAmount -= (1.0f / GlidePitchUpTimer.PunishmentCD) * Time.deltaTime;
                 CDTimer_UsableImage.fillAmount = 1.0f - CDTimer_DisusableImage.fillAmount;
             }
             else
             {
-                UseTimer.SetActive(true);
-                CDTimer.SetActive(false);
                 UseTimer_FillImage.fillAmount = Mathf.Lerp(UseTimer_FillImage.fillAmount, GlidePitchUpTimer.UseTimeRatio, ChangeRate * Time.deltaTime);
             }
         }
 
         private void Start()
         {
-            AllImages = GetComponentsInChildren<Image>();
+            CDTimer.SetActive(false);
+            UseTimer.SetActive(false);
         }
 
-        public static void TurnOff() 
+        public static void TurnOff()
         {
             if (Instance is null) return;
             Instance._isEnabled = false;
-            foreach (Image image in Instance.AllImages)
-            {
-                image.enabled = false;
-            }
+            Instance.CDTimer.SetActive(false);
+            Instance.UseTimer.SetActive(false);
         }
         public static void TurnOn()
         {
             Instance._isEnabled = true;
-            foreach (Image image in Instance.AllImages)
-            {
-                image.enabled = true;
-            }
+            Instance.CDTimer.SetActive(false);
+            Instance.UseTimer.SetActive(true);
         }
 
-        public static void ResetImageFillAmount() 
+        public static void TurnOnCDTimer() 
         {
             Instance.CDTimer_DisusableImage.fillAmount = 1.0f;
             Instance.CDTimer_UsableImage.fillAmount = 0.0f;
+            Instance.UseTimer.SetActive(false);
+            Instance.CDTimer.SetActive(true);
+        }
+
+        public static void TurnOffCDTimer()
+        {
+            Instance.UseTimer.SetActive(true);
+            Instance.CDTimer.SetActive(false);
         }
     }
 }

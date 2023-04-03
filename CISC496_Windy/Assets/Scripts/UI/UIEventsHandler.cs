@@ -115,6 +115,8 @@ namespace Windy.UI
             // Enable all player and camera control files
             GameEvents.OnStart?.Invoke();
 
+            GameTutorialManager.DisplayMobilePhoneControlTutorial();
+
             Util.ResetImagesAlpha(InGameUIImages, 0.0f);
             yield return new WaitUntil(() =>
             {
@@ -122,7 +124,6 @@ namespace Windy.UI
             });
             Util.ResetImagesAlpha(InGameUIImages, 1.0f);
 
-            GameTutorialManager.DisplayMobilePhoneControlTutorial();
         }
 
         IEnumerator GameOverWarmingFadeIn()

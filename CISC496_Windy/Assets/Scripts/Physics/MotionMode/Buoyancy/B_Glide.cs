@@ -45,7 +45,7 @@ namespace Windy.Buoyancy
 
             if (GlidePitchUpTimer.IsExceedingTimeLimit)
             {
-                UI.UI_GlidePitchUpTimer.ResetImageFillAmount();
+                UI.UI_GlidePitchUpTimer.TurnOnCDTimer();
                 PunishUpwardAccel = PunishGlideUpwardAccel;
                 float timer = 0;
                 yield return new WaitUntil(() => {
@@ -53,6 +53,7 @@ namespace Windy.Buoyancy
                     return timer > GlidePitchUpTimer.PunishmentCD;
                 });
                 Game.GameTutorialManager.DisplayGlidePunishmentTutorial();
+                UI.UI_GlidePitchUpTimer.TurnOffCDTimer();
                 PunishUpwardAccel = 0.0f;
                 GlidePitchUpTimer.ResetUseTime();
             }
