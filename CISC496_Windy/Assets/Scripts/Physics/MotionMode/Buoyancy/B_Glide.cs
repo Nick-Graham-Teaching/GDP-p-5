@@ -46,13 +46,13 @@ namespace Windy.Buoyancy
             if (GlidePitchUpTimer.IsExceedingTimeLimit)
             {
                 UI.UI_GlidePitchUpTimer.ResetImageFillAmount();
-                UI.UI_GameMessage.DisplayGlidePunishmentTutorialMessage();
                 PunishUpwardAccel = PunishGlideUpwardAccel;
                 float timer = 0;
                 yield return new WaitUntil(() => {
                     if (Game.GameProgressManager.Instance.GameState.IsInGame()) timer += Time.deltaTime;
                     return timer > GlidePitchUpTimer.PunishmentCD;
                 });
+                Game.GameTutorialManager.DisplayGlidePunishmentTutorial();
                 PunishUpwardAccel = 0.0f;
                 GlidePitchUpTimer.ResetUseTime();
             }

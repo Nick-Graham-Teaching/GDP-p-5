@@ -10,10 +10,6 @@ namespace Windy.UI
         public PopupWindow() { }
         public PopupWindow(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
-    public class VoidWindow : PopupWindow
-    {
-        public override bool Available => true;
-    }
     public class MCConnecionWindow : PopupWindow
     {
         public MCConnecionWindow(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }

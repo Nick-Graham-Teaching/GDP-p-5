@@ -10,11 +10,6 @@ namespace Windy.UI
         public GameMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
 
-    public class VoidMessage : GameMessage
-    {
-        public override bool Available => true;
-    }
-
     public class FlyTutorialMessage : GameMessage
     {
         public FlyTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
@@ -30,9 +25,15 @@ namespace Windy.UI
         public PuzzleHintTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
 
+    [System.Obsolete]
     public class SwitchModeKeyTutorialMessage: GameMessage
     {
         public SwitchModeKeyTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
+    }
+
+    public class MobilePhoneControlTutorialMessage : GameMessage
+    {
+        public MobilePhoneControlTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
 
     public class PuzzleSolvedMessage : GameMessage

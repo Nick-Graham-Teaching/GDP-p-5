@@ -116,11 +116,13 @@ namespace Windy.UI
             GameEvents.OnStart?.Invoke();
 
             Util.ResetImagesAlpha(InGameUIImages, 0.0f);
-            UI_GameMessage.DisplayFlyTutorialMessage();
             yield return new WaitUntil(() =>
             {
                 return Util.ImagesFadeIn(InGameUIImages, UIFadeInRate);
             });
+            Util.ResetImagesAlpha(InGameUIImages, 1.0f);
+
+            GameTutorialManager.DisplayMobilePhoneControlTutorial();
         }
 
         IEnumerator GameOverWarmingFadeIn()

@@ -19,5 +19,11 @@ namespace Windy.UI
 
         public virtual bool Available => false;
     }
+
+
+    public class VoidMessage : UI_Message
+    {
+        public override bool Available => true;
+    }
 }
 

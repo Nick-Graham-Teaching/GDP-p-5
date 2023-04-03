@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Windy.UI
 {
-    public class UI_GameMessage : UI_MessageChannel<GameMessage, UI_GameMessage>
+    public class UI_GameMessage : UI_MessageChannel<UI_GameMessage>
     {
-
-        VoidMessage VoidMessage;
         FlyTutorialMessage _flyTutorialMessage;
         GlidePunishmentTutorialMessage _glidePunishmentTutorialMessage;
         PuzzleHintTutorialMessage _puzzleHintTutorialMessage;
-        SwitchModeKeyTutorialMessage _switchModeKeyTutorialMessage;
+        //SwitchModeKeyTutorialMessage _switchModeKeyTutorialMessage;
+        MobilePhoneControlTutorialMessage _mobilePhoneControlTutorialMessage;
+
         PuzzleSolvedMessage _puzzleSolvedMessage;
 
         [SerializeField] UnityEngine.UI.Image FlyTutorialImage;
@@ -20,59 +21,42 @@ namespace Windy.UI
         [SerializeField] float GlidePunishmentTutorialStayTime;
         [SerializeField] UnityEngine.UI.Image PuzzleHintTutorialImage;
         [SerializeField] float PuzzleHintTutorialStayTime;
-        [SerializeField] UnityEngine.UI.Image SwitchModeKeyTutorialImage;
-        [SerializeField] float SwitchModeKeyTutorialStayTime;
+        //[SerializeField] UnityEngine.UI.Image SwitchModeKeyTutorialImage;
+        [SerializeField] UnityEngine.UI.Image MobilePhoneControlTutorialMessage;
+        //[SerializeField] float SwitchModeKeyTutorialStayTime;
+        [SerializeField] float MobilePhoneControlTutorialStayTime;
+
         [SerializeField] UnityEngine.UI.Image PuzzleSolvedImage;
         [SerializeField] float PuzzleSolvedStayTime;
 
-        static int _glidePunishmentTutorialCount = 0;
-        static int _puzzleHintTutorialCount = 0;
-        static int _switchModeKeyTutorialCount = 0;
-
-        private void Start()
+        private new void Start()
         {
-            VoidMessage = new VoidMessage();
+            base.Start();
             _flyTutorialMessage = new FlyTutorialMessage(FlyTutorialImage, FlyTutorialStayTime);
             _glidePunishmentTutorialMessage = new GlidePunishmentTutorialMessage(GlidePunishmentTutorialImage, GlidePunishmentTutorialStayTime);
             _puzzleHintTutorialMessage = new PuzzleHintTutorialMessage(PuzzleHintTutorialImage, PuzzleHintTutorialStayTime);
-            _switchModeKeyTutorialMessage = new SwitchModeKeyTutorialMessage(SwitchModeKeyTutorialImage, SwitchModeKeyTutorialStayTime);
+            _mobilePhoneControlTutorialMessage = new MobilePhoneControlTutorialMessage(MobilePhoneControlTutorialMessage, MobilePhoneControlTutorialStayTime);
             _puzzleSolvedMessage = new PuzzleSolvedMessage(PuzzleSolvedImage, PuzzleSolvedStayTime);
-
-            ResetMessageInstance();
         }
-
-        protected override void ResetMessageInstance()
-        {
-            MessageInstance = VoidMessage;
-        }
-
-        public static void ResetTutorialCound()
-        {
-            _glidePunishmentTutorialCount = 0;
-            _puzzleHintTutorialCount = 0;
-            _switchModeKeyTutorialCount = 0;
-        }
+        
 
         public static void DisplayFlyTutorialMessage()
         {
-            Instance.ApplyForShowup(Instance._flyTutorialMessage);
+            Instance.ApplyForShowup(Instance._flyTutorialMessage, true);
         }
         public static void DisplayGlidePunishmentTutorialMessage()
         {
-            if (_glidePunishmentTutorialCount++ == 0)
-                Instance.ApplyForShowup(Instance._glidePunishmentTutorialMessage);
+            Instance.ApplyForShowup(Instance._glidePunishmentTutorialMessage, true);
         }
         public static void DisplayPuzzleHintTutorialMessage()
         {
-            if (_puzzleHintTutorialCount++ == 0)
-                Instance.ApplyForShowup(Instance._puzzleHintTutorialMessage);
+            Instance.ApplyForShowup(Instance._puzzleHintTutorialMessage, true);
         }
-        public static void DisplaySwitchModeKeyTutorialMessage()
+        public static void DisplayMobileControllerTutorialMessage()
         {
-            if (_switchModeKeyTutorialCount++ == 0)
-                Instance.ApplyForShowup(Instance._switchModeKeyTutorialMessage);
+            Instance.ApplyForShowup(Instance._mobilePhoneControlTutorialMessage, true);
         }
-        
+
         public static void DisplayPuzzleSolvedMessage()
         {
             Instance.ApplyForShowup(Instance._puzzleSolvedMessage);
