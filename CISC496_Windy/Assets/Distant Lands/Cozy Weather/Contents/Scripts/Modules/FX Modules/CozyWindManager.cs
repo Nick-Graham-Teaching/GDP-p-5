@@ -114,8 +114,7 @@ namespace DistantLands.Cozy
 
             float i = 360 * Mathf.PerlinNoise(m_Seed, Time.time / 100000);
 
-            m_WindDirection = new Vector3(Mathf.Sin(i), 0, Mathf.Cos(i));
-
+            m_WindDirection = new Vector3(Mathf.Sin(i), 0, Mathf.Cos(i)); 
 
             if (useWindzone)
             {

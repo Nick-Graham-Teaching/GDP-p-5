@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   win1: 1
   win2: 1
-  win3: 0
+  win3: 1
   win4: 0
   skyZenithColor:
     mode: 0

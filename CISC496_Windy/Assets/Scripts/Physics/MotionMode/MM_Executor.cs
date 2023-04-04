@@ -384,7 +384,9 @@ namespace Windy
         {
             if (GameProgressManager.Instance.GameState.IsInGame())
             {
+# if UNITY_EDITOR
                 if (ShowMotionMode) Debug.Log(MotionMode);
+#endif
                 Switcher.Update();
                 MotionMode.Update();
             }

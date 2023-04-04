@@ -4,26 +4,24 @@ using UnityEngine;
 
 namespace Windy.UI
 {
-    public class UI_PopupWindow : UI_MessageChannel<PopupWindow, UI_PopupWindow>
+    public class UI_PopupWindow : UI_MessageChannel<UI_PopupWindow>
     {
 
-        VoidWindow VoidWindow;
         MCConnecionWindow ConnectionWindow;
         MCDisconnectionWindow DisconnectionWindow;
 
         [SerializeField] UnityEngine.UI.Image ConnectionWindowImage;
+        [SerializeField] float ConnectionWindowStayTime;
         [SerializeField] UnityEngine.UI.Image DisconnectionWindowImage;
+        [SerializeField] float DisconnectionWindowStayTime;
 
-        private void Start()
+        private new void Start()
         {
-            VoidWindow = new VoidWindow();
-            ConnectionWindow = new MCConnecionWindow(ConnectionWindowImage);
-            DisconnectionWindow= new MCDisconnectionWindow(DisconnectionWindowImage);
-
-            ResetMessageInstance();
+            base.Start();
+            ConnectionWindow = new MCConnecionWindow(ConnectionWindowImage, ConnectionWindowStayTime);
+            DisconnectionWindow= new MCDisconnectionWindow(DisconnectionWindowImage, DisconnectionWindowStayTime);
         }
 
-        protected override void ResetMessageInstance() => MessageInstance = VoidWindow;
 
         public static void ConnectionWindowShowUp()
         {

@@ -69,13 +69,13 @@ namespace Windy.Game
                 UI.UIEventsHandler.Instance.StartPage.SetActive(true);
                 UI.UIEventsHandler.Instance.SettingsPage.SetActive(false);
                 UI.UIEventsHandler.Instance.PausePage.SetActive(false);
-                UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
-                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
-                UI.UIEventsHandler.Instance.PuzzleLetters.SetActive(false);
+                UI.UIEventsHandler.Instance.InGamePage.SetActive(false);
                 UI.UIEventsHandler.Instance.CountdownPage.SetActive(false);
                 UI.UIEventsHandler.Instance.GameoverPage.SetActive(false);
                 UI.UIEvents.OnToStartPage?.Invoke();
                 UI.UIEvents.OnToWalkMode?.Invoke();
+
+                GameTutorialManager.ResetTutorialCound();
 
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -104,9 +104,7 @@ namespace Windy.Game
             {
                 cameraFollow.updateView = true;
                 UI.UIEventsHandler.Instance.StartPage.SetActive(false);
-                UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
-                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(true);
-                UI.UIEventsHandler.Instance.PuzzleLetters.SetActive(true);
+                UI.UIEventsHandler.Instance.InGamePage.SetActive(true);
                 GameState = new InGame();
 
                 //Cursor.visible = false;
@@ -127,9 +125,7 @@ namespace Windy.Game
                 Controller.Controller.Instance.SetPhoneContinueActive(true);
 
                 UI.UI_GameMessage.TurnOffAllMessages();
-                UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
-                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
-                UI.UIEventsHandler.Instance.PuzzleLetters.SetActive(false);
+                UI.UIEventsHandler.Instance.InGamePage.SetActive(false);
                 UI.UIEventsHandler.Instance.PausePage.SetActive(true);
             };
             // void Player. OnPauseStatus()
@@ -146,9 +142,7 @@ namespace Windy.Game
 
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
 
-                UI.UIEventsHandler.Instance.InGameUI.SetActive(true);
-                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(true);
-                UI.UIEventsHandler.Instance.PuzzleLetters.SetActive(true);
+                UI.UIEventsHandler.Instance.InGamePage.SetActive(true);
                 UI.UIEventsHandler.Instance.PausePage.SetActive(false);
             };
             // void PLayer. OnContinueStatus()
@@ -158,12 +152,16 @@ namespace Windy.Game
             // }
             GameEvents.OnRestart += () =>               // Invoked by new Restart();
             {
+
                 cameraFollow.updateView = true;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = false;
 
                 cameraFollow.OnRestart();
                 Puzzle.PuzzleManager.Instance.ClearInput();
+
+                UI.UIEventsHandler.Instance.InGamePage.SetActive(true);
+                UI.UIEventsHandler.Instance.GameoverPage.SetActive(false);
 
                 Controller.Controller.Instance.SetPhoneContinueActive(false);
             };
@@ -203,9 +201,7 @@ namespace Windy.Game
 
                 Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Game_Fail);
 
-                UI.UIEventsHandler.Instance.InGameUI.SetActive(false);
-                UI.UIEventsHandler.Instance.InGameUI_Characters.SetActive(false);
-                UI.UIEventsHandler.Instance.PuzzleLetters.SetActive(false);
+                UI.UIEventsHandler.Instance.InGamePage.SetActive(false);
                 UI.UIEventsHandler.Instance.GameoverPage.SetActive(true);
 
                 Controller.Controller.Instance.SetPhoneContinueActive(false);

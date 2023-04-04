@@ -30,8 +30,6 @@ namespace Windy.MotionMode
             {
                 diveAngleDelta = degree * diveAngle;
                 flyDirection += BackD;
-
-                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Descent);
             }
             if (Controller.Controller.ControlDevice.GetKeyPress(Keys.LeftCode, out degree))
             {

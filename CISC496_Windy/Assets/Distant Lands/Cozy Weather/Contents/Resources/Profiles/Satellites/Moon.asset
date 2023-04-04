@@ -16,7 +16,7 @@ MonoBehaviour:
   orbitRef: {fileID: 0}
   moonRef: {fileID: 0}
   lightRef: {fileID: 0}
-  size: 1
+  size: 2.5
   distance: 1
   useLight: 1
   flare: {fileID: 12100000, guid: 7f27290990cd1754c94eba89ca2dafa8, type: 2}

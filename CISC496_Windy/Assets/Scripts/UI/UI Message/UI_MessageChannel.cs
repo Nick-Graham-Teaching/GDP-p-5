@@ -4,49 +4,57 @@ using UnityEngine;
 
 namespace Windy.UI
 {
-    public class UI_MessageChannel<T, T1> : StaticSingleton<T1> where T : UI_Message where T1 : UI_MessageChannel<T, T1>
+    public class UI_MessageChannel<T> : StaticSingleton<T> where T : UI_MessageChannel<T>
     {
-        protected T MessageInstance;
+        protected UI_Message MessageInstance;
+
+        protected VoidMessage _voidMessage;
 
         [SerializeField] protected float MessageFadeOutRate;
-        [SerializeField] protected float MessageStayTime;
         Coroutine MessageFadeOutCoroutine;
+
+        protected void Start()
+        {
+            _voidMessage = new VoidMessage();
+            MessageInstance = _voidMessage;
+        }
 
         IEnumerator WindowFadeOut()
         {
-            yield return new WaitForSeconds(MessageStayTime);
+            yield return new WaitForSeconds(MessageInstance.DisplayTime);
             yield return new WaitUntil(() => Util.ImageFadeOut(MessageInstance.Window, MessageFadeOutRate));
             MessageInstance.Window.enabled = false;
             Util.ResetImageAlpha(MessageInstance.Window, 1.0f);
             ResetMessageInstance();
         }
 
-        protected void ApplyForShowup(T window)
+        protected void ApplyForShowup(UI_Message window, bool touchable = false)
         {
             if (MessageInstance.Available)
             {
                 MessageInstance = window;
                 MessageInstance.Window.enabled = true;
-                MessageFadeOutCoroutine = StartCoroutine(WindowFadeOut());
+                if (!touchable) MessageFadeOutCoroutine = StartCoroutine(WindowFadeOut());
             }
             else
             {
-                StopCoroutine(MessageFadeOutCoroutine);
+                if (Instance.MessageFadeOutCoroutine is not null) StopCoroutine(MessageFadeOutCoroutine);
                 Util.ResetImageAlpha(MessageInstance.Window, 1.0f);
                 MessageInstance.Window.enabled = false;
 
                 MessageInstance = window;
                 MessageInstance.Window.enabled = true;
-                MessageFadeOutCoroutine = StartCoroutine(WindowFadeOut());
+                if (!touchable) MessageFadeOutCoroutine = StartCoroutine(WindowFadeOut());
             }
         }
 
-        protected virtual void ResetMessageInstance() { }
+        protected void ResetMessageInstance() => MessageInstance = _voidMessage;
+
         public static void TurnOffAllMessages()
         {
             if (!Instance.MessageInstance.Available)
             {
-                Instance.StopCoroutine(Instance.MessageFadeOutCoroutine);
+                if (Instance.MessageFadeOutCoroutine is not null) Instance.StopCoroutine(Instance.MessageFadeOutCoroutine);
                 Util.ResetImageAlpha(Instance.MessageInstance.Window, 1.0f);
                 Instance.MessageInstance.Window.enabled = false;
 

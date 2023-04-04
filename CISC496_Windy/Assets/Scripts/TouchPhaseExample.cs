@@ -2,11 +2,12 @@ using UnityEngine;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
-public class TouchPhaseExample : MonoBehaviour
+public class TouchPhaseExample : MonoBehaviour,IPointerDownHandler
 {
-    private void Start()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log(0b0101);
+        Debug.Log("hjere");
     }
 }

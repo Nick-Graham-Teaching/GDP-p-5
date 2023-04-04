@@ -19,9 +19,11 @@ namespace Windy.MotionMode {
         {
             rb.drag = flyDrag;
             UI.UIEvents.OnToGlideMode?.Invoke();
+            Game.GameTutorialManager.DisplayFlyTutorial();
+            UI.UI_GlidePitchUpTimer.TurnOn();
         }
 
-
+        public override bool IsGlide() => true;
         public override string ToString() => "MotionMode -- Glide";
     }
 

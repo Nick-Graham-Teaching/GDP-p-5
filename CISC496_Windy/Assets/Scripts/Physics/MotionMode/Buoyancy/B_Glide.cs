@@ -19,7 +19,7 @@ namespace Windy.Buoyancy
 
         bool glideFloatSupervisorOn;
 
-        public sealed override float Force => glideUpwardAccel + CloudUpwardAccel;
+        public sealed override float Force => glideUpwardAccel + CloudUpwardAccel + PunishUpwardAccel;
 
 
         IEnumerator GlideUpForceTimer()
@@ -34,27 +34,36 @@ namespace Windy.Buoyancy
                                 return true;
                             }
                             if (degree < Mathf.Epsilon) return true;
-                            upForceDeltaTime += (degree * Time.deltaTime);
+                            GlidePitchUpTimer.IncrementUseTime(degree * Time.deltaTime);
                             glideUpwardAccel = Mathf.Lerp(glideUpwardAccel, MaxGlideUpwardAccel, degree * UpwardAccelSpeedUpRate * Time.deltaTime);
                         }
-                        return upForceDeltaTime >= UpForceMaxUtilityTime;
+                        return !MM_Executor.Instance.MotionMode.IsGlide() || GlidePitchUpTimer.IsExceedingTimeLimit;
                     }
                 );
 
-            if (upForceDeltaTime >= UpForceMaxUtilityTime)
+            glideUpwardAccel = MinGlideUpwardAccel;
+
+            if (GlidePitchUpTimer.IsExceedingTimeLimit)
             {
-                glideUpwardAccel = PunishGlideUpwardAccel;
-                yield return new WaitForSeconds(PunishmentCD);
-                glideUpwardAccel = MinGlideUpwardAccel;
-                upForceDeltaTime = 0.0f;
+                UI.UI_GlidePitchUpTimer.TurnOnCDTimer();
+                PunishUpwardAccel = PunishGlideUpwardAccel;
+                float timer = 0;
+                yield return new WaitUntil(() => {
+                    if (Game.GameProgressManager.Instance.GameState.IsInGame()) timer += Time.deltaTime;
+                    return timer > GlidePitchUpTimer.PunishmentCD;
+                });
+                Game.GameTutorialManager.DisplayGlidePunishmentTutorial();
+                UI.UI_GlidePitchUpTimer.TurnOffCDTimer();
+                PunishUpwardAccel = 0.0f;
+                GlidePitchUpTimer.ResetUseTime();
             }
             else
             {
-                glideUpwardAccel = MinGlideUpwardAccel;
                 yield return new WaitUntil(
                     () => {
-                        upForceDeltaTime = Mathf.Lerp(upForceDeltaTime, 0.0f, DeltaTimeRecoverRate * Time.deltaTime);
-                        return Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out float _) || upForceDeltaTime < Mathf.Epsilon;
+                        if (Game.GameProgressManager.Instance.GameState.IsInGame()) GlidePitchUpTimer.DecrementUseTime();
+                        return (MM_Executor.Instance.MotionMode.IsGlide() && Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out float _)) 
+                        || GlidePitchUpTimer.IsBackToZero;
                     }
                 );
             }
@@ -66,12 +75,10 @@ namespace Windy.Buoyancy
         public sealed override void Update()
         {
             base.Update();
-            if (!glideFloatSupervisorOn && Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out float _) && upForceDeltaTime < UpForceMaxUtilityTime)
+            if (!glideFloatSupervisorOn && Controller.Controller.ControlDevice.GetKeyPress(Keys.UpCode, out float _) && !GlidePitchUpTimer.IsExceedingTimeLimit)
             {
                 MM_Executor.Instance.StartCoroutine(GlideUpForceTimer());
                 glideFloatSupervisorOn = true;
-
-                Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Flying_Ascent);
             }
         }
         public sealed override void Start()
