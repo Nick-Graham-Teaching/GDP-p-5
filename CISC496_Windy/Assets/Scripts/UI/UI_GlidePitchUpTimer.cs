@@ -53,22 +53,37 @@ namespace Windy.UI
         public static void TurnOn()
         {
             Instance._isEnabled = true;
-            Instance.CDTimer.SetActive(false);
-            Instance.UseTimer.SetActive(true);
+
+            if (GlidePitchUpTimer.IsExceedingTimeLimit)
+            {
+                Instance.CDTimer.SetActive(true);
+                Instance.UseTimer.SetActive(false);
+            }
+            else
+            {
+                Instance.CDTimer.SetActive(false);
+                Instance.UseTimer.SetActive(true);
+            }
         }
 
         public static void TurnOnCDTimer() 
         {
-            Instance.CDTimer_DisusableImage.fillAmount = 1.0f;
-            Instance.CDTimer_UsableImage.fillAmount = 0.0f;
-            Instance.UseTimer.SetActive(false);
-            Instance.CDTimer.SetActive(true);
+            if (Instance._isEnabled)
+            {
+                Instance.CDTimer_DisusableImage.fillAmount = 1.0f;
+                Instance.CDTimer_UsableImage.fillAmount = 0.0f;
+                Instance.UseTimer.SetActive(false);
+                Instance.CDTimer.SetActive(true);
+            }
         }
 
         public static void TurnOffCDTimer()
         {
-            Instance.UseTimer.SetActive(true);
-            Instance.CDTimer.SetActive(false);
+            if (Instance._isEnabled)
+            {
+                Instance.UseTimer.SetActive(true);
+                Instance.CDTimer.SetActive(false);
+            }
         }
     }
 }
