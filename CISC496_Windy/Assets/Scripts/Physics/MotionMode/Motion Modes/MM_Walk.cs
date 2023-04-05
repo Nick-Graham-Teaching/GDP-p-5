@@ -232,6 +232,7 @@ namespace Windy.MotionMode
         {
             MM_Executor.Instance.StopEnergySupervisor();
             UI.UI_GlidePitchUpTimer.TurnOff();
+            Buoyancy.GlidePitchUpTimer.ResetUseTime();
             if (MM_Executor.Instance.B_M_Previous?.GetType() != MM_Executor.Instance.B_M_Takeoff?.GetType()) UI.UIEvents.OnToWalkMode?.Invoke();
         }
 
