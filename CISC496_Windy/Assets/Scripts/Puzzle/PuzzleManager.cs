@@ -7,7 +7,7 @@ namespace Windy.Puzzle
 {
     public enum PuzzleAnswerLetters
     {
-        A,E,I,N,O,Q,S,T,U,Y,Reset,Delete
+        Blank, A, E, I, N, O, Q, S, T, U, Y, Reset, Delete
     }
 
     public class PuzzleManager : Singleton<PuzzleManager>
@@ -35,9 +35,15 @@ namespace Windy.Puzzle
 
         public float WrongAnswerWarningColorChangeRate;
 
+        private bool IsRejectInput;
+
         private Image[] UI_Letters = new Image[6];
         private PuzzleAnswerLetters[] _playerAnswer = new PuzzleAnswerLetters[6];
 
+        private readonly PuzzleAnswerLetters[] CorrectAnswer_TutLevel =
+        {
+            PuzzleAnswerLetters.O
+        };
         private readonly PuzzleAnswerLetters[] CorrectAnswer = 
         { 
             PuzzleAnswerLetters.Q,
@@ -65,34 +71,38 @@ namespace Windy.Puzzle
         public void ClearInput()
         {
             Pointer = 0;
-            foreach (Image i in UI_Letters)
+            //foreach (Image i in UI_Letters)
+            //{
+            //    i.sprite = Blank;
+            //}
+            for (int i = 0; i < _playerAnswer.Length; i++)
             {
-                i.sprite = Blank;
+                _playerAnswer[i] = PuzzleAnswerLetters.Blank;
+                UI_Letters[i].sprite = Blank;
             }
         }
 
         IEnumerator WrongAnswerWarnAnimation()
         {
+            IsRejectInput = true;
             yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.red));
             yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.white));
             yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.red));
             yield return new WaitUntil(() => Util.ImagesColorLerp(UI_Letters, WrongAnswerWarningColorChangeRate, Color.white));
             ClearInput();
+            IsRejectInput = false;
         }
 
         public void DeleteOneInput()
         {
             Pointer--;
             UI_Letters[Pointer].sprite = Blank;
+            _playerAnswer[Pointer] = PuzzleAnswerLetters.Blank;
         }
 
         public void Input(PuzzleAnswerLetters letter)
         {
-            if (Pointer == 6)
-            {
-                return;
-            }
-
+            if (IsRejectInput) return;
             switch (letter)
             {
                 case PuzzleAnswerLetters.Reset:
@@ -155,28 +165,50 @@ namespace Windy.Puzzle
                     break;
             }
 
-            if (Pointer == 6)
-            {
-                CheckPuzzleInput();
-            }
+            CheckPuzzleInput();
         }
 
         void CheckPuzzleInput()
         {
-            for (int i = 0; i < 6; i++)
+            switch (Game.GameLevelManager.CurrentLevel)
             {
-                if (_playerAnswer[i] != CorrectAnswer[i])
-                {
-                    StartCoroutine(WrongAnswerWarnAnimation());
-                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_WrongAnswer);
-                    return;
-                }
-            }
+                case Game.Level.TutLevel:
+                    for (int i = 0; i < 1; i++)
+                    {
+                        if (_playerAnswer[i] != CorrectAnswer_TutLevel[i])
+                        {
+                            StartCoroutine(WrongAnswerWarnAnimation());
+                            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_WrongAnswer);
+                            return;
+                        }
+                    }
 
-            // Win the game;
-            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_CorrectAnswer);
-            ClearInput();
-            UI.UI_GameMessage.DisplayPuzzleSolvedMessage();
+                    // Win the game;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_CorrectAnswer);
+                    ClearInput();
+                    UI.UI_GameMessage.DisplayPuzzleSolvedMessage();
+                    Game.GameLevelManager.LevelOneSetUp();
+                    break;
+                case Game.Level.FirstLevel:
+
+                    if (Pointer < 6) return;
+
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (_playerAnswer[i] != CorrectAnswer[i])
+                        {
+                            StartCoroutine(WrongAnswerWarnAnimation());
+                            Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_WrongAnswer);
+                            return;
+                        }
+                    }
+
+                    // Win the game;
+                    Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Puzzle_CorrectAnswer);
+                    ClearInput();
+                    UI.UI_GameMessage.DisplayPuzzleSolvedMessage();
+                    break;
+            }
         }
 
         private new void Awake()

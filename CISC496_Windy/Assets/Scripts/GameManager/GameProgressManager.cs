@@ -62,6 +62,8 @@ namespace Windy.Game
 
             GameEvents.OnToStartPage += () =>           // Invoked by new Ready();
             {
+                GameLevelManager.TutLevelSetup();
+
                 cameraFollow.ResetTransform();
                 // Camera does not follow mouse movement
                 cameraFollow.updateView = false;
@@ -152,7 +154,6 @@ namespace Windy.Game
             // }
             GameEvents.OnRestart += () =>               // Invoked by new Restart();
             {
-
                 cameraFollow.updateView = true;
                 Cursor.lockState = CursorLockMode.Confined;
                 Cursor.visible = false;
