@@ -122,7 +122,8 @@ namespace Windy.UI
             });
             Util.ResetImagesAlpha(InGameUIImages, 1.0f);
 
-            GameTutorialManager.DisplayMobilePhoneControlTutorial();
+            if (GameSettings.InputDevice == InputDevice.MobilePhone)
+                GameTutorialManager.DisplayMobilePhoneControlTutorial();
         }
 
         IEnumerator GameOverWarmingFadeIn()

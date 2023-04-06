@@ -13,7 +13,7 @@ namespace Windy.Game
         static int _puzzleHintTutorialCount = 0;
         static int _mobileControlTutorialCount = 0;
 
-        public static void ResetTutorialCound()
+        public static void ResetTutorialCount()
         {
             _flyTutorialCount = 0;
             _glidePunishmentTutorialCount = 0;
@@ -21,11 +21,18 @@ namespace Windy.Game
             _mobileControlTutorialCount = 0;
         }
 
+        IEnumerator ContinueKeySupervisor()
+        {
+            yield return new WaitUntil(() => Input.GetKeyDown(Keys.ContinueCode) || Controller.Controller.ControlDevice.GetKeyDown(Keys.ContinueCode, out float _));
+            TurnOffTut();
+        }
+
         static void Pause()
         {
             GameProgressManager.Instance.GameState = new Pause();
             UI.UIEventsHandler.Instance.PausePage.SetActive(false);
             Instance.PointerEventImage.enabled = true;
+            Instance.StartCoroutine(Instance.ContinueKeySupervisor());
         }
 
         public static void DisplayMobilePhoneControlTutorial()
@@ -54,6 +61,7 @@ namespace Windy.Game
         }
         public static void TurnOffTut()
         {
+            Instance.StopAllCoroutines();
             GameProgressManager.Instance.GameState = new Continue();
             Instance.PointerEventImage.enabled = false;
             UI.UI_GameMessage.TurnOffAllMessages();

@@ -7,28 +7,44 @@ namespace Windy.UI
 {
     public class UI_MotionMode : MonoBehaviour
     {
-        public float _characterStayTime;
-        public float _diminishRate;
+        [SerializeField] Rigidbody PlayerBody;
 
-        public float _colorChangeRate;
+        [SerializeField] float _characterStayTime;
+        [SerializeField] float _diminishRate;
 
-        public Image Image_MotionModeCircle;
-        public UnityEngine.Animation Anim_MotionModeCircle;
+        [SerializeField] float _colorChangeRate;
 
-        public Image Image_Walk;
-        public Image Image_Glide;
-        public Image Image_Dive;
-        public Image Image_Takeoff;
-        public Image Image_Trapped;
+        [SerializeField] Image Image_MotionModeCircle;
+        [SerializeField] UnityEngine.Animation Anim_MotionModeCircle;
+        AnimationState MotionModeCircle_CirclingAnimationState;
 
-        public Image Character_Walk;
-        public Image Character_Glide;
-        public Image Character_Dive;
-        public Image Character_Takeoff;
-        public Image Character_Trapped;
+        [SerializeField] float MotionModeCircle_CirclingAnimationMinSpeed;
+        [SerializeField] float MotionModeCircle_CirclingAnimationMaxSpeed;
 
-        private Coroutine CharacterDiminishCoroutine;
-        private Dictionary<Image, Image> MotionModeImages;
+        [SerializeField] Image Image_Walk;
+        [SerializeField] Image Image_Glide;
+        [SerializeField] Image Image_Dive;
+        [SerializeField] Image Image_Takeoff;
+        [SerializeField] Image Image_Trapped;
+
+        [SerializeField] Image Character_Walk;
+        [SerializeField] Image Character_Glide;
+        [SerializeField] Image Character_Dive;
+        [SerializeField] Image Character_Takeoff;
+        [SerializeField] Image Character_Trapped;
+
+        Coroutine CharacterDiminishCoroutine;
+        Dictionary<Image, Image> MotionModeImages;
+
+        private void Update()
+        {
+            if (Game.GameProgressManager.Instance.GameState.IsInGame())
+            {
+                MotionModeCircle_CirclingAnimationState.speed = Mathf.Clamp(Mathf.Abs(PlayerBody.velocity.y) / 20.0f, 
+                    MotionModeCircle_CirclingAnimationMinSpeed, 
+                    MotionModeCircle_CirclingAnimationMaxSpeed);
+            }
+        }
 
         IEnumerator CharacterImageFadeOut(Image character)
         {
@@ -60,6 +76,8 @@ namespace Windy.UI
 
         private void Start()
         {
+
+            MotionModeCircle_CirclingAnimationState = Anim_MotionModeCircle["Image_CircleRotation"];
 
             MotionModeImages = new Dictionary<Image, Image>()
             {

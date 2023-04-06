@@ -77,7 +77,7 @@ namespace Windy.Game
                 UI.UIEvents.OnToStartPage?.Invoke();
                 UI.UIEvents.OnToWalkMode?.Invoke();
 
-                GameTutorialManager.ResetTutorialCound();
+                GameTutorialManager.ResetTutorialCount();
 
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
