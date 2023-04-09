@@ -326,6 +326,11 @@ namespace Windy.Controller
         {
             SendMessageToServer(Message.CreateContinueMessage(KEYSTAT.DOWN));
         }
+
+        public void OnDisplayAllTutPointerDown()
+        {
+            SendMessageToServer(Message.CreateDisplayAllTutMessage());
+        }
         #endregion
     }
 }

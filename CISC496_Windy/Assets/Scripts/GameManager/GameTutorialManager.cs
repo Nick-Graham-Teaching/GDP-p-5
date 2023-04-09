@@ -12,6 +12,20 @@ namespace Windy.Game
         static int _glidePunishmentTutorialCount = 0;
         static int _puzzleHintTutorialCount = 0;
         static int _mobileControlTutorialCount = 0;
+        static int _waystoneTutorialCount = 0;
+
+        public static bool IsDisplayAll { get; private set; }
+
+        private void Update()
+        {
+            if (GameProgressManager.Instance.GameState.IsInGame())
+            {
+                if (Input.GetKeyDown(Keys.TutorialCode))
+                {
+                    DisplayAll();
+                }
+            }
+        }
 
         public static void ResetTutorialCount()
         {
@@ -19,14 +33,47 @@ namespace Windy.Game
             _glidePunishmentTutorialCount = 0;
             _puzzleHintTutorialCount = 0;
             _mobileControlTutorialCount = 0;
+            _waystoneTutorialCount = 0;
+        }
+
+        public static void DisplayAll()
+        {
+            if (!IsDisplayAll)
+            {
+                IsDisplayAll = true;
+                Pause();
+                UI.UI_GameMessage.DisplayAll();
+            }
+        }
+
+        public static void TurnOffTut()
+        {
+            if (IsDisplayAll)
+            {
+                IsDisplayAll = UI.UI_GameMessage.DisplayAll();
+                if (!IsDisplayAll)
+                {
+                    TurnOffTut();
+                }
+                return;
+            }
+
+            GameProgressManager.Instance.GameState = new Continue();
+            Instance.StopAllCoroutines();
+            Instance.PointerEventImage.enabled = false;
+            UI.UI_GameMessage.TurnOffAllMessages();
         }
 
         IEnumerator ContinueKeySupervisor()
         {
             yield return new WaitUntil(() => Input.GetKeyDown(Keys.ContinueCode) || Controller.Controller.ControlDevice.GetKeyDown(Keys.ContinueCode, out float _));
             TurnOffTut();
+            if (IsDisplayAll)
+            {
+                yield return null;
+                StartCoroutine(ContinueKeySupervisor());
+            }
         }
-
         static void Pause()
         {
             GameProgressManager.Instance.GameState = new Pause();
@@ -35,7 +82,7 @@ namespace Windy.Game
             Instance.StartCoroutine(Instance.ContinueKeySupervisor());
         }
 
-        public static void DisplayMobilePhoneControlTutorial()
+        public static void DisplayMobilePhoneControl()
         {
             if (_mobileControlTutorialCount++ != 0) return;
             Pause();
@@ -47,27 +94,24 @@ namespace Windy.Game
             Pause();
             UI.UI_GameMessage.DisplayFlyTutorialMessage();
         }
-        public static void DisplayGlidePunishmentTutorial()
+        public static void DisplayGlidePunishment()
         {
             if (_glidePunishmentTutorialCount++ != 0) return;
             Pause();
             UI.UI_GameMessage.DisplayGlidePunishmentTutorialMessage();
         }
-        public static void DisplayPuzzleHintTutorial()
+        public static void DisplayPuzzleHint()
         {
             if (_puzzleHintTutorialCount++ != 0) return;
             Pause();
             UI.UI_GameMessage.DisplayPuzzleHintTutorialMessage();
         }
-        public static void TurnOffTut()
+        public static void DisplayWaystoneTut()
         {
-            Instance.StopAllCoroutines();
-            GameProgressManager.Instance.GameState = new Continue();
-            Instance.PointerEventImage.enabled = false;
-            UI.UI_GameMessage.TurnOffAllMessages();
+            if (_waystoneTutorialCount++ != 0) return;
+            Pause();
+            UI.UI_GameMessage.DisplayWaystoneTutorialMessage();
         }
-
-
     }
 }
 

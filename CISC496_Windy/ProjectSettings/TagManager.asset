@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Boundary
   - Cloud
+  - HelperWaystone
   layers:
   - Default
   - TransparentFX

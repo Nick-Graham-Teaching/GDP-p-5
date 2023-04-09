@@ -52,7 +52,7 @@ namespace Windy.Buoyancy
                     if (Game.GameProgressManager.Instance.GameState.IsInGame()) timer += Time.deltaTime;
                     return timer > GlidePitchUpTimer.PunishmentCD;
                 });
-                Game.GameTutorialManager.DisplayGlidePunishmentTutorial();
+                Game.GameTutorialManager.DisplayGlidePunishment();
                 UI.UI_GlidePitchUpTimer.TurnOffCDTimer();
                 PunishUpwardAccel = 0.0f;
                 GlidePitchUpTimer.ResetUseTime();

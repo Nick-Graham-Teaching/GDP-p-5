@@ -17,9 +17,6 @@ namespace Windy.MotionMode
             Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Waystone_Trapped);
 
             rb.useGravity = false;
-            //rb.velocity = Vector3.zero;
-
-            Game.GameTutorialManager.DisplayPuzzleHintTutorial();
         }
 
         public sealed override void Update()

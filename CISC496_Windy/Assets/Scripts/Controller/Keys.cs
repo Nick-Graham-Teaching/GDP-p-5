@@ -32,8 +32,9 @@ namespace Windy
         public static readonly KeyCode ModeSwitchCode = KeyCode.LeftShift;   // ModeSwitch
         public static readonly KeyCode PauseCode = KeyCode.Escape;                // Pause
         public static readonly KeyCode ContinueCode = KeyCode.O;             // Continue
+        public static readonly KeyCode TutorialCode = KeyCode.T;            // Tutorial
 
-        public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode, ModeSwitchCode, PauseCode, ContinueCode };
+        public static readonly KeyCode[] keys = { UpCode, LeftCode, DownCode, RightCode, JumpCode, ModeSwitchCode, PauseCode, ContinueCode, TutorialCode };
     }
 }
 

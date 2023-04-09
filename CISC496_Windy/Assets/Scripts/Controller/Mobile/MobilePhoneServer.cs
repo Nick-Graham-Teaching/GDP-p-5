@@ -87,6 +87,13 @@ namespace Windy.Controller
                 NetworkTransport.Send(hostId, connectionId, dataChannelId,
                     Message.CreateToFlyingModeMessage(), 1, out error);
         }
+        void SendTutContinueMessage()
+        {
+            if (Game.GameTutorialManager.IsDisplayAll)
+            {
+                NetworkTransport.Send(hostId, connectionId, dataChannelId, Message.CreateContinueMessage(KEYSTAT.IDLE), 5, out byte _);
+            }
+        }
         #endregion
 
         #region Process Message
@@ -167,6 +174,9 @@ namespace Windy.Controller
                     break;
                 case Message.GyroForwardUp:
                     Message.GetGyroForwardUpMessage(message, out GyroAttitudeMonitor.Forward, out GyroAttitudeMonitor.Up);
+                    break;
+                case Message.DisplayAllTut:
+                    Game.GameTutorialManager.DisplayAll();
                     break;
             }
         }
@@ -295,6 +305,7 @@ namespace Windy.Controller
             {
                 SendUseGyroMessage();
                 SendToFlyingOrToWalkMessage();
+                SendTutContinueMessage();
             }
         }
 

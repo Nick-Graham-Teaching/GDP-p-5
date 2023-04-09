@@ -35,6 +35,10 @@ namespace Windy.UI
     {
         public MobilePhoneControlTutorialMessage(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
+    public class WaystoneTutorialMessage : GameMessage
+    {
+        public WaystoneTutorialMessage(UnityEngine.UI.Image image, float stayTime):base(image, stayTime) { }
+    }
 
     public class PuzzleSolvedMessage : GameMessage
     {

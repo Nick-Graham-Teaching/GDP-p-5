@@ -65,11 +65,11 @@ namespace Windy.Game
     public sealed class Pause : OutOfGame
     {
         public override void Update()
-        {            
-            //if (Input.GetKeyDown(Keys.PauseCode))
+        { 
             if (Input.GetKeyDown(Keys.ContinueCode) || Controller.Controller.ControlDevice.GetKeyDown(Keys.ContinueCode, out float _))
             {
-                GameProgressManager.Instance.GameState = new Continue();
+                if (!GameTutorialManager.IsDisplayAll)
+                    GameProgressManager.Instance.GameState = new Continue();
             }
         }
         protected override void OnStateChange()

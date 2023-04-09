@@ -21,6 +21,15 @@ namespace Windy.Waystone
                     .SetWaystoneGravityDirection((transform.position - other.transform.position).normalized);
 
                 MM_Executor.Instance.SwitchMode(MM_Executor.Instance.B_M_Trapped, MM_Executor.Instance.B_S_Trapped);
+
+                if (CompareTag("HelperWaystone"))
+                {
+                    Game.GameTutorialManager.DisplayPuzzleHint();
+                }
+                else
+                {
+                    Game.GameTutorialManager.DisplayWaystoneTut();
+                }
             }
         }
 

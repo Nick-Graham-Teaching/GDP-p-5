@@ -34,6 +34,8 @@ namespace Windy.Controller
 
 		public const byte ToFlyingMode	  = 18; // The message from server
 		public const byte ToWalkMode	  = 19; // The message from server
+
+		public const byte DisplayAllTut	  = 20;
 									      
         public static int maxMessageSize = 128; // maximum size of a message in bytes
 
@@ -429,6 +431,19 @@ namespace Windy.Controller
 
 			byte[] m = new byte[1];
 			m[0] = ToWalkMode;
+
+			return m;
+		}
+        #endregion
+
+        #region Display all Tut Message
+		public static byte[] CreateDisplayAllTutMessage()
+        {
+			// Format is:
+			//	 - byte 0: message type
+
+			byte[] m = new byte[1];
+			m[0] = DisplayAllTut;
 
 			return m;
 		}
