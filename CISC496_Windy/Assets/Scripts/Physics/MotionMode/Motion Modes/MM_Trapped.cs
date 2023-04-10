@@ -13,6 +13,12 @@ namespace Windy.MotionMode
         public sealed override void Start()
         {
             MM_Executor.Instance.StopEnergySupervisor();
+
+            if (Game.GameSettings.InputDevice == Game.InputDevice.Keyboard)
+                UI.UI_KeyReminder.DisplayTakeoffKeyboardReminder();
+            else
+                UI.UI_KeyReminder.DisplayTakeoffMCReminder();
+
             UI.UIEvents.OnToTrappedMode?.Invoke();
             Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Waystone_Trapped);
 
@@ -37,6 +43,7 @@ namespace Windy.MotionMode
 
             rb.useGravity = true;
 
+            UI.UI_KeyReminder.TurnOffAllMessages();
             UI.UIEvents.OnOutOfTrappedMode?.Invoke();
             Audio.AudioPlayer.PlaydOneTimeRandomly(Audio.AudioClip.Waystone_GetRidOf);
         }

@@ -11,7 +11,7 @@ namespace Windy.UI
         GlidePunishmentTutorialMessage _glidePunishmentTutorialMessage;
         PuzzleHintTutorialMessage _puzzleHintTutorialMessage;
         MobilePhoneControlTutorialMessage _mobilePhoneControlTutorialMessage;
-        WaystoneTutorialMessage _waystoneTutorialMessage;
+        //WaystoneTutorialMessage _waystoneTutorialMessage;
 
         static int _displayAllIndex = 0;
         static GameMessage[] _allTutMessages;
@@ -26,8 +26,8 @@ namespace Windy.UI
         [SerializeField] float PuzzleHintTutorialStayTime;
         [SerializeField] UnityEngine.UI.Image MobilePhoneControlTutorialImage;
         [SerializeField] float MobilePhoneControlTutorialStayTime;
-        [SerializeField] UnityEngine.UI.Image WaystoneTutorialImage;
-        [SerializeField] float WaystoneTutorialStayTime;
+        //[SerializeField] UnityEngine.UI.Image WaystoneTutorialImage;
+        //[SerializeField] float WaystoneTutorialStayTime;
 
         [SerializeField] UnityEngine.UI.Image PuzzleSolvedImage;
         [SerializeField] float PuzzleSolvedStayTime;
@@ -39,7 +39,7 @@ namespace Windy.UI
             _glidePunishmentTutorialMessage =    new GlidePunishmentTutorialMessage    (GlidePunishmentTutorialImage,    GlidePunishmentTutorialStayTime);
             _puzzleHintTutorialMessage =         new PuzzleHintTutorialMessage         (PuzzleHintTutorialImage,         PuzzleHintTutorialStayTime);
             _mobilePhoneControlTutorialMessage = new MobilePhoneControlTutorialMessage (MobilePhoneControlTutorialImage, MobilePhoneControlTutorialStayTime);
-            _waystoneTutorialMessage =           new WaystoneTutorialMessage           (WaystoneTutorialImage,           WaystoneTutorialStayTime);
+            //_waystoneTutorialMessage =           new WaystoneTutorialMessage           (WaystoneTutorialImage,           WaystoneTutorialStayTime);
 
             _puzzleSolvedMessage = new PuzzleSolvedMessage(PuzzleSolvedImage, PuzzleSolvedStayTime);
 
@@ -47,7 +47,7 @@ namespace Windy.UI
                 _mobilePhoneControlTutorialMessage,
                 _flyTutorialMessage,
                 _puzzleHintTutorialMessage,
-                _waystoneTutorialMessage,
+                //_waystoneTutorialMessage,
                 _glidePunishmentTutorialMessage
             };
         }
@@ -80,9 +80,11 @@ namespace Windy.UI
         {
             Instance.ApplyForShowup(Instance._mobilePhoneControlTutorialMessage, true);
         }
+        [System.Obsolete]
         public static void DisplayWaystoneTutorialMessage()
         {
-            Instance.ApplyForShowup(Instance._waystoneTutorialMessage, true);
+            throw new System.NotImplementedException();
+            //Instance.ApplyForShowup(Instance._waystoneTutorialMessage, true);
         }
 
         public static void DisplayPuzzleSolvedMessage()

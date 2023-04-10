@@ -7,7 +7,6 @@ namespace Windy.UI
 {
     public class PopupWindow : UI_Message
     {
-        public PopupWindow() { }
         public PopupWindow(UnityEngine.UI.Image image, float stayTime) : base(image, stayTime) { }
     }
     public class MCConnecionWindow : PopupWindow

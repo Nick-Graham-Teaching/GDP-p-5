@@ -10,10 +10,23 @@ namespace Windy.MotionMode
         public override void Start()
         {
             rb.drag = flyDrag;
-            UI.UIEvents.OnToDiveMode?.Invoke();
+
             Game.GameTutorialManager.DisplayFlyTutorial();
-            UI.UI_GlidePitchUpTimer.TurnOn();
+
+            UI.UIEvents.OnToDiveMode?.Invoke();
+            UI.UI_GlidePitchUpTimer.TurnOn(true);
+            if (Game.GameSettings.InputDevice == Game.InputDevice.Keyboard)
+                UI.UI_KeyReminder.DisplaySwitchModeKeyboardReminder();
+            else
+                UI.UI_KeyReminder.DisplaySwitchModeMCReminder();
         }
+
+        public override void Quit()
+        {
+            UI.UI_KeyReminder.TurnOffAllMessages();
+        }
+
+        public override bool IsDive() => true;
 
         public override string ToString() => "MotionMode -- Dive";
     }

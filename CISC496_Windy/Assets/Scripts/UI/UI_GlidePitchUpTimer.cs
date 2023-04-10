@@ -11,6 +11,7 @@ namespace Windy.UI
     {
         [SerializeField] GameObject CDTimer;
         [SerializeField] GameObject UseTimer;
+        [SerializeField] GameObject DisabledTimerImage;
 
         [SerializeField] Image UseTimer_FillImage;
         [SerializeField] Image CDTimer_UsableImage;
@@ -31,6 +32,13 @@ namespace Windy.UI
                 CDTimer_DisusableImage.fillAmount -= (1.0f / GlidePitchUpTimer.PunishmentCD) * Time.deltaTime;
                 CDTimer_UsableImage.fillAmount = 1.0f - CDTimer_DisusableImage.fillAmount;
             }
+            else if (!MM_Executor.Instance.MotionMode.IsGlide())
+            {
+                if (DisabledTimerImage.activeSelf) return;
+                CDTimer.SetActive(false);
+                UseTimer.SetActive(false);
+                DisabledTimerImage.SetActive(true);
+            }
             else
             {
                 UseTimer_FillImage.fillAmount = Mathf.Lerp(UseTimer_FillImage.fillAmount, GlidePitchUpTimer.UseTimeRatio, ChangeRate * Time.deltaTime);
@@ -41,6 +49,7 @@ namespace Windy.UI
         {
             CDTimer.SetActive(false);
             UseTimer.SetActive(false);
+            DisabledTimerImage.SetActive(false);
         }
 
         public static void TurnOff()
@@ -49,8 +58,9 @@ namespace Windy.UI
             Instance._isEnabled = false;
             Instance.CDTimer.SetActive(false);
             Instance.UseTimer.SetActive(false);
+            Instance.DisabledTimerImage.SetActive(false);
         }
-        public static void TurnOn()
+        public static void TurnOn(bool isDive)
         {
             Instance._isEnabled = true;
 
@@ -58,11 +68,13 @@ namespace Windy.UI
             {
                 Instance.CDTimer.SetActive(true);
                 Instance.UseTimer.SetActive(false);
+                Instance.DisabledTimerImage.SetActive(false);
             }
             else
             {
                 Instance.CDTimer.SetActive(false);
-                Instance.UseTimer.SetActive(true);
+                Instance.UseTimer.SetActive(!isDive);
+                Instance.DisabledTimerImage.SetActive(isDive);
             }
         }
 

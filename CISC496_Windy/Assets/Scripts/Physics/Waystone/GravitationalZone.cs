@@ -26,10 +26,6 @@ namespace Windy.Waystone
                 {
                     Game.GameTutorialManager.DisplayPuzzleHint();
                 }
-                else
-                {
-                    Game.GameTutorialManager.DisplayWaystoneTut();
-                }
             }
         }
 

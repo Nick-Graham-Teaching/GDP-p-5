@@ -106,6 +106,7 @@ namespace Windy.Game
             Pause();
             UI.UI_GameMessage.DisplayPuzzleHintTutorialMessage();
         }
+        [System.Obsolete]
         public static void DisplayWaystoneTut()
         {
             if (_waystoneTutorialCount++ != 0) return;

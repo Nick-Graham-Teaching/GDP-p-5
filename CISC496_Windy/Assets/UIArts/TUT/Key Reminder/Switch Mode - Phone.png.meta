@@ -42,17 +42,17 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
+  alignment: 9
+  spritePivot: {x: 0.47707224, y: 0.48158714}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteBorder: {x: 179, y: 0, z: 304, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
-  spriteTessellationDetail: -1
+  spriteTessellationDetail: 0
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -127,18 +127,108 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
-    outline: []
+    sprites:
+    - serializedVersion: 2
+      name: Switch Mode - Phone_0
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 305
+        width: 2382
+        height: 579
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6d59c19953cea8458b517282a73662e
+      internalID: 846363753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Switch Mode - Phone_1
+      rect:
+        serializedVersion: 2
+        x: 1357
+        y: 875
+        width: 39
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d65d768821a39b49abdf2f4b18de04a
+      internalID: -1294364546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Switch Mode - Phone_2
+      rect:
+        serializedVersion: 2
+        x: 1357
+        y: 264
+        width: 39
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e6960285e5445bb4d98473c5789e7d2c
+      internalID: -305817546
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline:
+    - - {x: -37.797363, y: -280}
+      - {x: -76.99463, y: -280}
+      - {x: -79.79443, y: -282.8}
+      - {x: -79.79443, y: -331.8}
+      - {x: -75.59473, y: -333.19998}
+      - {x: -37.797363, y: -333.19998}
+      - {x: -34.99756, y: -326.19998}
+      - {x: -34.99756, y: -291.19998}
+    - - {x: -1061.126, y: 291.19998}
+      - {x: -1254.3125, y: 121.799995}
+      - {x: -1254.3125, y: -67.2}
+      - {x: -1112.9224, y: -292.6}
+      - {x: 957.5332, y: -292.6}
+      - {x: 1131.1211, y: -18.199999}
+      - {x: 1131.1211, y: 51.8}
+      - {x: 928.13525, y: 291.19998}
+    - - {x: -75.59473, y: 333.19998}
+      - {x: -79.79443, y: 329}
+      - {x: -79.79443, y: 285.6}
+      - {x: -68.595215, y: 277.19998}
+      - {x: -39.197266, y: 277.19998}
+      - {x: -34.99756, y: 289.8}
+      - {x: -34.99756, y: 331.8}
+      - {x: -39.197266, y: 333.19998}
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Switch Mode - Phone_0: 846363753
+      Switch Mode - Phone_1: -1294364546
+      Switch Mode - Phone_2: -305817546
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

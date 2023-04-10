@@ -77,7 +77,7 @@ namespace Windy.UI
         private void Start()
         {
 
-            MotionModeCircle_CirclingAnimationState = Anim_MotionModeCircle["Image_CircleRotation"];
+            MotionModeCircle_CirclingAnimationState = Anim_MotionModeCircle["Anim - MotionModeCircle - Rotation"];
 
             MotionModeImages = new Dictionary<Image, Image>()
             {
@@ -180,7 +180,7 @@ namespace Windy.UI
                         image.enabled = true;
                         MotionModeImages[image].enabled = true;
 
-                        Anim_MotionModeCircle.Play("Image_TrappedMode");
+                        Anim_MotionModeCircle.Play("Anim - MotionModeCircle - Twitch");
                         StopAllCoroutines();
                         Util.ResetImageColor(Image_MotionModeCircle, Color.red);
                         Util.ResetImageColor(image, Color.red);
@@ -198,7 +198,7 @@ namespace Windy.UI
             };
             UIEvents.OnOutOfTrappedMode += () =>
             {
-                Anim_MotionModeCircle.Play("Image_CircleRotation");
+                Anim_MotionModeCircle.Play("Anim - MotionModeCircle - Rotation");
                 Util.ResetImagesColor(MotionModeImages.Keys, Color.red);
                 Util.ResetImagesColor(MotionModeImages.Values, Color.red);
                 Util.ResetImageColor(Image_MotionModeCircle, Color.red);

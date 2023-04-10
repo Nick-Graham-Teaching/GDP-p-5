@@ -20,6 +20,7 @@ namespace Windy.MotionMode
         public virtual void Quit() { }
 
         public virtual bool IsGlide() => false;
+        public virtual bool IsDive() => false;
         public virtual bool IsOnGround() => false;
         public virtual bool UseGyro() => false;
 
